@@ -239,11 +239,13 @@ create table abonnement (
   constraint user_fk
     foreign key (id_user1)
     references "user" (id_user)
-    on delete cascade,
+    on delete cascade
+    on update cascade,
   constraint user2_fk
     foreign key (id_user2)
     references "user" (id_user)
     on delete cascade
+    on update cascade
 );
 
 create index user2_abonnement_idx on abonnement (id_user2);
@@ -324,11 +326,13 @@ create table contenu_collection (
   constraint "enregistrement"
     foreign key ("id_user", "id_post")
     references "enregistrement_post" ("id_user", "id_post")
-    on delete cascade,
+    on delete cascade
+    on update cascade,
   constraint "collection"
     foreign key ("id_collection")
     references "collection" ("id_collection")
     on delete cascade
+    on update cascade
 );
 
 create index contenu_collection_idx on "contenu_collection" ("id_collection");
