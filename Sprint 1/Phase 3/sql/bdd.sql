@@ -1,5 +1,6 @@
-
-
+-- -----------------------------------------------------
+-- drop every Table
+-- -----------------------------------------------------
 
 drop table if exists abonnement cascade;
 drop table if exists "collection" cascade;
@@ -49,26 +50,6 @@ create table "user" (
 );
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`User` (
---   `idUser` INT NOT NULL AUTO_INCREMENT,
---   `username` VARCHAR(100) NOT NULL,
---   `role` VARCHAR(45) NOT NULL,
---   `nom` VARCHAR(45) NULL,
---   `prenom` VARCHAR(45) NULL,
---   `dateDeNaissance` DATE NOT NULL,
---   `genre` VARCHAR(45) NULL,
---   `email` VARCHAR(45) NOT NULL,
---   `adresse` VARCHAR(45) NULL,
---   `password` VARCHAR(45) NULL,
---   `ppbin` MEDIUMBLOB NULL,
---   `ppform` VARCHAR(45) NULL,
---   `langue` VARCHAR(45) NOT NULL,
---   `description` LONGTEXT NULL,
---   PRIMARY KEY (`idUser`),
---   UNIQUE INDEX `idUser_UNIQUE` (`idUser` ASC) VISIBLE)
--- ENGINE = InnoDB;
-
-
 -- -----------------------------------------------------
 -- Table etablissement
 -- -----------------------------------------------------
@@ -81,16 +62,6 @@ create table "etablissement" (
   "description" text
 );
 
-
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`Etablissement` (
---   `idEtablissement` INT NOT NULL AUTO_INCREMENT,
---   `adresse` VARCHAR(45) NOT NULL,
---   `nom` VARCHAR(45) NOT NULL,
---   `approuved` TINYINT NULL DEFAULT 0,
---   `description` LONGTEXT NULL,
---   PRIMARY KEY (`idEtablissement`))
--- ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table note
@@ -118,27 +89,6 @@ create unique index idnote_unique on "note" ("id_note");
 create index etablissement_note_idx on "note" ("id_etablissement");
 create index user_note_idx on "note" ("id_user");
 
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`Note` (
---   `idNote` INT NOT NULL AUTO_INCREMENT,
---   `idEtablissement` INT NOT NULL,
---   `idUser` INT NOT NULL,
---   `date` DATETIME NULL,
---   PRIMARY KEY (`idNote`, `idEtablissement`, `idUser`),
---   UNIQUE INDEX `idNote_UNIQUE` (`idNote` ASC) VISIBLE,
---   INDEX `etablissement_idx` (`idEtablissement` ASC) VISIBLE,
---   INDEX `user_idx` (`idUser` ASC) VISIBLE,
---   CONSTRAINT `etablissement`
---     FOREIGN KEY (`idEtablissement`)
---     REFERENCES `mydb`.`Etablissement` (`idEtablissement`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `user`
---     FOREIGN KEY (`idUser`)
---     REFERENCES `mydb`.`User` (`idUser`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -170,30 +120,6 @@ create index iduser_post_idx on "post" ("id_user");
 create index idnote_post_idx on "post" ("id_note");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`Post` (
---   `idPost` INT NOT NULL AUTO_INCREMENT,
---   `idUser` INT NOT NULL,
---   `text` LONGTEXT NULL,
---   `date` DATETIME NOT NULL,
---   `type` VARCHAR(45) NOT NULL,
---   `afficher?` TINYINT NOT NULL DEFAULT 1,
---   `idNote` INT NULL,
---   PRIMARY KEY (`idPost`),
---   UNIQUE INDEX `idPost_UNIQUE` (`idPost` ASC) VISIBLE,
---   INDEX `idUser_idx` (`idUser` ASC) VISIBLE,
---   INDEX `idnote_idx` (`idNote` ASC) VISIBLE,
---   CONSTRAINT `idUser`
---     FOREIGN KEY (`idUser`)
---     REFERENCES `mydb`.`User` (`idUser`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `idnote`
---     FOREIGN KEY (`idNote`)
---     REFERENCES `mydb`.`Note` (`idNote`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
 -- -----------------------------------------------------
 -- Table type_etablissement
 -- -----------------------------------------------------
@@ -204,13 +130,6 @@ create table "type_etablissement" (
 );
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`TypeEtablissement` (
---   `idTypeEtablissement` INT NOT NULL,
---   `nom` VARCHAR(45) NULL,
---   PRIMARY KEY (`idTypeEtablissement`))
--- ENGINE = InnoDB;
-
-
 -- -----------------------------------------------------
 -- Table type_note
 -- -----------------------------------------------------
@@ -219,13 +138,6 @@ create table "type_note" (
   "id_type_note" serial primary key,
   "nom" varchar(45) not null
 );
-
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`TypeNote` (
---   `idTypeNote` INT NOT NULL AUTO_INCREMENT,
---   `nom` VARCHAR(45) NOT NULL,
---   PRIMARY KEY (`idTypeNote`))
--- ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -266,14 +178,6 @@ create table "collection" (
 create index idcollection_idx on "collection" ("id_collection");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`Collection` (
---   `idCollection` INT NOT NULL AUTO_INCREMENT,
---   `nom` VARCHAR(45) NOT NULL,
---   `public` TINYINT NOT NULL DEFAULT 1,
---   PRIMARY KEY (`idCollection`),
---   UNIQUE INDEX `idCollection_UNIQUE` (`idCollection` ASC) VISIBLE)
--- ENGINE = InnoDB;
-
 -- -----------------------------------------------------
 -- Table enregistrement_post
 -- -----------------------------------------------------
@@ -296,23 +200,6 @@ create table  "enregistrement_post" (
 
 create index user_enregistrement_post_idx on "enregistrement_post" ("id_user");
 
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`EnregistrementPost` (
---   `idPost` INT NOT NULL,
---   `idUser` INT NOT NULL,
---   PRIMARY KEY (`idPost`, `idUser`),
---   INDEX `user_idx` (`idUser` ASC) VISIBLE,
---   CONSTRAINT `post`
---     FOREIGN KEY (`idPost`)
---     REFERENCES `mydb`.`Post` (`idPost`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `user`
---     FOREIGN KEY (`idUser`)
---     REFERENCES `mydb`.`User` (`idUser`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table contenu_collection
@@ -338,29 +225,6 @@ create table contenu_collection (
 create index contenu_collection_idx on "contenu_collection" ("id_collection");
 
 
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`ContenuCollection` (
---   `idUser` INT NOT NULL,
---   `idPost` INT NOT NULL,
---   `idCollection` INT NOT NULL,
---   PRIMARY KEY (`idUser`, `idPost`, `idCollection`),
---   INDEX `collection_idx` (`idCollection` ASC) VISIBLE,
---   CONSTRAINT `enregistrement`
---     FOREIGN KEY (`idUser` , `idPost`)
---     REFERENCES `mydb`.`EnregistrementPost` (`idUser` , `idPost`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `collection`
---     FOREIGN KEY (`idCollection`)
---     REFERENCES `mydb`.`Collection` (`idCollection`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
-
-
-
 -- -----------------------------------------------------
 -- Table est_commentaire_de
 -- -----------------------------------------------------
@@ -384,27 +248,6 @@ create table "est_commentaire_de" (
 create index post2_commentairede_idx on "est_commentaire_de" ("id_post2");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`EstCommentaireDe` (
---   `idPost1` INT NOT NULL,
---   `idPost2` INT NOT NULL,
---   PRIMARY KEY (`idPost1`, `idPost2`),
---   INDEX `post2_idx` (`idPost2` ASC) VISIBLE,
---   CONSTRAINT `post1`
---     FOREIGN KEY (`idPost1`)
---     REFERENCES `mydb`.`Post` (`idPost`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `post2`
---     FOREIGN KEY (`idPost2`)
---     REFERENCES `mydb`.`Post` (`idPost`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
-
-
-
 -- -----------------------------------------------------
 -- Table etablissement_de_type
 -- -----------------------------------------------------
@@ -426,23 +269,6 @@ create table "etablissement_de_type" (
 );
 
 create index typeetablissement_idx on "etablissement_de_type" ("id_type_etablissement");
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`EtablissementDeType` (
---   `idEtablissement` INT NOT NULL,
---   `idTypeEtablissement` INT NOT NULL,
---   PRIMARY KEY (`idEtablissement`, `idTypeEtablissement`),
---   INDEX `typeetablissement_idx` (`idTypeEtablissement` ASC) VISIBLE,
---   CONSTRAINT `etablissement`
---     FOREIGN KEY (`idEtablissement`)
---     REFERENCES `mydb`.`Etablissement` (`idEtablissement`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `typeetablissement`
---     FOREIGN KEY (`idTypeEtablissement`)
---     REFERENCES `mydb`.`TypeEtablissement` (`idTypeEtablissement`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -468,24 +294,6 @@ create table "liked_collection" (
 create index collection_idx on "liked_collection" ("id_collection");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`LikedCollection` (
---   `idUser` INT NOT NULL,
---   `idCollection` INT NOT NULL,
---   PRIMARY KEY (`idUser`, `idCollection`),
---   INDEX `collection_idx` (`idCollection` ASC) VISIBLE,
---   CONSTRAINT `collection`
---     FOREIGN KEY (`idCollection`)
---     REFERENCES `mydb`.`Collection` (`idCollection`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `user`
---     FOREIGN KEY (`idUser`)
---     REFERENCES `mydb`.`User` (`idUser`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
 -- -----------------------------------------------------
 -- Table liked_post
 -- -----------------------------------------------------
@@ -509,24 +317,6 @@ create table "liked_post" (
 create index "iduser_likedpost_idx" on "liked_post" ("id_user");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`LikedPost` (
---   `idPost` INT NOT NULL,
---   `idUser` INT NOT NULL,
---   PRIMARY KEY (`idPost`, `idUser`),
---   INDEX `idUser_idx` (`idUser` ASC) VISIBLE,
---   CONSTRAINT `idPost`
---     FOREIGN KEY (`idPost`)
---     REFERENCES `mydb`.`Post` (`idPost`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `idUser`
---     FOREIGN KEY (`idUser`)
---     REFERENCES `mydb`.`User` (`idUser`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
 -- -----------------------------------------------------
 -- Table mot_cle
 -- -----------------------------------------------------
@@ -538,14 +328,6 @@ create table  "mot_cle" (
 );
 
 create unique index idmotcle_unique_idx on "mot_cle" ("id_mot_cle");
-
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`MotCle` (
---   `idMotCle` INT NOT NULL AUTO_INCREMENT,
---   `Mot` VARCHAR(45) NOT NULL,
---   PRIMARY KEY (`idMotCle`),
---   UNIQUE INDEX `idMotCle_UNIQUE` (`idMotCle` ASC) VISIBLE)
--- ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -569,27 +351,6 @@ create table "mot_cle_post" (
 );
 
 create index post_motcle_idx on "mot_cle_post" ("id_post");
-
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`MotClePost` (
---   `idMotCle` INT NOT NULL,
---   `idPost` INT NOT NULL,
---   PRIMARY KEY (`idMotCle`, `idPost`),
---   INDEX `post_idx` (`idPost` ASC) VISIBLE,
---   CONSTRAINT `post`
---     FOREIGN KEY (`idPost`)
---     REFERENCES `mydb`.`Post` (`idPost`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `mot cle`
---     FOREIGN KEY (`idMotCle`)
---     REFERENCES `mydb`.`MotCle` (`idMotCle`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
-
 
 
 -- -----------------------------------------------------
@@ -616,27 +377,6 @@ create table  "note_concerne" (
 create index type_note_idx on "note_concerne" ("id_type_note");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`NoteConcerne` (
---   `idNote` INT NOT NULL,
---   `idTypeNote` INT NOT NULL,
---   `Note` INT NOT NULL,
---   PRIMARY KEY (`idNote`, `idTypeNote`),
---   INDEX `type_idx` (`idTypeNote` ASC) VISIBLE,
---   CONSTRAINT `type`
---     FOREIGN KEY (`idTypeNote`)
---     REFERENCES `mydb`.`TypeNote` (`idTypeNote`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `note`
---     FOREIGN KEY (`idNote`)
---     REFERENCES `mydb`.`Note` (`idNote`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
-
-
 -- -----------------------------------------------------
 -- Table regime
 -- -----------------------------------------------------
@@ -645,14 +385,6 @@ create table "regime" (
   "id_regime" serial primary key,
   "nom" varchar(45) not null
 );
-
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`Regime` (
---   `idRegime` INT NOT NULL,
---   `nom` VARCHAR(45) NOT NULL,
---   PRIMARY KEY (`idRegime`))
--- ENGINE = InnoDB;
-
 
 -- -----------------------------------------------------
 -- Table regime_etablissement
@@ -677,24 +409,6 @@ create table "regime_etablissement" (
 create index regime_etablissement_idx on "regime_etablissement" ("id_regime");
 
 
--- CREATE TABLE IF NOT EXISTS `mydb`.`RegimeEtablissement` (
---   `idEtablissement` INT NOT NULL,
---   `idRegime` INT NOT NULL,
---   PRIMARY KEY (`idEtablissement`, `idRegime`),
---   INDEX `regime_idx` (`idRegime` ASC) VISIBLE,
---   CONSTRAINT `etablissement`
---     FOREIGN KEY (`idEtablissement`)
---     REFERENCES `mydb`.`Etablissement` (`idEtablissement`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `regime`
---     FOREIGN KEY (`idRegime`)
---     REFERENCES `mydb`.`Regime` (`idRegime`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
 -- -----------------------------------------------------
 -- Table regimes_de_l_user
 -- -----------------------------------------------------
@@ -716,28 +430,3 @@ create table "regimes_de_l_user" (
 );
 
 create index regime_user_idx on "regimes_de_l_user" ("id_regime");
-
-
--- CREATE TABLE IF NOT EXISTS `mydb`.`RegimesDeLUser` (
---   `idUser` INT NOT NULL,
---   `idRegime` INT NOT NULL,
---   PRIMARY KEY (`idUser`, `idRegime`),
---   INDEX `regime_idx` (`idRegime` ASC) VISIBLE,
---   CONSTRAINT `user`
---     FOREIGN KEY (`idUser`)
---     REFERENCES `mydb`.`User` (`idUser`)
---     ON DELETE cascade
---     ON UPDATE cascade,
---   CONSTRAINT `regime`
---     FOREIGN KEY (`idRegime`)
---     REFERENCES `mydb`.`Regime` (`idRegime`)
---     ON DELETE cascade
---     ON UPDATE cascade)
--- ENGINE = InnoDB;
-
-
-
-
-
-
-
