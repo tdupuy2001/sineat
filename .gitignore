@@ -1,2 +1,4 @@
 .DS_Store
 backend-dev
+.vscode
+__pycache__

@@ -73,12 +73,12 @@ create table "note" (
   "id_user" int not null,
   -- "date" date null,
   primary key ("id_note", "id_etablissement", "id_user"),
-  constraint "etablissement"
+  constraint "etablissement_note_fk"
     foreign key ("id_etablissement")
     references "etablissement" ("id_etablissement")
     on delete cascade
     on update cascade,
-  constraint "user"
+  constraint "user_note_fk"
     foreign key ("id_user")
     references "user" ("id_user")
     on delete cascade
@@ -103,12 +103,12 @@ create table "post" (
   "type" varchar(45) not null,
   "afficher?" boolean not null default true,
   "id_note" int,
-  constraint "id_user"
+  constraint "id_user_post_fk"
     foreign key ("id_user")
     references "user" ("id_user")
     on delete cascade
     on update cascade,
-  constraint "id_note"
+  constraint "id_note_post_fk"
     foreign key ("id_note")
     references "note" ("id_note")
     on delete cascade
@@ -186,12 +186,12 @@ create table  "enregistrement_post" (
   "id_post" int not null,
   "id_user" int not null,
   primary key ("id_post", "id_user"),
-  constraint post
+  constraint post_enre_post_fk
     foreign key ("id_post")
     references "post" ("id_post")
     on delete cascade
     on update cascade,
-  constraint "user"
+  constraint "user_enre_post_fk"
     foreign key ("id_user")
     references "user" ("id_user")
     on delete cascade
@@ -210,12 +210,12 @@ create table contenu_collection (
   "id_post" int not null,
   "id_collection" int not null,
   primary key ("id_user", "id_post", "id_collection"),
-  constraint "enregistrement"
+  constraint "enregistrement_cont_coll_fk"
     foreign key ("id_user", "id_post")
     references "enregistrement_post" ("id_user", "id_post")
     on delete cascade
     on update cascade,
-  constraint "collection"
+  constraint "collection_cont_coll_fk"
     foreign key ("id_collection")
     references "collection" ("id_collection")
     on delete cascade
@@ -233,12 +233,12 @@ create table "est_commentaire_de" (
   "id_post1" int not null,
   "id_post2" int not null,
   primary key ("id_post1", "id_post2"),
-  constraint post1
+  constraint post1_fk
     foreign key ("id_post1")
     references "post" ("id_post")
     on delete cascade
     on update cascade,
-  constraint post2
+  constraint post2_fk
     foreign key ("id_post2")
     references "post" ("id_post")
     on delete cascade
@@ -256,12 +256,12 @@ create table "etablissement_de_type" (
   "id_etablissement" int not null,
   "id_type_etablissement" int not null,
   primary key ("id_etablissement", "id_type_etablissement"),
-  constraint etablissement
+  constraint etablissement_eta_de_ty_fk
     foreign key ("id_etablissement")
     references "etablissement" ("id_etablissement")
     on delete cascade
     on update cascade,
-  constraint type_etablissement
+  constraint type_etablissement_eta_de_ty_fk
     foreign key ("id_type_etablissement")
     references "type_etablissement" ("id_type_etablissement")
     on delete cascade
@@ -279,12 +279,12 @@ create table "liked_collection" (
   "id_user" int not null,
   "id_collection" int not null,
   primary key ("id_user", "id_collection"),
-  constraint "collection"
+  constraint "collection_liked_coll_fk"
     foreign key ("id_collection")
     references "collection" ("id_collection")
     on delete cascade
     on update cascade,
-  constraint "user"
+  constraint "user_liked_coll_fk"
     foreign key ("id_user")
     references "user" ("id_user")
     on delete cascade
@@ -302,12 +302,12 @@ create table "liked_post" (
   "id_post" int not null,
   "id_user" int not null,
   primary key ("id_post", "id_user"),
-  constraint "id_post"
+  constraint "id_post_liked_post_fk"
     foreign key ("id_post")
     references "post" ("id_post")
     on delete cascade
     on update cascade,
-  constraint "id_user"
+  constraint "id_user_liked_post_fk"
     foreign key ("id_user")
     references "user" ("id_user")
     on delete cascade
@@ -338,12 +338,12 @@ create table "mot_cle_post" (
   "id_mot_cle" int not null,
   "id_post" int not null,
   primary key ("id_mot_cle", "id_post"),
-  constraint "post"
+  constraint "post_mot_cle_fk"
     foreign key ("id_post")
     references "post" ("id_post")
     on delete cascade
     on update cascade,
-  constraint "mot_cle"
+  constraint "mot_cle_mot_cle_fk"
     foreign key ("id_mot_cle")
     references "mot_cle" ("id_mot_cle")
     on delete cascade
@@ -360,14 +360,14 @@ create index post_motcle_idx on "mot_cle_post" ("id_post");
 create table  "note_concerne" (
   "id_note" int not null,
   "id_type_note" int not null,
-  "note" int not null,
+  "grade" int not null,
   primary key ("id_note", "id_type_note"),
-  constraint "type"
+  constraint "type_note_concerne_fk"
     foreign key ("id_type_note")
     references "type_note" ("id_type_note")
     on delete cascade
     on update cascade,
-  constraint "note"
+  constraint "note_note_concerne_fk"
     foreign key ("id_note")
     references "note" ("id_note")
     on delete cascade
@@ -394,12 +394,12 @@ create table "regime_etablissement" (
   "id_etablissement" int not null,
   "id_regime" int not null,
   primary key ("id_etablissement", "id_regime"),
-  constraint "etablissement"
+  constraint "etablissement_regime_eta_fk"
     foreign key ("id_etablissement")
     references "etablissement" ("id_etablissement")
     on delete cascade
     on update cascade,
-  constraint "regime"
+  constraint "regime_regime_eta_fk"
     foreign key ("id_regime")
     references "regime" ("id_regime")
     on delete cascade
@@ -417,12 +417,12 @@ create table "regimes_de_l_user" (
   "id_user" int not null,
   "id_regime" int not null,
   primary key ("id_user", "id_regime"),
-  constraint "user"
+  constraint "user_regime_use_fk"
     foreign key ("id_user")
     references "user" ("id_user")
     on delete cascade
     on update cascade,
-  constraint "regime"
+  constraint "regime_regime_use_fk"
     foreign key ("id_regime")
     references "regime" ("id_regime")
     on delete cascade
