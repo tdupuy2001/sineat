@@ -6,26 +6,31 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.automap import name_for_collection_relationship 
 from sqlalchemy.ext.automap import name_for_scalar_relationship
 from db_mapping import DBAcces
+# from db_mapping import Etablissement
 from sqlalchemy.orm import Session
-
+# import faker
+# import datetime
+# fake = faker.Faker()
+# print(str(fake.date_between(datetime.date(2015, 9, 1), datetime.date(2023, 6, 2))).strip("-"))
 
 db = DBAcces("sineat_db", False)
 db.connect_db()
-Etablissement = globals()[etablissement] # Accès à la classe Etablissement depuis le dictionnaire
+
+# Etablissement = globals()[Etablissement()] # Accès à la classe Etablissement depuis le dictionnaire
 
 # Utilisation de la classe Etablissement
-nouvel_etablissement = Etablissement(id_etablissement=1, adresse="136 Avenue Gambetta", nom="Doe", approuved=True, description="Bonjour ceci est un test")
+# nouvel_etablissement = Etablissement(id_etablissement=1, adresse="136 Avenue Gambetta", nom="Doe", approuved=True, description="Bonjour ceci est un test")
 
-# Utilisation de la session pour ajouter l'instance nouvel_etablissement à la base de données
-with Session(db.engine) as session:
-    session.add(nouvel_etablissement)
-    session.commit()
+# # Utilisation de la session pour ajouter l'instance nouvel_etablissement à la base de données
+# with Session(db.engine) as session:
+#     session.add(nouvel_etablissement)
+#     session.commit()
 
 
 
-etablissements = session.query(Etablissement).all()
-for etablissement in etablissements:
-    print(etablissement)
+# etablissements = session.query(Etablissement).all()
+# for etablissement in etablissements:
+#     print(etablissement)
 
 
 

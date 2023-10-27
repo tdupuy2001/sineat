@@ -13,7 +13,7 @@ content = "";
 
 for i in range(DATA_NUMBER):
     nom=noms[i]
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{nom}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{nom}\');\n"
 
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:

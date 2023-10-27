@@ -16,7 +16,7 @@ content = "";
 for i in range(1,nb_etablissement+1):
     regime_etablissement=random.randint(1,nb_regime)
     historique.append([i,regime_etablissement])
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{i}","{regime_etablissement}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{i}\',\'{regime_etablissement}\');\n"
 
 #uncomment if we add another type of regime
 

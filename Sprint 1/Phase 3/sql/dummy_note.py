@@ -15,7 +15,7 @@ content = "";
 for _ in range(DUMMY_DATA_NUMBER):
     id_user=random.randint(1,nb_user)
     id_etablissement=random.randint(1,nb_etablissement)
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{id_etablissement}","{id_user}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_etablissement}\',\'{id_user}\');\n"
 
 
 if __name__=="__main__":

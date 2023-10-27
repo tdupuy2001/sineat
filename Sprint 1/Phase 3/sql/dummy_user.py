@@ -14,7 +14,7 @@ chemin="Sprint 1/Phase 3/sql/"
 
 #user creation
 DUMMY_DATA_NUMBER = 300;
-TABLE_NAME = "user";
+TABLE_NAME = "\"user\"";
 TABLE_COLUMNS = ["username","role","nom","prenom","date_de_naissance","genre","email","adresse","password","ppbin","ppform","langue","description"]
 content = "";
 
@@ -32,7 +32,7 @@ for _ in range(DUMMY_DATA_NUMBER):
     ppform=ppforms[random.randint(0,len(ppforms)-1)]
     ppbin=create_ppbin(taille_binaire)
     description=fake.paragraph(nb_sentences=3, variable_nb_sentences=False)
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{username}","{role}","{nom}","{prenom}","{date_de_naissance}","{genre}","{email}","{adresse}","{password}","{ppbin}","{ppform}","{langue}","{description}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{username}\',\'{role}\',\'{nom}\',\'{prenom}\',\'{date_de_naissance}\',\'{genre}\',\'{email}\',\'{adresse}\',\'{password}\',\'{ppbin}\',\'{ppform}\',\'{langue}\',\'{description}\');\n"
 
 
 if __name__=="__main__":

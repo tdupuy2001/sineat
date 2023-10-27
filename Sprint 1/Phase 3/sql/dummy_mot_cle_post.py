@@ -21,7 +21,7 @@ for i in range(DUMMY_DATA_NUMBER):
         id_post=random.randint(1,nb_post)
         id_mot_cle=random.randint(1,nb_mot_cle)
     historique.append([id_mot_cle,id_post])
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{id_mot_cle}","{id_post}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_mot_cle}\',\'{id_post}\');\n"
 
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:

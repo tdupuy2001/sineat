@@ -29,18 +29,18 @@ drop table if exists "user" cascade;
 
 create table "user" (
   "id_user" serial primary key,
-  "username" varchar(100) not null,
-  "role" varchar(45) not null,
-  "nom" varchar(45),
-  "prenom" varchar(45),
+  "username" text not null,
+  "role" text not null default 'user',
+  "nom" text,
+  "prenom" text,
   "date_de_naissance" date not null,
-  "genre" varchar(45),
-  "email" varchar(70) not null,
-  "adresse" varchar(45),
-  "password" varchar(45),
+  "genre" text,
+  "email" text not null,
+  "adresse" text,
+  "password" text,
   "ppbin" bytea,
   "ppform" text,
-  "langue" varchar(45) not null,
+  "langue" text not null,
   "description" text,
   constraint avatar check (
     (ppbin is null and ppform is null)
@@ -57,7 +57,7 @@ create table "user" (
 create table "etablissement" (
   "id_etablissement" serial primary key,
   "adresse" text not null,
-  "nom" varchar(45) not null,
+  "nom" text not null,
   "approuved" boolean default false,
   "description" text
 );
@@ -100,8 +100,8 @@ create table "post" (
   "id_user" int not null,
   "text" text,
   "date" date not null,
-  "type" varchar(45) not null,
-  "afficher?" boolean not null default true,
+  "type" text not null,
+  "afficher" boolean not null default true,
   "id_note" int,
   constraint "id_user_post_fk"
     foreign key ("id_user")
@@ -126,7 +126,7 @@ create index idnote_post_idx on "post" ("id_note");
 
 create table "type_etablissement" (
   "id_type_etablissement" serial primary key,
-  "nom" varchar(45)
+  "nom" text not null
 );
 
 
@@ -136,7 +136,7 @@ create table "type_etablissement" (
 
 create table "type_note" (
   "id_type_note" serial primary key,
-  "nom" varchar(45) not null
+  "nom" text not null
 );
 
 
@@ -171,7 +171,7 @@ create index user2_abonnement_idx on abonnement (id_user2);
 
 create table "collection" (
   id_collection serial primary key,
-  nom varchar(45) not null,
+  nom text not null,
   "public" boolean not null default true
 );
 
@@ -183,8 +183,8 @@ create index idcollection_idx on "collection" ("id_collection");
 -- -----------------------------------------------------
 
 create table  "enregistrement_post" (
-  "id_post" int not null,
   "id_user" int not null,
+  "id_post" int not null,
   primary key ("id_post", "id_user"),
   constraint post_enre_post_fk
     foreign key ("id_post")
@@ -323,7 +323,7 @@ create index "iduser_likedpost_idx" on "liked_post" ("id_user");
 
 create table  "mot_cle" (
   "id_mot_cle" serial,
-  "mot" varchar(45) not null,
+  "mot" text not null,
   primary key ("id_mot_cle")
 );
 
@@ -383,7 +383,7 @@ create index type_note_idx on "note_concerne" ("id_type_note");
 
 create table "regime" (
   "id_regime" serial primary key,
-  "nom" varchar(45) not null
+  "nom" text not null
 );
 
 -- -----------------------------------------------------

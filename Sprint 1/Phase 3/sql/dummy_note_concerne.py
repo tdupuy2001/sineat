@@ -17,7 +17,7 @@ for i in range(DUMMY_DATA_NUMBER):
     id_note=random.randint(1,nb_note)
     id_type_note=random.randint(1,nb_type_note)
     grade=random.randint(1,5)
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{id_note}","{id_type_note}","{grade}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_note}\',\'{id_type_note}\',\'{grade}\');\n"
 
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:

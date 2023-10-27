@@ -20,7 +20,7 @@ for i in range(DUMMY_DATA_NUMBER):
         id_user1=random.randint(1,nb_user)
         id_user2=random.randint(1,nb_user)
     historique.append([id_user1,id_user2])
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{id_user1}","{id_user2}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_user1}\',\'{id_user2}\');\n"
 
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:

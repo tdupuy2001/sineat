@@ -10,13 +10,13 @@ chemin="Sprint 1/Phase 3/sql/"
 historique=[]
 
 TABLE_NAME = "regimes_de_l_user";
-TABLE_COLUMNS = ['id_etablissement','id_regime']
+TABLE_COLUMNS = ['id_user','id_regime']
 content = "";
 
 for i in range(1,nb_user+1):
     regime_user=random.randint(1,nb_regime)
     historique.append([i,regime_user])
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{i}","{regime_user}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{i}\',\'{regime_user}\');\n"
 
 #uncomment if we add another type of regime
 

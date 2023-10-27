@@ -16,7 +16,7 @@ content = "";
 for i in range(1,nb_etablissement+1):
     type_etablissement=random.randint(1,nb_type)
     historique.append([i,type_etablissement])
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{i}","{type_etablissement}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{i}\',\'{type_etablissement}\');\n"
 
 for _ in range(nb_etablissement//4):
     etablissement=random.randint(1,nb_etablissement)
@@ -25,7 +25,7 @@ for _ in range(nb_etablissement//4):
         etablissement=random.randint(1,nb_etablissement)
         type_etablissement=random.randint(1,nb_type)
     historique.append([i,type_etablissement]) 
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{etablissement}","{type_etablissement}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{etablissement}\',\'{type_etablissement}\');\n"
 
 
 if __name__=="__main__":

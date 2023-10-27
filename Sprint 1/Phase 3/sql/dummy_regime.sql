@@ -1,1 +1,1 @@
-INSERT INTO regime (nom) VALUES ("sans gluten");
+INSERT INTO regime (nom) VALUES ('sans gluten');

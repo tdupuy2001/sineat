@@ -17,7 +17,7 @@ for _ in range(DUMMY_DATA_NUMBER):
     nom=prefixe_nom[random.randint(0,len(prefixe_nom)-1)]+' '+fake.company()
     approved=random.choice([True,False])
     description=fake.paragraph(nb_sentences=1, variable_nb_sentences=False)
-    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{adresse}","{nom}","{approved}","{description}");\n'
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{adresse}\',\'{nom}\',\'{approved}\',\'{description}\');\n"
 
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:
