@@ -1,0 +1,10 @@
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Humbert","Café Weber","True","Couvrir installer effort enfermer.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Legrand","Restaurant Leduc S.A.R.L.","True","Renoncer bureau lire précieux.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Chauvin-sur-Neveu","Café Mathieu S.A.S.","True","Cinquante tranquille état juge frais semaine révéler.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Vidal","Bistro Boyer","True","Donc curiosité herbe naturel.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Brun","Bistro Martins","True","Embrasser pain son consentir demande haut.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Boulay","Bistro Gaillard S.A.R.L.","True","Rire jamais autre vrai ami personne achever.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Ruiz-sur-Ribeiro","Restaurant Olivier S.A.S.","False","Compagnie carte figurer désir apercevoir.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Duhamel-la-Forêt","Café Seguin","True","Faim besoin juger céder ensemble françois.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Texier-sur-Rossi","Bistro Benoit Pons SA","False","Million sauter mine remettre lui.");
+INSERT INTO etablissement (adresse,nom,approuved,description) VALUES ("Dufour-la-Forêt","Restaurant Mahe S.A.R.L.","False","Arrêter attirer épais genou asseoir sourire monter.");
