@@ -48,14 +48,25 @@ Sortez de postgres grâce à la commande :
 \q
 ```
 
+Vous pouvez bien évidemment faire avec les urls vu en cours. Mais elles ne fonctionnent pas sur mac et c'est pourquoi je note la démarche ici.
+
 3. Connectez-vous à la base de données en utilisant la commande suivante :
 
 ```bash
 psql -d sineat_db -U sineat_admin -W
 ```
 
-4. Une fois connecté, importez le fichier SQL en exécutant la commande suivante, en remplaçant 'chemin/du/fichier/sql' par le chemin réel vers votre fichier SQL :
+4. Une fois connecté, importez le fichier SQL en exécutant la commande suivante, en remplaçant 'chemin/du/fichier/bdd.sql' par le chemin réel vers votre fichier SQL :
 
 ```sql
-\i 'chemin/du/fichier/sql'
+\i 'chemin/du/fichier/bdd.sql'
 ```
+
+N'oubliez pas les apostrophes obligatoire car il y a des espaces dans les noms de dossiers.
+
+5. Pour peupler la base il suffit d'exécuter de la même manière que précédement le fichier merge.sql : 
+
+```sql
+\i 'chemin/du/fichier/merge.sql'
+```
+
