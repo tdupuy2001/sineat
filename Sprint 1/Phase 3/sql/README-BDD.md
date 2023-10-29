@@ -56,7 +56,9 @@ Vous pouvez bien évidemment faire avec les urls vu en cours. Mais elles ne fonc
 psql -d sineat_db -U sineat_admin -W
 ```
 
-4. Une fois connecté, importez le fichier SQL en exécutant la commande suivante, en remplaçant 'chemin/du/fichier/bdd.sql' par le chemin réel vers votre fichier SQL :
+## Initialisation de la base de données
+
+1. Une fois connecté à la base de données, importez le fichier SQL en exécutant la commande suivante, en remplaçant 'chemin/du/fichier/bdd.sql' par le chemin réel vers votre fichier SQL :
 
 ```sql
 \i 'chemin/du/fichier/bdd.sql'
@@ -64,7 +66,7 @@ psql -d sineat_db -U sineat_admin -W
 
 N'oubliez pas les apostrophes obligatoire car il y a des espaces dans les noms de dossiers.
 
-5. Pour peupler la base il suffit d'exécuter de la même manière que précédement le fichier merge.sql : 
+2. Pour peupler la base il suffit d'exécuter de la même manière que précédement le fichier merge.sql : 
 
 ```sql
 \i 'chemin/du/fichier/merge.sql'

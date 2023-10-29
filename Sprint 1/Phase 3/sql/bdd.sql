@@ -3,7 +3,7 @@
 -- -----------------------------------------------------
 
 drop table if exists abonnement cascade;
-drop table if exists "collection" cascade;
+drop table if exists collection cascade;
 drop table if exists contenu_collection cascade;
 drop table if exists enregistrement_post cascade;
 drop table if exists est_commentaire_de cascade;
