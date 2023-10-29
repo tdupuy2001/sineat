@@ -6,7 +6,7 @@ from dummy_type_etablissement import DATA_NUMBER as nb_type
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-chemin="Sprint 1/Phase 3/sql/"
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 historique=[]
 
 TABLE_NAME = "etablissement_de_type";

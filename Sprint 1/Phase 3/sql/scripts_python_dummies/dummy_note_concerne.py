@@ -6,7 +6,8 @@ from dummy_type_note import DATA_NUMBER as nb_type_note
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-chemin="Sprint 1/Phase 3/sql/"
+historique=[]
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
 TABLE_NAME = "note_concerne";
@@ -16,6 +17,10 @@ content = "";
 for i in range(DUMMY_DATA_NUMBER):
     id_note=random.randint(1,nb_note)
     id_type_note=random.randint(1,nb_type_note)
+    while [id_note,id_type_note] in historique:
+        id_note=random.randint(1,nb_note)
+        id_type_note=random.randint(1,nb_type_note)
+    historique.append([id_note,id_type_note])
     grade=random.randint(1,5)
     content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_note}\',\'{id_type_note}\',\'{grade}\');\n"
 

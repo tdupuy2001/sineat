@@ -6,7 +6,7 @@ from dummy_regime import DATA_NUMBER as nb_regime
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-chemin="Sprint 1/Phase 3/sql/"
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 historique=[]
 
 TABLE_NAME = "regimes_de_l_user";

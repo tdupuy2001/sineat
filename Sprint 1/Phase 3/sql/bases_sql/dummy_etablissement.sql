@@ -1,0 +1,10 @@
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Thomas','Café Moreau','True','Pièce dautres animal vouloir gens dautres métier.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Ruiz-sur-Diaz','Café Besnard','False','Vite nuit tracer jeune train robe ouvrir cours.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Verdier-sur-Guillaume','Grill Barbe','True','Nez souffrir calme mari professeur.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Sainte Henriette','Grill Coulon S.A.','False','Avoir plus meilleur exister paix froid.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('GoncalvesBourg','Bistro Valette SA','True','Convenir quel en rejeter cent.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Lévydan','Grill Millet','True','Trace ci connaissance pencher.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Léger','Bistro Deschamps Chevallier S.A.','True','Pas ailleurs rapport lorsque étranger personnage réflexion.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Sainte Suzanne','Grill Richard Huet SARL','False','Seul midi tout côté étoile essuyer changer.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Martins-sur-Lefort','Bistro Blanchard Lévy SA','False','Davantage quart crier respecter printemps séparer.');
+INSERT INTO etablissement (adresse,nom,approved,description) VALUES ('Schmitt','Restaurant Jourdan SARL','True','Nom fruit source demain enlever.');

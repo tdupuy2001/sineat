@@ -3,7 +3,7 @@ import random
 
 fake = faker.Faker(["fr_FR"])
 
-chemin="Sprint 1/Phase 3/sql/"
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
 TABLE_NAME = "mot_cle";
@@ -11,7 +11,7 @@ TABLE_COLUMNS = ['mot']
 content = "";
 
 for i in range(DUMMY_DATA_NUMBER):
-    mot=fake.word()
+    mot=fake.word().replace("'","")
     content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{mot}\');\n"
 
 if __name__=="__main__":

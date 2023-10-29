@@ -6,7 +6,7 @@ from dummy_post import DUMMY_DATA_NUMBER as nb_post
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-chemin="Sprint 1/Phase 3/sql/"
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 historique=[]
 
 DUMMY_DATA_NUMBER = 100;

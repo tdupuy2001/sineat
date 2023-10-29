@@ -3,11 +3,11 @@ import faker
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-noms=["sans gluten"]
-chemin="Sprint 1/Phase 3/sql/"
+noms=["restaurant","bar","magasin"]
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 
 DATA_NUMBER = len(noms);
-TABLE_NAME = "regime";
+TABLE_NAME = "type_etablissement";
 TABLE_COLUMNS = ['nom']
 content = "";
 

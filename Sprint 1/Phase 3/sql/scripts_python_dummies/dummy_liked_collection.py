@@ -6,8 +6,8 @@ from dummy_collection import DUMMY_DATA_NUMBER as nb_collection
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-historique=[]
-chemin="Sprint 1/Phase 3/sql/"
+historique=[] 
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
 TABLE_NAME = "liked_collection";

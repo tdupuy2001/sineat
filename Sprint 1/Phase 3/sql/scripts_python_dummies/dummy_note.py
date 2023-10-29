@@ -5,7 +5,7 @@ from dummy_etablissement import DUMMY_DATA_NUMBER as nb_etablissement
 
 fake = faker.Faker(["fr_FR"])
 
-chemin="Sprint 1/Phase 3/sql/"
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 50;
 TABLE_NAME = "note";

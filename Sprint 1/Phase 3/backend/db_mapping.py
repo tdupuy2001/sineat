@@ -2,12 +2,19 @@ import sqlalchemy
 from sqlalchemy import create_engine, MetaData, select
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.automap import automap_base, name_for_collection_relationship, name_for_scalar_relationship
+import configparser
 
-USER = "sineat_admin"
-PASSWORD = "sineat_admin_password"
-HOST = "localhost"
-PORT = "5432"
-DB_NAME = "sineat_db"
+config = configparser.ConfigParser()
+print(config.read("config.ini"))
+print(config.sections())
+
+config_sql = config['SQLBDD']
+
+USER = config_sql["USER"]
+PASSWORD = config_sql["PASSWORD"]
+HOST = config_sql["HOST"]
+PORT = config_sql["PORT"]
+DB_NAME = config_sql["DB_NAME"]
 
 TRACE = True
 
@@ -60,8 +67,12 @@ class DBAcces:
             'user': 'User'
         }
         relation_map = {
-
-        }
+             'User=>User(user2_fk)': 'aaaa',
+             'User=>Post(id_user_liked_post_fk)': 'bbbb',
+             'Post=>Post(post1_fk)': 'cccc',
+             'Post=>User(id_post_liked_post_fk)': 'dddd',
+             'User=>Post(id_user_post_fk)': 'eeee',
+         }
     
     
         url_de_connexion = (

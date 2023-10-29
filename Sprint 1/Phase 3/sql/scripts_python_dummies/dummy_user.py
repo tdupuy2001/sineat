@@ -10,7 +10,7 @@ genres=['homme','femme','']
 langues= ["Mandarin", "Espagnol", "Anglais", "Hindi", "Arabe"]
 ppforms=['JPG','PNG']
 taille_binaire=50
-chemin="Sprint 1/Phase 3/sql/"
+chemin="Sprint 1/Phase 3/sql/bases_sql/"
 
 #user creation
 DUMMY_DATA_NUMBER = 300;
@@ -31,7 +31,7 @@ for _ in range(DUMMY_DATA_NUMBER):
     langue=langues[random.randint(0,len(langues)-1)]
     ppform=ppforms[random.randint(0,len(ppforms)-1)]
     ppbin=create_ppbin(taille_binaire)
-    description=fake.paragraph(nb_sentences=3, variable_nb_sentences=False)
+    description=fake.paragraph(nb_sentences=3, variable_nb_sentences=False).replace("'","")
     content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{username}\',\'{role}\',\'{nom}\',\'{prenom}\',\'{date_de_naissance}\',\'{genre}\',\'{email}\',\'{adresse}\',\'{password}\',\'{ppbin}\',\'{ppform}\',\'{langue}\',\'{description}\');\n"
 
 
