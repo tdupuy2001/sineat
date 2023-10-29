@@ -56,6 +56,6 @@ result = session.execute(order)
 etablissements_trouves = result.scalars().all()
 show_result(
     etablissements_trouves,
-    ['grade', 'id_etablissement', 'id_user']
+    ['id_note', 'id_etablissement', 'id_user']
 )
 

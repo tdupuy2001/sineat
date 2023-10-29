@@ -67,11 +67,11 @@ class DBAcces:
             'user': 'User'
         }
         relation_map = {
-             'User=>User(user2_fk)': 'aaaa',
-             'User=>Post(id_user_liked_post_fk)': 'bbbb',
-             'Post=>Post(post1_fk)': 'cccc',
-             'Post=>User(id_post_liked_post_fk)': 'dddd',
-             'User=>Post(id_user_post_fk)': 'eeee',
+             'User=>User(user2_fk)': 'est_abonnee_a',
+             'User=>Post(id_user_liked_post_fk)': 'all_post_liked',
+             'Post=>Post(post1_fk)': 'est_comm_de',
+             'Post=>User(id_post_liked_post_fk)': 'all_user_who_liked_post',
+             'User=>Post(id_user_post_fk)': 'user_write_post',
          }
     
     
