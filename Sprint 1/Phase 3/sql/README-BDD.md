@@ -26,9 +26,9 @@ Vous pouvez alors créer :
 
 
 ```sql
-create role sineat_admin with login createdb createrole password 'sineat_admin_password';
-create database sineat_db;
-grant all privileges on database sineat_db to sineat_admin;
+create user sineat_admin with password 'sineat_admin_password';
+create database sineat_db owner sineat_admin;
+revoke all on database sineat_db from public;
 ```
 ---
 Il faudra peut être rajouter 
