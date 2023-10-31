@@ -5,8 +5,9 @@ from sqlalchemy.ext.automap import automap_base, name_for_collection_relationshi
 import configparser
 
 config = configparser.ConfigParser()
-print(config.read("config.ini"))
-print(config.sections())
+config.read("config.ini")
+# print(config.read("config.ini"))
+# print(config.sections())
 
 config_sql = config['SQLBDD']
 
@@ -16,7 +17,7 @@ HOST = config_sql["HOST"]
 PORT = config_sql["PORT"]
 DB_NAME = config_sql["DB_NAME"]
 
-TRACE = True
+TRACE = False
 
 Abonnement = None
 Collection = None
