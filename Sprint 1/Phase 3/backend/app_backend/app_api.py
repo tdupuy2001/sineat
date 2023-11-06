@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from db_mapping import DBAcces
+from .db_mapping import DBAcces
 import bcrypt
 
 origins = ["http://localhost:3000", "http://localhost:8000", "http://localhost:9456"]
@@ -19,12 +19,29 @@ app.add_middleware(
 
 db = DBAcces("sineat_db", False)
 
+"""
+Création des classes pouvant être utilisés avec FastApi
+"""
+from pydantic import BaseModel
+
+class UserSchema(BaseModel):
+    username : str
+    role : str
+    date_de_naissance : str
+    email : str
+    password : str
+    langue : str
+    
+    # class Config:
+    #     orm_mode = True
+    
+
 
 """
 Api pour user
 """
 
-from db_mapping import User
+from .db_mapping import User
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -32,9 +49,14 @@ def find_user(username:str, session:Session):
     found_user = result.scalar()
     return(found_user)
 
+@app.get("/users")
+def get_users():
+    with Session(db.engine) as session:
+        users = session.query(User).all()
+        return users
 
-app.post("/register")
-def add_user(user: User):
+@app.post("/register")
+def add_user(user: UserSchema):
     with Session(db.engine) as session:
         found_user = find_user(user.username, session)
         if found_user != None:
@@ -53,21 +75,24 @@ def add_user(user: User):
             )
             session.add(new_user)
             session.commit()
+            session.refresh(new_user)
+            return new_user
+
 
         
         
-if __name__=="__main__":
-    session = Session(db.engine)
-    print(find_user(username="RGuillou",session=session),find_user(username="AGoeury",session=session))
+# if __name__=="__main__":
+#     session = Session(db.engine)
+#     print(find_user(username="RGuillou",session=session),find_user(username="AGoeury",session=session))
     
-    test_user = User(
-            username="test_user",
-            date_de_naissance="1990-01-01",
-            email="test@example.com",
-            password="test_password",
-            langue="fr"
-        )
+#     test_user = User(
+#             username="test_user",
+#             date_de_naissance="1990-01-01",
+#             email="test@example.com",
+#             password="test_password",
+#             langue="fr"
+#         )
     
-    add_user(test_user)
+#     add_user(test_user)
     
-    print(find_user(username="test_user",session=session))
+#     print(find_user(username="test_user",session=session))

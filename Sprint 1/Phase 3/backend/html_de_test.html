@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appeler une API depuis HTML</title>
+</head>
+<body>
+    <form id="registration-form">
+        <input type="text" id="username" placeholder="Nom d'utilisateur">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <input type="text" id="date_de_naissance" placeholder="Date de naissance">
+        <input type="text" id="email" placeholder="adresse mail">
+        <input type="text" id="langue" placeholder="langue">
+        <!-- Ajoutez d'autres champs ici -->
+        <button type="submit">S'inscrire</button>
+    </form>
+
+    <script>
+        document.getElementById('registration-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                date_de_naissance: document.getElementById('date_de_naissance').value,
+                email: document.getElementById('email').value,
+                langue: document.getElementById('langue').value,
+                // Ajoutez d'autres champs ici
+            };
+
+            fetch('http://127.0.0.1:8000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Réponse de l\'API :', data);
+                // Gérez la réponse de l'API ici
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'appel de l\'API :', error);
+            });
+        });
+    </script>
+</body>
+</html>
