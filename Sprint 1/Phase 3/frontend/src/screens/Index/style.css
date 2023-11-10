@@ -307,10 +307,10 @@
   
   .index .sign-up-wrapper {
     align-items: center;
-    /*display: inline-flex;*/
+    display: flex;
     gap: 8px;
-    /*justify-content: center;*/
-    left: 200px;
+    justify-content: center;
+    left: 220px;
     position: relative;
     top: 3px;
   }
