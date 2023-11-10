@@ -167,7 +167,7 @@ create table "collection" (
   public boolean not null default true,
   constraint user_create_collection_fk
     foreign key (id_user)
-    references "user" (id_user)
+    references "user" (id_user) 
     on delete cascade
     on update cascade
 );

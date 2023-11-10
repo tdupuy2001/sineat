@@ -73,7 +73,7 @@ class DBAcces:
              'Post=>Post(post1_fk)': 'est_comm_de',
              'Post=>User(id_post_liked_post_fk)': 'all_user_who_liked_post',
              'User=>Post(id_user_post_fk)': 'user_write_post',
-             'User=>Collection(id_user)':'a_cree_collection',
+             'User=>Collection(user_create_collection_fk)':'a_cree_collection',
          }
     
     
