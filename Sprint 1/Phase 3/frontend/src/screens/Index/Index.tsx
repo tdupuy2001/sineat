@@ -40,18 +40,7 @@ export function Index() {
         if (u.data) {
           login(u.data);
         } else {
-          const user: User = {
-            username: username,
-            firstName: username,
-            lastName: username,
-            email: username + "@mail.com",
-            avatar: "",
-          };
-          userService.addUser(user).then((u) => {
-            if (u.data) {
-              login(u.data);
-            }
-          });
+
         }
       });
     } else {
@@ -71,10 +60,8 @@ export function Index() {
     setShown(!shown);
   }
   return (
-    <div className="index" style={{display: 'flex', flexDirection: 'column', height:'100hv'}}>
-      <Alert severity={loginMessageType}>
-        {loginMessage}
-      </Alert>
+    <div className="index">
+
       <div className="div-2">
         <div className="overlap-group">
           <div className="rectangle" />
