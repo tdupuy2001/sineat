@@ -24,31 +24,6 @@ Création des classes pouvant être utilisés avec FastApi
 """
 from pydantic import BaseModel
 
-# class UserSchemaRegister(BaseModel):
-#     """
-#     Les attributs obligatoires
-#     """
-#     username : str
-#     role : str
-#     date_de_naissance : str
-#     email : str
-#     password : str
-#     langue : str
-
-# class UserSchemaUpdate(BaseModel):
-#     """
-#     Les attributs facultatifs
-#     """
-#     username : str
-#     nom : str
-#     prenom : str
-#     genre : str
-#     adresse : str
-#     description : str
-#     # class Config:
-#     #     orm_mode = True
-#  J'aime pas 
-
 class UserSchema(BaseModel):
     """
     Les attributs obligatoires
@@ -81,18 +56,14 @@ def find_user(username:str, session:Session):
     found_user = result.scalar()
     return(found_user)
 
-# FIXME:
 def check_user(password:str, username:str, session:Session):
     order = select(User).where(User.username == username)
     result = session.execute(order).scalar()
     
     encoded_password = password.encode('utf-8')
     stored_password = result.password.encode('utf-8')
-    stored_salt = result.salt.encode('utf-8')
-
-    password_to_check = stored_salt + encoded_password
     
-    if bcrypt.checkpw(password_to_check, stored_password):
+    if bcrypt.checkpw(encoded_password, stored_password):
         return True
     else:
         return False
@@ -125,8 +96,8 @@ def add_user(user: UserSchema):
                 role = "user",
                 date_de_naissance = user.date_de_naissance,
                 email = user.email,
-                password = hashed_password,
-                salt = user_salt,
+                password = hashed_password.decode('utf-8'),
+                salt = user_salt.decode('utf-8'),
                 langue = user.langue
             )
             session.add(new_user)
@@ -146,40 +117,17 @@ def add_user(user: UserSchema):
             session.refresh(new_collection)
             return new_user
 
-# @app.put("/users")
-# def put_user(user: UserSchemaUpdate):
-#     with Session(db.engine) as session:
-#         found_user = find_user(user.username, session)
-#         # Non changeable
-#         found_user.nom = user.nom
-#         found_user.prenom = user.prenom
-#         found_user.genre = user.genre
-#         found_user.adresse = user.adresse
-#         found_user.description = user.description
-#         session.commit()
-# J'aime pas trop la facon de faire
 
-@app.put("/users")
-def put_user(user: UserSchema):
-    # TODO:
-    # Je pense qu'il y a des problèmes de sécu
-    # Et donc il faudrait pouvoir modifier le mdp
-    # Mais ailleurs, et vérifier que c'est bien l'user qui demande à faire la modif
+@app.post("/login_check")
+def log_user(user : UserSchema):
+    error = False
     with Session(db.engine) as session:
         found_user = find_user(user.username, session)
-        if check_user(found_user.password,user.username,session):
-            # Non modifiable
-            found_user.date_de_naissance = found_user.date_de_naissance if user.date_de_naissance != found_user.date_de_naissance else user.date_de_naissance
-            found_user.email = found_user.email if user.email != found_user.email else user.email
-            found_user.password = found_user.password if user.password != found_user.password else user.password
-            found_user.langue = found_user.langue if user.langue != found_user.langue else user.langue
-            
-            # Modifiable
-            found_user.nom = user.nom
-            found_user.prenom = user.prenom
-            found_user.genre = user.genre
-            found_user.adresse = user.adresse
-            found_user.description = user.description
-            session.commit()
+        if found_user == None:
+            error = True
+        if not check_user(user.password,user.username,session):
+            error = True
+        if error:
+            return {'message': 'Wrong username or password'}
         else:
-            return {'message': "Vous n'avez pas les droits de modifier ce profil"}
+            return {'message': 'success'}
