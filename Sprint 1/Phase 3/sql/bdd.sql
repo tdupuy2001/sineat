@@ -5,7 +5,7 @@
 drop table if exists abonnement cascade;
 drop table if exists collection cascade;
 drop table if exists contenu_collection cascade;
-drop table if exists enregistrement_post cascade;
+-- drop table if exists enregistrement_post cascade;
 drop table if exists est_commentaire_de cascade;
 drop table if exists etablissement cascade;
 drop table if exists etablissement_de_type cascade;
@@ -161,8 +161,15 @@ create table abonnement (
 
 create table "collection" (
   id_collection serial primary key,
+  id_user int not null,
   nom text not null,
-  public boolean not null default true
+  is_all_saves boolean default false,
+  public boolean not null default true,
+  constraint user_create_collection_fk
+    foreign key (id_user)
+    references "user" (id_user)
+    on delete cascade
+    on update cascade
 );
 
 
@@ -170,21 +177,21 @@ create table "collection" (
 -- Table enregistrement_post
 -- -----------------------------------------------------
 
-create table  enregistrement_post (
-  id_user int not null,
-  id_post int not null,
-  primary key (id_post, id_user),
-  constraint post_enre_post_fk
-    foreign key (id_post)
-    references post (id_post)
-    on delete cascade
-    on update cascade,
-  constraint user_enre_post_fk
-    foreign key (id_user)
-    references "user" (id_user)
-    on delete cascade
-    on update cascade
-);
+-- create table  enregistrement_post (
+--   id_user int not null,
+--   id_post int not null,
+--   primary key (id_post, id_user),
+--   constraint post_enre_post_fk
+--     foreign key (id_post)
+--     references post (id_post)
+--     on delete cascade
+--     on update cascade,
+--   constraint user_enre_post_fk
+--     foreign key (id_user)
+--     references "user" (id_user)
+--     on delete cascade
+--     on update cascade
+-- );
 
 
 
@@ -193,13 +200,12 @@ create table  enregistrement_post (
 -- -----------------------------------------------------
 
 create table contenu_collection (
-  id_user int not null,
   id_post int not null,
   id_collection int not null,
-  primary key (id_user, id_post, id_collection),
-  constraint enregistrement_cont_coll_fk
-    foreign key (id_user, id_post)
-    references enregistrement_post (id_user, id_post)
+  primary key (id_post, id_collection),
+  constraint enregistrement_post_fk
+    foreign key (id_post)
+    references post (id_post)
     on delete cascade
     on update cascade,
   constraint collection_cont_coll_fk
