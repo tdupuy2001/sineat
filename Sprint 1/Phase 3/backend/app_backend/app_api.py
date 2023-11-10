@@ -73,7 +73,7 @@ class UserSchema(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User
+from .db_mapping import User, Collection
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -132,6 +132,18 @@ def add_user(user: UserSchema):
             session.add(new_user)
             session.commit()
             session.refresh(new_user)
+            
+            user_id = session.query(User).filter_by(username=user.username).first().id_user
+            
+            new_collection = Collection(
+                id_user = user_id,
+                nom = 'all saves',
+                is_all_saves = True
+            )
+            
+            session.add(new_collection)
+            session.commit()
+            session.refresh(new_collection)
             return new_user
 
 # @app.put("/users")
@@ -171,20 +183,3 @@ def put_user(user: UserSchema):
             session.commit()
         else:
             return {'message': "Vous n'avez pas les droits de modifier ce profil"}
-        
-        
-# if __name__=="__main__":
-#     session = Session(db.engine)
-#     print(find_user(username="RGuillou",session=session),find_user(username="AGoeury",session=session))
-    
-#     test_user = User(
-#             username="test_user",
-#             date_de_naissance="1990-01-01",
-#             email="test@example.com",
-#             password="test_password",
-#             langue="fr"
-#         )
-    
-#     add_user(test_user)
-    
-#     print(find_user(username="test_user",session=session))
