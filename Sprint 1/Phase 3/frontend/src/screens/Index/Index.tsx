@@ -14,6 +14,7 @@ import { config } from "../../config";
 export function Index() {
 
   const context = useContext(MyBlogContext);
+  const _ = "";
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
@@ -35,7 +36,7 @@ export function Index() {
   const _handleLoginRequested = () => {
     if (username && password) {
       const userService = new UserService(config.API_URL);
-      userService.log_user({username: username, password: password}).then((response: any)=> {
+      userService.log_user({username: username, role: _, date_de_naissance: _, email: _, password: password, langue: _, nom: _, prenom: _, genre: _, adresse: _,description: _}).then((response: any)=> {
         if (response.data.message === 'success') {
           login(response.data);
         } else {
