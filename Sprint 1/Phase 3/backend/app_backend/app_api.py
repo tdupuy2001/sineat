@@ -125,7 +125,7 @@ def log_user(user : UserSchema):
         found_user = find_user(user.username, session)
         if found_user == None:
             error = True
-        if not check_user(user.password,user.username,session):
+        elif not check_user(user.password,user.username,session):
             error = True
         if error:
             return {'message': 'Wrong username or password'}
