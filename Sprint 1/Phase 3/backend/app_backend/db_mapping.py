@@ -5,8 +5,9 @@ from sqlalchemy.ext.automap import automap_base, name_for_collection_relationshi
 import configparser
 
 config = configparser.ConfigParser()
-print(config.read("config.ini"))
-print(config.sections())
+config.read("config.ini")
+# print(config.read("config.ini"))
+# print(config.sections())
 
 config_sql = config['SQLBDD']
 
@@ -16,12 +17,12 @@ HOST = config_sql["HOST"]
 PORT = config_sql["PORT"]
 DB_NAME = config_sql["DB_NAME"]
 
-TRACE = True
+TRACE = False
 
 Abonnement = None
 Collection = None
 ContenuCollection = None
-EnregistrementPost = None
+# EnregistrementPost = None
 EstCommentaireDe = None
 Etablissement = None
 EtablissementDeType = None
@@ -48,7 +49,7 @@ class DBAcces:
             'abonnement': 'Abonnement',
             'collection': 'Collection',
             'contenu_collection': 'ContenuCollection',
-            'enregistrement_post': 'EnregistrementPost',
+            # 'enregistrement_post': 'EnregistrementPost',
             'est_commentaire_de': 'EstCommentaireDe',
             'etablissement': 'Etablissement',
             'etablissement_de_type': 'EtablissementDeType',
@@ -72,6 +73,7 @@ class DBAcces:
              'Post=>Post(post1_fk)': 'est_comm_de',
              'Post=>User(id_post_liked_post_fk)': 'all_user_who_liked_post',
              'User=>Post(id_user_post_fk)': 'user_write_post',
+             'User=>Collection(user_create_collection_fk)':'a_cree_collection',
          }
     
     
@@ -125,11 +127,11 @@ class DBAcces:
             def __str__(self):
                 return f"Contenu({self.id_collection},{self.id_post})"
             
-        class EnregistrementPost(Base):
-            __tablename__ = 'enregistrement_post'
+        # class EnregistrementPost(Base):
+        #     __tablename__ = 'enregistrement_post'
 
-            def __str__(self):
-                return f"Enregistrement({self.id_user},{self.id_post})"
+        #     def __str__(self):
+        #         return f"Enregistrement({self.id_user},{self.id_post})"
             
         class Post(Base):
             __tablename__ = 'post'
@@ -248,7 +250,7 @@ class DBAcces:
         # On rend les tables du modèle globales à ce module
         for cls in [
             User, Post, Collection, ContenuCollection,RegimeDeLUser,
-            EnregistrementPost, Note, Abonnement, Etablissement,
+            Note, Abonnement, Etablissement,
             EstCommentaireDe, EtablissementDeType, TypeEtablissement,
             LikedCollection, LikedPost, MotCle, MotClePost,
             NoteConcerne, TypeNote, Regime, RegimeEtablissement,

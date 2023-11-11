@@ -1,6 +1,6 @@
 import random
 import string
-random.seed(0)
+
 
 def create_password(n):
     letters=string.ascii_letters

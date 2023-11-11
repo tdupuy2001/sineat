@@ -22,6 +22,7 @@ for i in range(DUMMY_DATA_NUMBER):
     historique.append([id_post1,id_post2])
     content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_post1}\',\'{id_post2}\');\n"
 
+
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:
         f.write(content)
