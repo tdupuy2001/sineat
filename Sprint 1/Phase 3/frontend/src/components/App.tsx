@@ -6,7 +6,6 @@ import { UserService } from '../services/UserService';
 import { config } from '../config';
 import { MyBlogContext } from '../MyBlogContext';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import LoginPage from './LoginPage';
 import { Index } from '../screens/Index';
 import { Register } from '../screens/Register/Register';
 
@@ -19,9 +18,6 @@ function App() {
         path='/login'
         element={<Index/>}
         />
-        <Route
-        path='/'
-        element={<LoginPage/>}/>
         <Route 
         path='/register'
         element={<Register/>}/>

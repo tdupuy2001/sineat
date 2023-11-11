@@ -33,23 +33,23 @@ export function Index() {
   );
   //il y a le créer un compte et se connecter ici il faudra changer
   const _handleLoginRequested = () => {
-    console.log(username + " " + password + + " test login");
-    if (username && username === password) {
+    if (username && password) {
       const userService = new UserService(config.API_URL);
-      userService.getUser(username).then((u) => {
-        if (u.data) {
-          login(u.data);
+      userService.log_user({username: username, password: password}).then((response: any)=> {
+        if (response.data.message === 'success') {
+          login(response.data);
         } else {
-
+          setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !")
+          setLoginMessageType("error");
         }
       });
     } else {
-      setLoginMessage("Mauvais mot de passe !")
+      setLoginMessage("Veuillez entrer un nom d'utilisateur et un mot de passe.")
       setLoginMessageType("error");
     }
   };
 
-  const _handleForgotPasswordREquested = () => {
+  const _handleForgotPasswordRequested = () => {
     setLoginMessage("Tu as oublié ton mot de passe");
     setLoginMessageType("warning");
   }

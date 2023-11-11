@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 import { User } from '../dto/User';
+import { UserLogin } from '../dto/UserLogin';
 
 export class UserService {
 
@@ -28,5 +29,9 @@ export class UserService {
 
     deleteUser(username:string) {
         return this.axiosInstance.delete<void>('/users/'+username)
+    }
+
+    log_user(user: UserLogin) {
+        return this.axiosInstance.post<User>('/login_check', user);
     }
 }

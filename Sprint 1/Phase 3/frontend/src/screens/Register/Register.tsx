@@ -13,8 +13,19 @@ import { useNavigate } from "react-router-dom";
 
 export function Register() {
   const context = useContext(MyBlogContext);
+
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [prenom, setPrenom] = useState<string>();
+  const [nom, setNom] = useState<string>();
+  const [dateDeNaissance, setDateDeNaissance] = useState<Date>();
+  const [genre, setGenre] = useState<string>();
+  const [langue, setLangue] = useState<string>();
+  const [description, setDescription] = useState<string>();
+  const [adresse, setAdresse] = useState<string>();
+  const [avatar, setAvatar] = useState<string>();
+
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
     "info"
   );
@@ -31,7 +42,7 @@ export function Register() {
     [context, navigate]
   );
 
-  const genre = [
+  const genres = [
     {
       value: 'Femme',
       label: 'Femme',
@@ -253,53 +264,45 @@ export function Register() {
     return true;
   };
 
-  const _handleLoginRequested = () => {
-    
-    if (username && username === password) {
-      const userService = new UserService(config.API_URL);
-      userService.getUser(username).then((u) => {
-        if (u.data) {
-          login(u.data);
-        } else {
-          const user: User = {
-            username: username,
-            firstName: username,
-            lastName: username,
-            email: username + "@mail.com",
-            avatar: "",
-          };
-          userService.addUser(user).then((u) => {
-            if (u.data) {
-              login(u.data);
-            }
-          });
-        }
-      });
-    } else {
-      setLoginMessage("Mauvais mot de passe !")
-      setLoginMessageType("error");
-    }
-  };
 
   const _handleRegisterRequested = () => {
-    // avant faudra mettre le username déjà existant 
-    if (validatePasswords()) {
-      //suite du code ici, on fait rien si mot de passe pas pareil
-    }
-    console.log(username + " " + password + + " test login");
     if (username) {
       const userService = new UserService(config.API_URL);
       userService.getUser(username).then((u) => {
-        const user: User = {
-          username: username,
-          firstName: username,
-          lastName: username,
-          email: username + "@mail.com",
-          avatar: "",
-        };
-      })
-    }
-  }
+        if (u.data) {
+          setLoginMessage("Nom d'utilisateur déjà utilisé !")
+          setLoginMessageType("error");
+        } else {
+          if (validatePasswords()) {
+            if (username && password && email && prenom && nom && dateDeNaissance && langue && description && adresse && avatar && dateDeNaissance && genre) {
+              const userService = new UserService(config.API_URL);
+              const user: User = {
+                username: username,
+                password: password,
+                email: email,
+                prenom: prenom,
+                nom: nom,
+                langue: langue,
+                description: description,
+                adresse: adresse,
+                avatar: avatar,
+                date_de_naissance: dateDeNaissance,
+                genre: genre
+              }
+              userService.addUser(user).then((u) => {
+                if (u.data) {
+                  login(u.data);
+                }
+              });
+            }
+          } else {
+            setLoginMessage("Les mots de passe ne correspondent pas !")
+            setLoginMessageType("error");
+          }
+        }
+      });
+    } 
+  };
  
   return (
     <div className="index" style={{display:'flex', flexDirection:'column', justifyContent: 'center', alignItems:'center', height:'100vh', width: '100vw'}}>
@@ -319,38 +322,38 @@ export function Register() {
                   <div className="frame-4">
                     <div className="label"> Nom d'utilisateur *</div>
                   </div>
-                  <input className="text-field"/> 
+                  <input className="text-field" onChange={e => setUsername(e.target.value)}/> 
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Email *</div>
                   </div>
-                  <input className="text-field"/>
+                  <input className="text-field" onChange={e => setEmail(e.target.value)}/>
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label"> Prénom </div>
                     </div>
-                    <input className="text-field"/>
+                    <input className="text-field" onChange={e => setPrenom(e.target.value)}/>
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Nom de famille </div>
                   </div>
-                  <input className="text-field"/>
+                  <input className="text-field" onChange={e => setNom(e.target.value)}/>
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Date de naissance *</div>
                   </div>
-                  <input className="text-field" type="date"/>
+                  <input className="text-field" type="date" onChange={e => setDateDeNaissance(new Date(e.target.value))} />
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Genre </div>
                   </div>
-                  <TextField className="text-field" select defaultValue="Non précisé">
-                    {genre.map((option)=> (
+                  <TextField className="text-field" select defaultValue="Non précisé" onChange={e => setGenre(e.target.value)}>
+                    {genres.map((option)=> (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
                       </MenuItem>
@@ -361,7 +364,7 @@ export function Register() {
                     <div className="frame-4">
                         <div className="label-2"> Langue *</div>
                     </div>
-                    <TextField className="text-field" select defaultValue="Non précisé">
+                    <TextField className="text-field" select defaultValue="Non précisé" onChange={e => setLangue(e.target.value)}>
                     {langues.map((option)=> (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
@@ -372,25 +375,25 @@ export function Register() {
                     <div className="frame-4">
                         <div className="label-2">Description</div>
                     </div>
-                    <input className="text-field" type="password"/>
+                    <input className="text-field" onChange={e => setDescription(e.target.value)}/>
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2"> Adresse </div>
                     </div>
-                    <input className="text-field"/>
+                    <input className="text-field" onChange={e => setAdresse(e.target.value)}/>
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2"> Avatar</div>
                     </div>
-                    <input className="text-field"/>
+                    <input className="text-field" onChange={e => setAvatar(e.target.value)}/>
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2">Mot de passe *</div>
                     </div>
-                    <input className="text-field" type="password"/>
+                    <input className="text-field" type="password" onChange={e => setPassword(e.target.value)}/>
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
