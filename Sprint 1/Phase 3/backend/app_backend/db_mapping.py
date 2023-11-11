@@ -49,7 +49,7 @@ class DBAcces:
             'abonnement': 'Abonnement',
             'collection': 'Collection',
             'contenu_collection': 'ContenuCollection',
-            'enregistrement_post': 'EnregistrementPost',
+            # 'enregistrement_post': 'EnregistrementPost',
             'est_commentaire_de': 'EstCommentaireDe',
             'etablissement': 'Etablissement',
             'etablissement_de_type': 'EtablissementDeType',
