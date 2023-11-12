@@ -32,7 +32,11 @@ export function Index() {
     },
     [context, navigate]
   );
-  //il y a le créer un compte et se connecter ici il faudra changer
+
+  const _createAnAccount = () => {
+    navigate("/register");
+  }
+
   const _handleLoginRequested = () => {
     if (username && password) {
       const userService = new UserService(config.API_URL);
@@ -82,7 +86,7 @@ export function Index() {
             divClassName="design-component-instance-node"
             text="New to our community"
           />
-          <Button className="button">
+          <Button className="button" onClick={_createAnAccount}>
             <div className="frame">
               <div className="sign-up">Créer un compte</div>
             </div>

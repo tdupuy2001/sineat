@@ -19,7 +19,7 @@ export function Register() {
   const [email, setEmail] = useState<string>();
   const [prenom, setPrenom] = useState<string>();
   const [nom, setNom] = useState<string>();
-  const [dateDeNaissance, setDateDeNaissance] = useState<Date>();
+  const [dateDeNaissance, setDateDeNaissance] = useState<string>();
   const [genre, setGenre] = useState<string>();
   const [langue, setLangue] = useState<string>();
   const [description, setDescription] = useState<string>();
@@ -31,6 +31,7 @@ export function Register() {
   );
   const [loginMessage, setLoginMessage] = useState("Se connecter");
   const navigate = useNavigate();
+  //ici à changer pour le register
   const login = useCallback(
     (user: User) => {
       context.setUser(user);
@@ -274,18 +275,18 @@ export function Register() {
           setLoginMessageType("error");
         } else {
           if (validatePasswords()) {
-            if (username && password && email && prenom && nom && dateDeNaissance && langue && description && adresse && avatar && dateDeNaissance && genre) {
+            if (username && password && email && prenom && nom && dateDeNaissance && langue && description && adresse && dateDeNaissance && genre) {
               const userService = new UserService(config.API_URL);
               const user: User = {
                 username: username,
                 password: password,
                 email: email,
+                role: 'user',
                 prenom: prenom,
                 nom: nom,
                 langue: langue,
                 description: description,
                 adresse: adresse,
-                avatar: avatar,
                 date_de_naissance: dateDeNaissance,
                 genre: genre
               }
@@ -346,7 +347,7 @@ export function Register() {
                   <div className="frame-4">
                     <div className="label"> Date de naissance *</div>
                   </div>
-                  <input className="text-field" type="date" onChange={e => setDateDeNaissance(new Date(e.target.value))} />
+                  <input className="text-field" type="date" onChange={e => setDateDeNaissance(e.target.value)} />
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
@@ -385,12 +386,6 @@ export function Register() {
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
-                        <div className="label-2"> Avatar</div>
-                    </div>
-                    <input className="text-field" onChange={e => setAvatar(e.target.value)}/>
-                </div>
-                <div className="div-3">
-                    <div className="frame-4">
                         <div className="label-2">Mot de passe *</div>
                     </div>
                     <input className="text-field" type="password" onChange={e => setPassword(e.target.value)}/>
@@ -402,7 +397,7 @@ export function Register() {
                     <input className="text-field" type="password" onChange={e => setConfirmPassword(e.target.value)}/>
                 </div>
                 <div className="frame-5">
-                  <Button className="frame-wrapper">
+                  <Button className="frame-wrapper" onClick={_handleRegisterRequested}>
                     <div className="sign-up-wrapper">
                       <div className="sign-up-2">Log in</div>
                     </div>
