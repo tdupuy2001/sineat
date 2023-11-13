@@ -22,6 +22,6 @@ Voilà, vous êtes prêts pour faire du front!
 
 components : Contient le fichier App.tsx qui nous permet de faire le routage et autre composents
 dto : Contient les interfaces User...
-screens : Contient les différents pages Web (1 par dossier)
+screens : Contient les différentes pages Web (1 par dossier)
 services : Contient les CRUD des interfaces
 icons : Contient les icons utilisés dans Figma
