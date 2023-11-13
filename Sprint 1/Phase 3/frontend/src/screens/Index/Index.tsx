@@ -20,7 +20,7 @@ export function Index() {
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
     "info"
   );
-  const [loginMessage, setLoginMessage] = useState("Se connecter");
+  const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
   const login = useCallback(
     (user: User) => {
@@ -66,7 +66,9 @@ export function Index() {
   }
   return (
     <div className="index">
-
+      {loginMessage && (<Alert severity={loginMessageType}>
+        {loginMessage}
+      </Alert>)}
       <div className="div-2">
         <div className="overlap-group">
           <div className="rectangle" />

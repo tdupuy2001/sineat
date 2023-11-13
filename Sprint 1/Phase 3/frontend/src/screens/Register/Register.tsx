@@ -3,7 +3,7 @@ import { Divider } from "../../components/Divider";
 import { LinkText } from "../../components/LinkText";
 import { Property1Hide } from "../../icons/Property1Hide";
 import "../Register/style.css";
-import { AlertColor, Button, MenuItem, TextField } from "@mui/material";
+import { Alert, AlertColor, Button, MenuItem, TextField } from "@mui/material";
 import { Property1See } from "../../icons/Property1See";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
@@ -31,7 +31,7 @@ export function Register() {
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
     "info"
   );
-  const [loginMessage, setLoginMessage] = useState("Se connecter");
+  const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
   //ici à changer pour le register
   const login = useCallback(
@@ -269,49 +269,55 @@ export function Register() {
 
 
   const _handleRegisterRequested = () => {
-    if (username) {
-      const userService = new UserService(config.API_URL);
-      userService.getUser(username).then((u) => {
-        if (u.data) {
-          setLoginMessage("Nom d'utilisateur déjà utilisé !")
-          setLoginMessageType("error");
-        } else {
-          if (validatePasswords()) {
-            if (username && password && email && dateDeNaissance && langue) {
-              const userService = new UserService(config.API_URL);
-              const user: UserLogin = {
-                username: username,
-                password: password,
-                role: "",
-                email: email,
-                prenom: prenom,
-                nom: nom,
-                langue: langue,
-                description: description,
-                adresse: adresse,
-
-                date_de_naissance: dateDeNaissance,
-                genre: genre ?? ""
-              }
-              userService.addUser(user).then((u) => {
-                if (u.data) {
-                  login(u.data);
-                }
-              });
-            }
-          } else {
-            setLoginMessage("Les mots de passe ne correspondent pas !")
+    if (!username || !password || !email || !dateDeNaissance || !langue) {
+      setLoginMessage("Veuillez remplir tous les champs obligatoires.");
+      setLoginMessageType("error");
+    } else {
+      if (username) {
+        const userService = new UserService(config.API_URL);
+        userService.getUser(username).then((u) => {
+          if (u.data) {
+            setLoginMessage("Nom d'utilisateur déjà utilisé !")
             setLoginMessageType("error");
+          } else {
+            if (validatePasswords()) {
+              if (username && password && email && dateDeNaissance && langue) {
+                const userService = new UserService(config.API_URL);
+                const user: UserLogin = {
+                  username: username,
+                  password: password,
+                  role: "",
+                  email: email,
+                  prenom: prenom,
+                  nom: nom,
+                  langue: langue,
+                  description: description,
+                  adresse: adresse,
+
+                  date_de_naissance: dateDeNaissance,
+                  genre: genre ?? ""
+                }
+                userService.addUser(user).then((u) => {
+                  if (u.data) {
+                    login(u.data);
+                  }
+                });
+              }
+            } else {
+              setLoginMessage("Les mots de passe ne correspondent pas !")
+              setLoginMessageType("error");
+            }
           }
-        }
-      });
-    } 
+        });
+      } 
+    }
   };
  
   return (
     <div className="index" style={{display:'flex', flexDirection:'column', justifyContent: 'center', alignItems:'center', height:'100vh', width: '100vw'}}>
-      
-
+      {loginMessage && (<Alert severity={loginMessageType}>
+        {loginMessage}
+      </Alert>)}      
         <div className="sign-in-wrapper">
           <div className="sign-in">
             <div className="frame-2">
