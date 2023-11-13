@@ -4,6 +4,15 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .db_mapping import DBAcces
 import bcrypt
+import logging
+
+logging.basicConfig(
+    filename='app.log',  # Nom du fichier de logs
+    filemode='a',  # Mode d'écriture du fichier ('a' pour append, 'w' pour write)
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 
 origins = ["http://localhost:3000", "http://localhost:8000", "http://localhost:9456"]
 
@@ -37,11 +46,11 @@ class UserSchema(BaseModel):
     """
     Les attributs facultatifs
     """
-    nom : str
-    prenom : str
-    genre : str
-    adresse : str
-    description : str
+    nom: str = ""
+    prenom: str = ""
+    genre: str = ""
+    adresse: str = ""
+    description: str = ""
 
 """
 Api pour user
@@ -88,6 +97,7 @@ def add_user(user: UserSchema):
         if found_user != None:
             return found_user
         else: 
+            logging.debug(f"voici l'user qui rentre {user}")
             user_salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), user_salt)
             new_user = User(
@@ -97,7 +107,12 @@ def add_user(user: UserSchema):
                 email = user.email,
                 password = hashed_password.decode('utf-8'),
                 salt = user_salt.decode('utf-8'),
-                langue = user.langue
+                langue = user.langue,
+                adresse = user.adresse,
+                nom = user.nom,
+                prenom = user.prenom,
+                genre = user.genre,
+                description = user.description
             )
             session.add(new_user)
             session.commit()
@@ -130,3 +145,14 @@ def log_user(user : UserSchema):
             return {'message': 'Wrong username or password'}
         else:
             return {'message': 'success'}
+            
+if __name__ == "__main__":
+    print(add_user(
+        UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
+        email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
+    ))
+    print(get_user("michel33"))
+    # prenom: str = ""
+    # genre: str = ""
+    # adresse: str = ""
+    # description: str = ""

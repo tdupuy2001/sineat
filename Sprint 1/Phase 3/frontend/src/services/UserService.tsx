@@ -11,7 +11,8 @@ export class UserService {
         this.axiosInstance = axios.create({baseURL: this.apiUrl})
     }
 
-    addUser(user:User) {
+    addUser(user:UserLogin) {
+        console.log(user)
         return this.axiosInstance.post<User>('/register', user);
     }
 

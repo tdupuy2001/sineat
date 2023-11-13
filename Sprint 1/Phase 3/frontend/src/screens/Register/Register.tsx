@@ -10,6 +10,8 @@ import { UserService } from "../../services/UserService";
 import { config } from "../../config";
 import { User } from "../../dto/User";
 import { useNavigate } from "react-router-dom";
+import { UserLogin } from "../../dto/UserLogin";
+
 
 export function Register() {
   const context = useContext(MyBlogContext);
@@ -17,14 +19,14 @@ export function Register() {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const [prenom, setPrenom] = useState<string>();
-  const [nom, setNom] = useState<string>();
-  const [dateDeNaissance, setDateDeNaissance] = useState<Date>();
-  const [genre, setGenre] = useState<string>();
+  const [prenom, setPrenom] = useState<string>("");
+  const [nom, setNom] = useState<string>("");
+  const [dateDeNaissance, setDateDeNaissance] = useState<string>();
+  const [genre, setGenre] = useState<string>("");
   const [langue, setLangue] = useState<string>();
-  const [description, setDescription] = useState<string>();
-  const [adresse, setAdresse] = useState<string>();
-  const [avatar, setAvatar] = useState<string>();
+  const [description, setDescription] = useState<string>("");
+  const [adresse, setAdresse] = useState<string>("");
+  // const [avatar, setAvatar] = useState<string>();
 
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
     "info"
@@ -274,20 +276,21 @@ export function Register() {
           setLoginMessageType("error");
         } else {
           if (validatePasswords()) {
-            if (username && password && email && prenom && nom && dateDeNaissance && langue && description && adresse && avatar && dateDeNaissance && genre) {
+            if (username && password && email && dateDeNaissance && langue) {
               const userService = new UserService(config.API_URL);
-              const user: User = {
+              const user: UserLogin = {
                 username: username,
                 password: password,
+                role: "",
                 email: email,
                 prenom: prenom,
                 nom: nom,
                 langue: langue,
                 description: description,
                 adresse: adresse,
-                avatar: avatar,
+                // avatar: avatar,
                 date_de_naissance: dateDeNaissance,
-                genre: genre
+                genre: genre ?? ""
               }
               userService.addUser(user).then((u) => {
                 if (u.data) {
@@ -334,19 +337,19 @@ export function Register() {
                     <div className="frame-4">
                         <div className="label"> Prénom </div>
                     </div>
-                    <input className="text-field" onChange={e => setPrenom(e.target.value)}/>
+                    <input className="text-field" defaultValue={prenom} onChange={e => setPrenom(e.target.value)}/>
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Nom de famille </div>
                   </div>
-                  <input className="text-field" onChange={e => setNom(e.target.value)}/>
+                  <input className="text-field" defaultValue={nom} onChange={e => setNom(e.target.value)}/>
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Date de naissance *</div>
                   </div>
-                  <input className="text-field" type="date" onChange={e => setDateDeNaissance(new Date(e.target.value))} />
+                  <input className="text-field" type="date" onChange={e => setDateDeNaissance(e.target.value)} />
                 </div>
                 <div className="div-3">
                   <div className="frame-4">
@@ -375,20 +378,20 @@ export function Register() {
                     <div className="frame-4">
                         <div className="label-2">Description</div>
                     </div>
-                    <input className="text-field" onChange={e => setDescription(e.target.value)}/>
+                    <input className="text-field" defaultValue={description} onChange={e => setDescription(e.target.value)}/>
                 </div>
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2"> Adresse </div>
                     </div>
-                    <input className="text-field" onChange={e => setAdresse(e.target.value)}/>
+                    <input className="text-field" defaultValue={adresse} onChange={e => setAdresse(e.target.value)}/>
                 </div>
-                <div className="div-3">
+                {/* <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2"> Avatar</div>
                     </div>
                     <input className="text-field" onChange={e => setAvatar(e.target.value)}/>
-                </div>
+                </div> */}
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2">Mot de passe *</div>
@@ -402,7 +405,7 @@ export function Register() {
                     <input className="text-field" type="password" onChange={e => setConfirmPassword(e.target.value)}/>
                 </div>
                 <div className="frame-5">
-                  <Button className="frame-wrapper">
+                  <Button className="frame-wrapper" onClick={_handleRegisterRequested}>
                     <div className="sign-up-wrapper">
                       <div className="sign-up-2">Log in</div>
                     </div>

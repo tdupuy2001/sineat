@@ -5,9 +5,9 @@ export interface UserLogin {
     email:string;
     password: string;
     langue:string;
-    nom:string;
-    prenom:string;
-    genre:string;
-    adresse:string;
-    description:string;
+    nom?:string;
+    prenom?:string;
+    genre?:string;
+    adresse?:string;
+    description?:string;
 }
