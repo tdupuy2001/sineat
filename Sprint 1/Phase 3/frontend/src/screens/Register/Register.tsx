@@ -19,10 +19,10 @@ export function Register() {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const [prenom, setPrenom] = useState<string>("");
-  const [nom, setNom] = useState<string>("");
+  const [prenom, setPrenom] = useState<string>();
+  const [nom, setNom] = useState<string>();
   const [dateDeNaissance, setDateDeNaissance] = useState<string>();
-  const [genre, setGenre] = useState<string>("");
+  const [genre, setGenre] = useState<string>();
   const [langue, setLangue] = useState<string>();
   const [description, setDescription] = useState<string>("");
   const [adresse, setAdresse] = useState<string>("");
@@ -33,6 +33,7 @@ export function Register() {
   );
   const [loginMessage, setLoginMessage] = useState("Se connecter");
   const navigate = useNavigate();
+  //ici à changer pour le register
   const login = useCallback(
     (user: User) => {
       context.setUser(user);
@@ -288,7 +289,7 @@ export function Register() {
                 langue: langue,
                 description: description,
                 adresse: adresse,
-                // avatar: avatar,
+
                 date_de_naissance: dateDeNaissance,
                 genre: genre ?? ""
               }
@@ -386,12 +387,7 @@ export function Register() {
                     </div>
                     <input className="text-field" defaultValue={adresse} onChange={e => setAdresse(e.target.value)}/>
                 </div>
-                {/* <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label-2"> Avatar</div>
-                    </div>
-                    <input className="text-field" onChange={e => setAvatar(e.target.value)}/>
-                </div> */}
+                
                 <div className="div-3">
                     <div className="frame-4">
                         <div className="label-2">Mot de passe *</div>

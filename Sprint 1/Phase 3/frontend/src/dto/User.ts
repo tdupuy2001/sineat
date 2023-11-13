@@ -1,15 +1,13 @@
-
 export interface User {
-    id_user?:number
-    username:string
-    nom:string
-    prenom:string
-    date_de_naissance:Date
-    genre:string
-    email:string
-    description:string
-    adresse:string
-    password:string
-    langue:string
-    avatar:string
+    username: string;
+    role:string;
+    date_de_naissance:string;
+    email:string;
+    password: string;
+    langue:string;
+    nom:string;
+    prenom:string;
+    genre:string;
+    adresse:string;
+    description:string;
 }
