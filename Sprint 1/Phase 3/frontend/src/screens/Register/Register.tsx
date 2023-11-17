@@ -337,15 +337,15 @@ export function Register() {
               
                 
 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom d'utilisateur" variant="outlined" onChange={e => setUsername(e.target.value)}/>
+                  <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom d'utilisateur" variant="outlined" onChange={e => setUsername(e.target.value)}/>
 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Email" variant="outlined" onChange={e => setEmail(e.target.value)}/>
+                  <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Email" variant="outlined" onChange={e => setEmail(e.target.value)}/>
               
                   <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Prénom" variant="outlined" onChange={e => setPrenom(e.target.value)}/>
                 
                   <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom de famille" variant="outlined" onChange={e => setNom(e.target.value)}/>
 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Date de naissance"  type="date" variant="outlined" onChange={e => setDateDeNaissance(e.target.value)}
+                  <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Date de naissance"  type="date" variant="outlined" onChange={e => setDateDeNaissance(e.target.value)}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -359,7 +359,7 @@ export function Register() {
                     ))}
                   </TextField>
                 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Langue" variant="outlined" select defaultValue="Non précisé" onChange={e => setLangue(e.target.value)}>
+                  <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Langue" variant="outlined" select defaultValue="Non précisé" onChange={e => setLangue(e.target.value)}>
                     {langues.map((option)=> (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
@@ -369,9 +369,9 @@ export function Register() {
 
                   <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Description" variant="outlined" onChange={e => setDescription(e.target.value)}/>
 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Mot de passe" type="password" variant="outlined" onChange={e => setPassword(e.target.value)}/>
+                  <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Mot de passe" type="password" variant="outlined" onChange={e => setPassword(e.target.value)}/>
 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Confirmer le mot de passe" type="password" variant="outlined" onChange={e => setConfirmPassword(e.target.value)}/>
+                  <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Confirmer le mot de passe" type="password" variant="outlined" onChange={e => setConfirmPassword(e.target.value)}/>
 
                 <div className="Btn-signin">
                   <button className="btn-signin" onClick={_handleRegisterRequested}>
