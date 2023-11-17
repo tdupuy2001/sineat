@@ -35,7 +35,7 @@ export function Main() {
             <SearchBar />
             {isLoggedIn ? (
               <div className='user-info'>
-                <span>{userName}!</span>
+                <span>{"test"}!</span>
               </div>
             ) : (
               <button className='btn-login' onClick={handleLogin}>Se connecter</button>
