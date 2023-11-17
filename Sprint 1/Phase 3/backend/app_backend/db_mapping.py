@@ -50,7 +50,7 @@ class DBAcces:
             'collection': 'Collection',
             'contenu_collection': 'ContenuCollection',
             # 'enregistrement_post': 'EnregistrementPost',
-            'est_commentaire_de': 'EstCommentaireDe',
+            # 'est_commentaire_de': 'EstCommentaireDe',
             'etablissement': 'Etablissement',
             'etablissement_de_type': 'EtablissementDeType',
             'liked_collection': 'LikedCollection',
