@@ -9,9 +9,10 @@
   }
   .mainLog{
     display: flex;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100;
     flex-direction: column;
+    background-color:#F2EADF;
 }
 
 .SignUp{
@@ -45,8 +46,8 @@
 }
 
 .Img-signup img {
-    width: 225%;
-    height: 249%;
+    width: 100%;
+    height: 100%;
     margin: auto;
     object-fit: cover; /* this property ensures that the entire image is shown within the div */
 }
@@ -97,19 +98,22 @@
 }
 
 .cont-signIn{
-    height: 80%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    width: 70%;
+    width: fit-content;
     border: #602A0F solid 1px;
-    margin: auto;
+    margin: 20px 0px;
     border-radius: 17px;
     gap: 1rem;
+    block-size: fit-content;
+    background-color: #ffffff;
 }
 
 .Img-signin{
+    height: 10%;
+    width: 50%;
     flex: 1;
     display: flex;
     justify-content: center;
@@ -118,15 +122,21 @@
 }
 
 .Img-signin img {
-    width: 150px;
-    height: 60px;
+    width: 50%;
+    height: 50%;
+    position: relative;
     margin: auto;
     object-fit: cover; /* this property ensures that the entire image is shown within the div */
 }
 
+.img-auto {
+  width: 25%;
+  height: auto;
+}
+
 .btn-signin{
-    height: 40px;
-    width: 400px;
+    height: 100%;
+    width: 100%;
     border-radius: 20px ;
     background-color:  #602A0F; 
     color: white;
@@ -136,13 +146,13 @@
 
 .Btn-signin{
     height: 40px;
-    width: 400px;
+    width: 80%;
     border-radius: 20px ;
 }
 
 .btn-signin:hover{
     height: 40px;
-    width: 400px;
+    width: 100%;
     border-radius: 20px ;
     border: #602A0F solid 1px;
     background-color:  white; 
