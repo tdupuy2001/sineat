@@ -251,7 +251,7 @@ class DBAcces:
         for cls in [
             User, Post, Collection, ContenuCollection,RegimeDeLUser,
             Note, Abonnement, Etablissement,
-            EstCommentaireDe, EtablissementDeType, TypeEtablissement,
+            EtablissementDeType, TypeEtablissement,
             LikedCollection, LikedPost, MotCle, MotClePost,
             NoteConcerne, TypeNote, Regime, RegimeEtablissement,
             ]:
