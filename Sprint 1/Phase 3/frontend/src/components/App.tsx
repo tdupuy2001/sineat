@@ -6,21 +6,15 @@ import { UserService } from '../services/UserService';
 import { config } from '../config';
 import { MyBlogContext } from '../MyBlogContext';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Index } from '../screens/Index';
-import { Register } from '../screens/Register/Register';
+import Login  from '../screens/Login/Login';
 
 function App() {
 
   return (
     <div>
       <Routes>
-        <Route 
-        path='/login'
-        element={<Index/>}
-        />
-        <Route 
-        path='/register'
-        element={<Register/>}/>
+        <Route path='/login' element={<Login />}/>
+        
       </Routes>
     </div>
   );

@@ -1,0 +1,39 @@
+.divider {
+
+    width: 500px;
+    display: flex;
+   
+    align-items: center;
+   
+    justify-content: center;
+   
+   }
+   
+   
+   .line {
+   
+    width: 25%;
+   
+    height: 1px;
+   
+    background-color: #666666;;
+   
+   }
+   
+   
+   .text {
+
+    text-align: center; 
+
+    color: #666666;
+    font-family: "Avenir-Roman", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+
+    padding: 10px;
+
+    word-break: keep-all;
+   
+   }

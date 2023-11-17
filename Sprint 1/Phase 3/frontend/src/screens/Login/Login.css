@@ -1,0 +1,161 @@
+.mainLog{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: row;
+}
+
+.SignUp{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    background-color: #F2EADF;
+}
+
+.ContSignUp{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    gap: 10px;
+}
+
+.SignIn{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.Img-signup{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* this will ensure that the image doesn't exceed the boundaries of the div */
+}
+
+.Img-signup img {
+    width: 225px;
+    height: 249px;
+    margin: auto;
+    object-fit: cover; /* this property ensures that the entire image is shown within the div */
+}
+
+.Texts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+   }
+   
+.Texts span {
+    width: 70%;
+    word-wrap: break-word;
+    text-align: center;
+   }
+
+.btn-signup{
+    height: 40px;
+    width: 400px;
+    border-radius: 20px ;
+    background-color:  #602A0F; 
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.btn-signup:hover{
+    height: 40px;
+    width: 400px;
+    border-radius: 20px ;
+    border: #602A0F solid 1px;
+    background-color:  white; 
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.Btn-signup{
+    height: 40px;
+    width: 400px;
+    border-radius: 20px ;
+    margin-bottom: 40px;
+}
+
+.cont-signIn{
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+    border: #602A0F solid 1px;
+    margin: auto;
+    border-radius: 17px;
+    gap: 1rem;
+}
+
+.Img-signin{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* this will ensure that the image doesn't exceed the boundaries of the div */
+}
+
+.Img-signin img {
+    width: 150px;
+    height: 60px;
+    margin: auto;
+    object-fit: cover; /* this property ensures that the entire image is shown within the div */
+}
+
+.btn-signin{
+    height: 40px;
+    width: 400px;
+    border-radius: 20px ;
+    background-color:  #602A0F; 
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.Btn-signin{
+    height: 40px;
+    width: 400px;
+    border-radius: 20px ;
+}
+
+.btn-signin:hover{
+    height: 40px;
+    width: 400px;
+    border-radius: 20px ;
+    border: #602A0F solid 1px;
+    background-color:  white; 
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.privacy{
+    font-size: 11px;
+    margin-bottom: 40px;
+}
+
+.last-signin{
+    display: flex;
+    justify-content: space-between;
+    width: 330px;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.title-signin{
+    font-size: 20px;
+    margin-bottom: 20px;
+}
