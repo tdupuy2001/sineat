@@ -138,7 +138,6 @@
     flex-direction: column;
     gap: 32px;
     justify-content: center;
-    left: 1122px;
     position: absolute;
     top: 159px;
   }
@@ -148,13 +147,10 @@
     border: 1px solid;
     border-color: #66666680;
     border-radius: 24px;
-    display: inline-flex;
+    display: flex;
     flex: 0 0 auto;
     flex-direction: column;
     gap: 10px;
-    overflow: hidden;
-    padding: 40px 56px;
-    position: relative;
   }
   
   .index .frame-2 {

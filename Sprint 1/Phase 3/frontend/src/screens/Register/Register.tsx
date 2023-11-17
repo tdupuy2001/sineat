@@ -318,7 +318,7 @@ export function Register() {
       {loginMessage && (<Alert severity={loginMessageType}>
         {loginMessage}
       </Alert>)}      
-        <div className="sign-in-wrapper">
+        
           <div className="sign-in">
             <div className="frame-2">
               <img
@@ -346,6 +346,7 @@ export function Register() {
                     </div>
                     <input className="text-field" defaultValue={prenom} onChange={e => setPrenom(e.target.value)}/>
                 </div>
+                
                 <div className="div-3">
                   <div className="frame-4">
                     <div className="label"> Nom de famille </div>
@@ -420,7 +421,7 @@ export function Register() {
               </div>
             </div>
           </div>
-        </div>
+        
       
     </div>
   );
