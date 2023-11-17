@@ -1,11 +1,24 @@
-import React from 'react';
+import React,{useState,useContext, useEffect} from 'react';
 import './Main.css';
 import Img from './assets/SIN-2-NoBG.png';
 import Img2 from './assets/test.png'
 import { Link,  useNavigate } from 'react-router-dom';
-import SearchBar from '../../Utils/searchbar';
+import SearchBar from '../../components/SearchBar/searchbar';
 
-function Main() {
+import { MyBlogContext } from "../../MyBlogContext";
+
+export function Main() {
+
+  const context = useContext(MyBlogContext);
+
+
+  useEffect(() => {
+    console.log(MyBlogContext)
+  }, [])
+  
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -20,7 +33,13 @@ function Main() {
         <div className='navbar-main'>
           <div className='search-login'>
             <SearchBar />
-            <button className='btn-login' onClick={handleLogin}>Se connecter</button>
+            {isLoggedIn ? (
+              <div className='user-info'>
+                <span>{userName}!</span>
+              </div>
+            ) : (
+              <button className='btn-login' onClick={handleLogin}>Se connecter</button>
+            )}
           </div>
           <div className='navItems'>
             <ul className='navlist'>

@@ -1,4 +1,13 @@
-import React from 'react'
+import React, {useCallback, useContext, useState} from "react";
+import { Alert, AlertColor, TextField } from "@mui/material";
+import { MyBlogContext } from "../../MyBlogContext";
+import { useNavigate } from "react-router-dom";
+import { User } from "../../dto/User";
+import { UserService } from "../../services/UserService";
+import { config } from "../../config";
+
+
+
 import './Login.css'
 import SignUpImg from './assets/signup-img.png';
 import SigninImg from './assets/SIN-2-NoBG.png'
@@ -9,20 +18,66 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-function Login() {
+export function Login() {
 
-    const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const _ = "";
+
+  const navigate = useNavigate();
+
+  const context = useContext(MyBlogContext);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
+  const [username, setUsername] = useState<string>();
+  const [password, setPassword] = useState<string>();
+
+  const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
+    "info"
+  );
+
+  const [loginMessage, setLoginMessage] = useState("");
+
+  const login = useCallback(
+    (user: User) => {
+      context.setUser(user);
+      localStorage.setItem("username", user.username);
+      setLoginMessage("");
+      setLoginMessageType("info");
+      navigate("/");
+    },
+    [context, navigate]
+  );
+
+
+  const handleLoginRequested = () => {
+    if (username && password) {
+      const userService = new UserService(config.API_URL);
+      userService.log_user({username: username, role: _, date_de_naissance: _, email: _, password: password, langue: _, nom: _, prenom: _, genre: _, adresse: _,description: _}).then((response: any)=> {
+        if (response.data.message === 'success') {
+          login(response.data);
+        } else {
+          setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !")
+          setLoginMessageType("error");
+        }
+      });
+    } else {
+      setLoginMessage("Veuillez entrer un nom d'utilisateur et un mot de passe.")
+      setLoginMessageType("error");
+    }
+  };
+
+
+
+  
   return (
     <div className='mainLog'>
         <div className='SignUp'>
@@ -47,8 +102,11 @@ function Login() {
                     <img src={SigninImg} alt="SigninImg" />
                 </div>
                 <div className='title-signin'> Se connecter</div>
+                {loginMessage && (<Alert severity={loginMessageType}>
+                  {loginMessage}
+                </Alert>)}
                 <div className='username'>
-                    <TextField  sx={{ m: 1, width: '400px' }} id="outlined-basic" label="Username" variant="outlined" />
+                    <TextField  sx={{ m: 1, width: '400px' }} id="outlined-basic" label="Username" variant="outlined" onChange={(evt) => setUsername(evt.target.value)}/>
                 </div>
                 <div className='psswd'>
                 <FormControl sx={{ m: 1, width: '400px' }} variant="outlined">
@@ -69,11 +127,12 @@ function Login() {
                         </InputAdornment>
                         }
                         label="Password"
+                        onChange={(evt) => setPassword(evt.target.value)}
                         />
                 </FormControl>
                 </div>
                 <div className='Btn-signin'>
-                    <button className='btn-signin'>Se connecter</button>
+                    <button className='btn-signin' onClick={handleLoginRequested}>Se connecter</button>
                 </div>
                 <div className='privacy'>
                     <span>
