@@ -11,6 +11,7 @@ import { config } from "../../config";
 import { User } from "../../dto/User";
 import { useNavigate } from "react-router-dom";
 import { UserLogin } from "../../dto/UserLogin";
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 
 export function Register() {
@@ -314,115 +315,86 @@ export function Register() {
   };
  
   return (
-    <div className="index" style={{display:'flex', flexDirection:'column', justifyContent: 'center', alignItems:'center', height:'100vh', width: '100vw'}}>
+    
+      
+    <div className="mainLog" >
       {loginMessage && (<Alert severity={loginMessageType}>
         {loginMessage}
       </Alert>)}      
-        <div className="sign-in-wrapper">
-          <div className="sign-in">
-            <div className="frame-2">
-              <img
-                className="SIN-nobg"
-                alt="Sin nobg"
-                src="https://cdn.animaapp.com/projects/652956d4313e8aaa8f26adb6/releases/6548c973bfd479f2efe3643d/img/sin-2-nobg-1.png"
-              />
-              <div className="text-wrapper-5">Rejoins-nous !</div>
-              <div className="frame-3">
-                <div className="div-3">
-                  <div className="frame-4">
-                    <div className="label"> Nom d'utilisateur *</div>
-                  </div>
-                  <input className="text-field" onChange={e => setUsername(e.target.value)}/> 
-                </div>
-                <div className="div-3">
-                  <div className="frame-4">
-                    <div className="label"> Email *</div>
-                  </div>
-                  <input className="text-field" onChange={e => setEmail(e.target.value)}/>
-                </div>
-                <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label"> Prénom </div>
-                    </div>
-                    <input className="text-field" defaultValue={prenom} onChange={e => setPrenom(e.target.value)}/>
-                </div>
-                <div className="div-3">
-                  <div className="frame-4">
-                    <div className="label"> Nom de famille </div>
-                  </div>
-                  <input className="text-field" defaultValue={nom} onChange={e => setNom(e.target.value)}/>
-                </div>
-                <div className="div-3">
-                  <div className="frame-4">
-                    <div className="label"> Date de naissance *</div>
-                  </div>
-                  <input className="text-field" type="date" onChange={e => setDateDeNaissance(e.target.value)} />
-                </div>
-                <div className="div-3">
-                  <div className="frame-4">
-                    <div className="label"> Genre </div>
-                  </div>
-                  <TextField className="text-field" select defaultValue="Non précisé" onChange={e => setGenre(e.target.value)}>
+        
+          <div className="SignIn">
+            <div className="cont-signIn">
+              
+              
+                <img
+                  className="img-auto"
+                  alt="Sin nobg"
+                  src="https://cdn.animaapp.com/projects/652956d4313e8aaa8f26adb6/releases/6548c973bfd479f2efe3643d/img/sin-2-nobg-1.png"
+                />
+                
+              
+              <div className="title-signin">Rejoins-nous !</div>
+              
+                
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom d'utilisateur" variant="outlined" onChange={e => setUsername(e.target.value)}/>
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Email" variant="outlined" onChange={e => setEmail(e.target.value)}/>
+              
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Prénom" variant="outlined" onChange={e => setPrenom(e.target.value)}/>
+                
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom de famille" variant="outlined" onChange={e => setNom(e.target.value)}/>
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Date de naissance"  type="date" variant="outlined" onChange={e => setDateDeNaissance(e.target.value)}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Genre" variant="outlined" select defaultValue="Non précisé" onChange={e => setGenre(e.target.value)}>
                     {genres.map((option)=> (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
                       </MenuItem>
                     ))}
                   </TextField>
-                </div>
-                <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label-2"> Langue *</div>
-                    </div>
-                    <TextField className="text-field" select defaultValue="Non précisé" onChange={e => setLangue(e.target.value)}>
+                
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Langue" variant="outlined" select defaultValue="Non précisé" onChange={e => setLangue(e.target.value)}>
                     {langues.map((option)=> (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
                       </MenuItem>
                     ))}
-                  </TextField>                </div>
-                <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label-2">Description</div>
-                    </div>
-                    <input className="text-field" defaultValue={description} onChange={e => setDescription(e.target.value)}/>
+                  </TextField>    
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Description" variant="outlined" onChange={e => setDescription(e.target.value)}/>
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Mot de passe" type="password" variant="outlined" onChange={e => setPassword(e.target.value)}/>
+
+                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Confirmer le mot de passe" type="password" variant="outlined" onChange={e => setConfirmPassword(e.target.value)}/>
+
+                <div className="Btn-signin">
+                  <button className="btn-signin" onClick={_handleRegisterRequested}>
+                      S'inscrire
+                  </button>
                 </div>
-                <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label-2"> Adresse </div>
-                    </div>
-                    <input className="text-field" defaultValue={adresse} onChange={e => setAdresse(e.target.value)}/>
+                <div className='privacy'>
+                    <span>
+                        By continuing , you agree to the <a href="http://">Terms of use</a> and <a href="http://">Privacy policies</a>
+                    </span>
                 </div>
-                
-                <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label-2">Mot de passe *</div>
-                    </div>
-                    <input className="text-field" type="password" onChange={e => setPassword(e.target.value)}/>
+                <div className='last-signin'>
+                    <div><a href="http://">Autres problemes</a></div>
+                    <div><a href="http://">Mot de passe oublié ?</a></div>
                 </div>
-                <div className="div-3">
-                    <div className="frame-4">
-                        <div className="label"> Confirmer le mot de passe *</div>
-                    </div>
-                    <input className="text-field" type="password" onChange={e => setConfirmPassword(e.target.value)}/>
-                </div>
-                <div className="frame-5">
-                  <Button className="frame-wrapper" onClick={_handleRegisterRequested}>
-                    <div className="sign-up-wrapper">
-                      <div className="sign-up-2">Log in</div>
-                    </div>
-                  </Button>
-                  <LinkText className="link-text-instance" text="By continuing, you agree to the " />
-                </div>
-              </div>
-              <div className="frame-6">
-                <p className="p">Un problème ? On vous aide <a href=""> ici</a></p>
-              </div>
+                 
             </div>
           </div>
-        </div>
+        
       
     </div>
+    
+    
   );
 };
 
