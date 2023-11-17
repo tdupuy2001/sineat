@@ -70,7 +70,7 @@ class DBAcces:
         relation_map = {
              'User=>User(user2_fk)': 'est_abonnee_a',
              'User=>Post(id_user_liked_post_fk)': 'all_post_liked',
-             'Post=>Post(post1_fk)': 'est_comm_de',
+            #  'Post=>Post(post1_fk)': 'est_comm_de',
              'Post=>User(id_post_liked_post_fk)': 'all_user_who_liked_post',
              'User=>Post(id_user_post_fk)': 'user_write_post',
              'User=>Collection(user_create_collection_fk)':'a_cree_collection',
@@ -151,11 +151,11 @@ class DBAcces:
             def __str__(self):
                 return f"Etablissement({self.id_etablissement},{self.nom})"
             
-        class EstCommentaireDe(Base):
-            __tablename__ = 'est_commentaire_de'
+        # class EstCommentaireDe(Base):
+        #     __tablename__ = 'est_commentaire_de'
 
-            def __str__(self):
-                return f"EstCommentaireDe({self.id_post1},{self.id_post2})"
+        #     def __str__(self):
+        #         return f"EstCommentaireDe({self.id_post1},{self.id_post2})"
         
         class EtablissementDeType(Base):
             __tablename__ = 'etablissement_de_type'

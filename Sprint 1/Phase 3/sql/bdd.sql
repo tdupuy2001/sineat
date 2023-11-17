@@ -6,7 +6,7 @@ drop table if exists abonnement cascade;
 drop table if exists collection cascade;
 drop table if exists contenu_collection cascade;
 -- drop table if exists enregistrement_post cascade;
-drop table if exists est_commentaire_de cascade;
+-- drop table if exists est_commentaire_de cascade;
 drop table if exists etablissement cascade;
 drop table if exists etablissement_de_type cascade;
 drop table if exists liked_collection cascade ;
@@ -101,6 +101,7 @@ create table post (
   type text not null,
   afficher boolean not null default true,
   id_note int,
+  id_post_comm int,
   constraint id_user_post_fk
     foreign key (id_user)
     references "user" (id_user)
@@ -109,6 +110,11 @@ create table post (
   constraint id_note_post_fk
     foreign key (id_note)
     references note (id_note)
+    on delete cascade
+    on update cascade,
+  constraint id_post_comm_fk
+    foreign key (id_post_comm)
+    references post (id_post)
     on delete cascade
     on update cascade
 );
@@ -220,21 +226,21 @@ create table contenu_collection (
 -- Table est_commentaire_de
 -- -----------------------------------------------------
 
-create table est_commentaire_de (
-  id_post1 int not null,
-  id_post2 int not null,
-  primary key (id_post1, id_post2),
-  constraint post1_fk
-    foreign key (id_post1)
-    references post (id_post)
-    on delete cascade
-    on update cascade,
-  constraint post2_fk
-    foreign key (id_post2)
-    references post (id_post)
-    on delete cascade
-    on update cascade
-);
+-- create table est_commentaire_de (
+--   id_post1 int not null,
+--   id_post2 int not null,
+--   primary key (id_post1, id_post2),
+--   constraint post1_fk
+--     foreign key (id_post1)
+--     references post (id_post)
+--     on delete cascade
+--     on update cascade,
+--   constraint post2_fk
+--     foreign key (id_post2)
+--     references post (id_post)
+--     on delete cascade
+--     on update cascade
+-- );
 
 
 -- -----------------------------------------------------
