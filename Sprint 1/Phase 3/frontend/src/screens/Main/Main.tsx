@@ -6,12 +6,36 @@ import { Link,  useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/SearchBar/searchbar';
 import { MyBlogContext } from '../../MyBlogContext';
 
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+
 
 export function Main() {
 
   const { user } = useContext(MyBlogContext);
 
   const [username,setusername] = useState("null")
+  const [open, setOpen] = useState(true);
+
+  const handleList = () => {
+    setOpen(!open);
+  };
+
+  const handleLogout = () => {
+
+    // For demonstration purposes, let's reset to the initial state
+    setusername("null");
+    setIsLoggedIn(false);
+    setOpen(true);
+
+  };
 
   useEffect(() => {
     if (user) {
@@ -38,9 +62,29 @@ export function Main() {
           <div className='search-login'>
             <SearchBar />
             {isLoggedIn ? (
-              <div className='user-info'>
-                <span>{username}</span>
-              </div>
+              <List
+              sx={{ width: "100%", maxWidth: '30%', bgcolor: "#F2EADF" }}
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+            >
+              <ListItemButton onClick={handleList}>
+                <ListItemIcon>
+                  <InboxIcon />
+                </ListItemIcon>
+                <ListItemText primary={username} />
+                {open ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  <ListItemButton sx={{ pl: 4 }} onClick={handleLogout}>
+                    <ListItemIcon>
+                      <PowerSettingsNewIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Log out" />
+                  </ListItemButton>
+                </List>
+              </Collapse>
+            </List>
             ) : (
               <button className='btn-login' onClick={handleLogin}>Se connecter</button>
             )}

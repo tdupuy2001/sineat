@@ -17,8 +17,7 @@ function SearchBar() {
           ),
         }}
         variant="outlined"
-        sx={{backgroundColor:'#fff'}}
-        size="small"
+        sx={{backgroundColor:'#fff',width:'40%',height :'85%'}}
     />
   );
 }
