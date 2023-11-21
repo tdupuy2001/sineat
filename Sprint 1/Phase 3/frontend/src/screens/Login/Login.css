@@ -100,24 +100,16 @@
     gap: 1rem;
 }
 
-.Img-signin{
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* this will ensure that the image doesn't exceed the boundaries of the div */
-}
-
-.Img-signin img {
-    width: 50%;
-    height: 40%;
+.Img-signin {
+    width: 45%;
+    height: 15%;
     margin: auto;
     object-fit: cover; /* this property ensures that the entire image is shown within the div */
 }
 
 .btn-signin{
-    height: 40px;
-    width: 400px;
+    height: 8%;
+    width: 60%;
     border-radius: 20px ;
     background-color:  #602A0F; 
     color: white;
@@ -125,15 +117,9 @@
     cursor: pointer;
 }
 
-.Btn-signin{
-    height: 40px;
-    width: 400px;
-    border-radius: 20px ;
-}
-
 .btn-signin:hover{
-    height: 40px;
-    width: 400px;
+    height: 8%;
+    width: 60%;
     border-radius: 20px ;
     border: #602A0F solid 1px;
     background-color:  white; 
@@ -150,12 +136,12 @@
 .last-signin{
     display: flex;
     justify-content: space-between;
-    width: 330px;
+    width: 50%;
     font-size: 12px;
     margin-bottom: 20px;
 }
 
 .title-signin{
     font-size: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 5%;
 }

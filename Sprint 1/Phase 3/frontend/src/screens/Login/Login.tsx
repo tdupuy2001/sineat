@@ -61,19 +61,21 @@ export function Login() {
   const handleLoginRequested = () => {
     if (username && password) {
       const userService = new UserService(config.API_URL);
-      userService.log_user({username: username, role: _, date_de_naissance: _, email: _, password: password, langue: _, nom: _, prenom: _, genre: _, adresse: _,description: _}).then((response: any)=> {
+      userService.log_user({ username, role: _, date_de_naissance: _, email: _, password, langue: _, nom: _, prenom: _, genre: _, adresse: _, description: _ }).then((response: any) => {
         if (response.data.message === 'success') {
-          login(response.data);
+          const user = response.data.user;
+          login(user); // This will update the context and navigate to "/"
         } else {
-          setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !")
+          setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !");
           setLoginMessageType("error");
         }
       });
     } else {
-      setLoginMessage("Veuillez entrer un nom d'utilisateur et un mot de passe.")
+      setLoginMessage("Veuillez entrer un nom d'utilisateur et un mot de passe.");
       setLoginMessageType("error");
     }
   };
+  
 
 
 
@@ -98,18 +100,13 @@ export function Login() {
         </div>
         <div className='SignIn'>
             <div className='cont-signIn'>
-                <div className='Img-signin'>
-                    <img src={SigninImg} alt="SigninImg" />
-                </div>
+                <img src={SigninImg} alt="SigninImg" className='Img-signin' />
                 <div className='title-signin'> Se connecter</div>
                 {loginMessage && (<Alert severity={loginMessageType}>
                   {loginMessage}
                 </Alert>)}
-                <div className='username'>
-                    <TextField  sx={{ m: 1, width: '400px' }} id="outlined-basic" label="Username" variant="outlined" onChange={(evt) => setUsername(evt.target.value)}/>
-                </div>
-                <div className='psswd'>
-                <FormControl sx={{ m: 1, width: '400px' }} variant="outlined">
+                <TextField  sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Username" variant="outlined" onChange={(evt) => setUsername(evt.target.value)}/>
+                <FormControl sx={{ m: 1, width: '80%' }} variant="outlined">
                     <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
@@ -130,10 +127,7 @@ export function Login() {
                         onChange={(evt) => setPassword(evt.target.value)}
                         />
                 </FormControl>
-                </div>
-                <div className='Btn-signin'>
-                    <button className='btn-signin' onClick={handleLoginRequested}>Se connecter</button>
-                </div>
+                <button className='btn-signin' onClick={handleLoginRequested}>Se connecter</button>
                 <div className='privacy'>
                     <span>
                         By continuing , you agree to the <a href="http://">Terms of use</a> and <a href="http://">Privacy policies</a>

@@ -1,20 +1,24 @@
-import React,{useState,useContext, useEffect} from 'react';
+import React,{useState,useEffect,useContext} from 'react';
 import './Main.css';
 import Img from './assets/SIN-2-NoBG.png';
 import Img2 from './assets/test.png'
 import { Link,  useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/SearchBar/searchbar';
+import { MyBlogContext } from '../../MyBlogContext';
 
-import { MyBlogContext } from "../../MyBlogContext";
 
 export function Main() {
 
-  const context = useContext(MyBlogContext);
+  const { user } = useContext(MyBlogContext);
 
+  const [username,setusername] = useState("null")
 
   useEffect(() => {
-    console.log(MyBlogContext)
-  }, [])
+    if (user) {
+      setusername(user?.username)
+      setIsLoggedIn(true)
+    }
+  }, [user])
   
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,7 +39,7 @@ export function Main() {
             <SearchBar />
             {isLoggedIn ? (
               <div className='user-info'>
-                <span>{"test"}!</span>
+                <span>{username}</span>
               </div>
             ) : (
               <button className='btn-login' onClick={handleLogin}>Se connecter</button>

@@ -1,0 +1,107 @@
+.mainLog{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    background-color:#F2EADF;
+}
+
+.SignIn{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.cont-signIn{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    border: #602A0F solid 1px;
+    margin: 20px 0px;
+    border-radius: 17px;
+    gap: 1rem;
+    block-size: fit-content;
+    background-color: #ffffff;
+}
+
+.Img-signin{
+    height: 10%;
+    width: 50%;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* this will ensure that the image doesn't exceed the boundaries of the div */
+}
+
+.Img-signin img {
+    width: 50%;
+    height: 50%;
+    position: relative;
+    margin: auto;
+    object-fit: cover; /* this property ensures that the entire image is shown within the div */
+}
+
+.img-auto {
+  width: 25%;
+  height: auto;
+}
+
+.btn-signin{
+    height: 100%;
+    width: 100%;
+    border-radius: 20px ;
+    background-color:  #602A0F; 
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.Btn-signin{
+    height: 40px;
+    width: 80%;
+    border-radius: 20px ;
+}
+
+.btn-signin:hover{
+    height: 40px;
+    width: 100%;
+    border-radius: 20px ;
+    border: #602A0F solid 1px;
+    background-color:  white; 
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.privacy{
+    font-size: 11px;
+    margin-bottom: 40px;
+}
+
+.last-signin{
+    display: flex;
+    justify-content: space-between;
+    width: 330px;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.title-signin{
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+  .index .text-field {
+    align-self: stretch;
+    border: 1px solid;
+    border-color: #66666659;
+    border-radius: 12px;
+    height: 56px;
+    position: relative;
+    width: 100%;
+  }
+  

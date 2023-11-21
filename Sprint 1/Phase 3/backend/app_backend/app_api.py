@@ -144,7 +144,7 @@ def log_user(user : UserSchema):
         if error:
             return {'message': 'Wrong username or password'}
         else:
-            return {'message': 'success'}
+            return {'message': 'success','user' : user}
             
 if __name__ == "__main__":
     print(add_user(
