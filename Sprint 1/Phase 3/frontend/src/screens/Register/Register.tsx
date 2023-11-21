@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useState} from "react";
 import "./Register.css";
-import { Alert, AlertColor, Button, MenuItem, TextField } from "@mui/material";
+import { Alert, AlertColor, MenuItem, TextField } from "@mui/material";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
@@ -311,11 +311,8 @@ export function Register() {
   return (
     
       
-    <div className="mainLog" >
-      {loginMessage && (<Alert severity={loginMessageType}>
-        {loginMessage}
-      </Alert>)}      
-        
+    <div className="mainRegister" >
+             
           <div className="SignIn">
             <div className="cont-signIn">
               
@@ -329,7 +326,9 @@ export function Register() {
               
               <div className="title-signin">Rejoins-nous !</div>
               
-                
+              {loginMessage && (<Alert severity={loginMessageType}>
+                {loginMessage}
+              </Alert>)} 
 
                   <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom d'utilisateur" variant="outlined" onChange={e => setUsername(e.target.value)}/>
 
@@ -367,8 +366,8 @@ export function Register() {
 
                   <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Confirmer le mot de passe" type="password" variant="outlined" onChange={e => setConfirmPassword(e.target.value)}/>
 
-                <div className="Btn-signin">
-                  <button className="btn-signin" onClick={_handleRegisterRequested}>
+                <div className="Btn-register">
+                  <button className="btn-register" onClick={_handleRegisterRequested}>
                       S'inscrire
                   </button>
                 </div>

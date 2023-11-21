@@ -75,6 +75,10 @@ export function Login() {
       setLoginMessageType("error");
     }
   };
+
+  const handleRegister = () => {
+    navigate("/Register");
+  };
   
 
 
@@ -89,7 +93,7 @@ export function Login() {
                 </div>
                 <Divider />   
                 <div className='Btn-signup'>
-                    <button className='btn-signup'>Créer un compte</button>
+                    <button className='btn-signup' onClick={handleRegister}>Créer un compte</button>
                 </div>
                 <div className='Texts'>
                     <span>

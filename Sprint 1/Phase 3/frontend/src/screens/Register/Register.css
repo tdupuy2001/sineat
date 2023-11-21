@@ -1,4 +1,4 @@
-.mainLog{
+.mainRegister{
     display: flex;
     width: 100%;
     height: 100%;
@@ -50,7 +50,7 @@
   height: auto;
 }
 
-.btn-signin{
+.btn-register{
     height: 100%;
     width: 100%;
     border-radius: 20px ;
@@ -60,13 +60,13 @@
     cursor: pointer;
 }
 
-.Btn-signin{
+.Btn-register{
     height: 40px;
     width: 80%;
     border-radius: 20px ;
 }
 
-.btn-signin:hover{
+.btn-register:hover{
     height: 40px;
     width: 100%;
     border-radius: 20px ;

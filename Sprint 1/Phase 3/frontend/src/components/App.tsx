@@ -8,6 +8,8 @@ import { User } from "../dto/User";
 import { UserService } from "../services/UserService";
 import { config } from '../config';
 import {Register} from '../screens/Register/Register';
+import About from '../screens/About/About';
+import Contact from '../screens/Contact/Contact';
 
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
         <Route path='/login' element={<Login />}/>
         <Route path='/' element={<Main />}/>
         <Route path='/Register' element={<Register />}/>
+        <Route path='/about' element={<About />} />
+        <Route path='/contact' element={<Contact />} />
       </Routes>
     </div>
     </MyBlogContext.Provider>

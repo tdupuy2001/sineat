@@ -3,7 +3,7 @@ import './Contact.css';
 import Img from './assets/SIN-2-NoBG.png';
 import Img1 from './assets/test.png';
 import { Link,  useNavigate } from 'react-router-dom';
-import SearchBar from '../../Utils/searchbar';
+import SearchBar from '../../components/SearchBar/searchbar';
 
 function Contact() {
   const navigate = useNavigate();
