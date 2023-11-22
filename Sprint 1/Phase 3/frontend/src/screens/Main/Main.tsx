@@ -21,8 +21,8 @@ export function Main() {
 
   const { user } = useContext(MyBlogContext);
 
-  const [username,setusername] = useState("null")
-  const [open, setOpen] = useState(true);
+  const [username,setusername] = useState(sessionStorage?.getItem("username"))
+  const [open, setOpen] = useState(false);
 
   const handleList = () => {
     setOpen(!open);
@@ -30,10 +30,10 @@ export function Main() {
 
   const handleLogout = () => {
 
-    // For demonstration purposes, let's reset to the initial state
     setusername("null");
     setIsLoggedIn(false);
-    setOpen(true);
+    setOpen(false);
+    sessionStorage.removeItem("username")
 
   };
 

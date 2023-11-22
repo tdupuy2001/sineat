@@ -32,10 +32,9 @@ export function Register() {
   const login = useCallback(
     (user: User) => {
       context.setUser(user);
-      localStorage.setItem("username", user.username);
       setLoginMessage("");
       setLoginMessageType("info");
-      navigate("/");
+      navigate("/Login");
     },
     [context, navigate]
   );
