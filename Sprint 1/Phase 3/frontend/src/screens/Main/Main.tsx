@@ -91,7 +91,7 @@ export function Main() {
           </div>
           <div className='navItems'>
             <ul className='navlist'>
-              <li><Link className='item current' to="/">Acceuil</Link></li>
+              <li><Link className='item current' to="/">accueil</Link></li>
               <li><Link className='item' to="/map">Notre carte</Link></li>
               <li><Link className='item' to="/news">Fil d'actualité</Link></li>
               <li><Link className='item' to="/about">Qui sommes nous ?</Link></li>

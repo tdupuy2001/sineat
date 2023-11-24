@@ -1,6 +1,6 @@
 .cont-Main{
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background-color: #F2EADF;
     display: flex;
     flex-direction: column;
@@ -29,8 +29,8 @@
 
 
 .logo-nav {
-    width: 200px;
-    height: 80px;
+    width: 20%;
+    height: 10%;
     margin: 0 10px ;
     object-fit: cover; /* this property ensures that the entire image is shown within the div */
 }
