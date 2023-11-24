@@ -7,7 +7,6 @@ import { config } from "../../config";
 import { User } from "../../dto/User";
 import { useNavigate } from "react-router-dom";
 import { UserLogin } from "../../dto/UserLogin";
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 
 export function Register() {
@@ -375,28 +374,17 @@ export function Register() {
                     <span>
                         By continuing , you agree to the <a href="http://">Terms of use</a> and <a href="http://">Privacy policies</a>
                     </span>
-                <div className='privacy'>
-                    <span>
-                        By continuing , you agree to the <a href="http://">Terms of use</a> and <a href="http://">Privacy policies</a>
-                    </span>
                 </div>
                 <div className='last-signin'>
                     <div><a href="http://">Autres problemes</a></div>
                     <div><a href="http://">Mot de passe oublié ?</a></div>
-                <div className='last-signin'>
-                    <div><a href="http://">Autres problemes</a></div>
-                    <div><a href="http://">Mot de passe oublié ?</a></div>
                 </div>
-                 
                  
             </div>
           </div>
         
-        
       
     </div>
-    
-    
     
     
   );
