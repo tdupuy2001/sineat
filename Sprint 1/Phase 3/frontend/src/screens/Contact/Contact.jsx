@@ -3,7 +3,7 @@ import './Contact.css';
 import Img from './assets/SIN-2-NoBG.png';
 import Img1 from './assets/test.png';
 import { Link,  useNavigate } from 'react-router-dom';
-import SearchBar from '../../components/SearchBar/searchbar';
+import SearchBar from '../../components/SearchBar/searchbar'
 
 function Contact() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function Contact() {
           <div className='navItems'>
             <ul className='navlist'>
               <li><Link className='item' to="/">Acceuil</Link></li>
-              <li><Link className='item' to="/menu">Notre carte</Link></li>
+              <li><Link className='item' to="/map">Notre carte</Link></li>
               <li><Link className='item' to="/news">Fil d'actualité</Link></li>
               <li><Link className='item' to="/about">Qui sommes nous ?</Link></li>
               <li><Link className='item current' to="/contact">Contact</Link></li>

@@ -10,6 +10,7 @@ import { config } from '../config';
 import {Register} from '../screens/Register/Register';
 import About from '../screens/About/About';
 import Contact from '../screens/Contact/Contact';
+import Map from '../screens/Map/Map';
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route path='/' element={<Main />}/>
         <Route path='/Register' element={<Register />}/>
         <Route path='/about' element={<About />} />
+        <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
       </Routes>
     </div>
