@@ -1,0 +1,10 @@
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('1','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('2','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('3','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('4','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('5','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('6','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('7','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('8','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('9','1');
+INSERT INTO regime_etablissement (id_etablissement,id_regime) VALUES ('10','1');
