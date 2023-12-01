@@ -275,21 +275,21 @@ export function Register() {
             setLoginMessageType("error");
           } else {
             if (validatePasswords()) {
-              if (username && password && email && dateDeNaissance && langue) {
+              if (username && password && email && langue) {
                 const userService = new UserService(config.API_URL);
                 const user: UserLogin = {
                   username: username,
                   password: password,
                   role: "",
                   email: email,
-                  prenom: prenom,
-                  nom: nom,
+                  prenom: "",
+                  nom: "",
                   langue: langue,
-                  description: description,
-                  adresse: adresse,
+                  description: "",
+                  adresse: "",
 
-                  date_de_naissance: dateDeNaissance,
-                  genre: genre ?? ""
+                  date_de_naissance: "",
+                  genre: ""
                 }
                 userService.addUser(user).then((u) => {
                   if (u.data) {
@@ -333,7 +333,7 @@ export function Register() {
 
                   <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Email" variant="outlined" onChange={e => setEmail(e.target.value)}/>
               
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Prénom" variant="outlined" onChange={e => setPrenom(e.target.value)}/>
+                  {/* <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Prénom" variant="outlined" onChange={e => setPrenom(e.target.value)}/>
                 
                   <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Nom de famille" variant="outlined" onChange={e => setNom(e.target.value)}/>
 
@@ -349,7 +349,7 @@ export function Register() {
                         {option.label}
                       </MenuItem>
                     ))}
-                  </TextField>
+                  </TextField> */}
                 
                   <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Langue" variant="outlined" select defaultValue="Non précisé" onChange={e => setLangue(e.target.value)}>
                     {langues.map((option)=> (
@@ -359,7 +359,7 @@ export function Register() {
                     ))}
                   </TextField>    
 
-                  <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Description" variant="outlined" onChange={e => setDescription(e.target.value)}/>
+                  {/* <TextField className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Description" variant="outlined" onChange={e => setDescription(e.target.value)}/> */}
 
                   <TextField required className="text-field" sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Mot de passe" type="password" variant="outlined" onChange={e => setPassword(e.target.value)}/>
 
