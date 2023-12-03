@@ -33,7 +33,7 @@ create table "user" (
   role text not null default 'user',
   nom text,
   prenom text,
-  date_de_naissance date not null,
+  date_de_naissance text,
   genre text,
   email text not null,
   adresse text,
