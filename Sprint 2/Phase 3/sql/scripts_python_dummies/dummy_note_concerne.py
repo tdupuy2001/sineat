@@ -7,7 +7,7 @@ fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
 historique=[]
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
 TABLE_NAME = "note_concerne";

@@ -1,12 +1,12 @@
 import faker 
 import random
-from dummy_etablissement import DUMMY_DATA_NUMBER as nb_etablissement
 from dummy_type_etablissement import DATA_NUMBER as nb_type
+from utils import nb_etablissement
 
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 historique=[]
 
 TABLE_NAME = "etablissement_de_type";
