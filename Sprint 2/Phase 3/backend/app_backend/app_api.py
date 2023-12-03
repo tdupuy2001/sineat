@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -52,11 +52,27 @@ class UserSchema(BaseModel):
     adresse: str = ""
     description: str = ""
 
+class PostSchema(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    id_user: int
+    date: str
+    type: str
+    afficher: bool
+    """
+    Les attributs facultatifs
+    """
+    text: str = ""
+    id_note: int = None
+    id_post_comm: int = None
+
+
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection
+from .db_mapping import User, Collection, Post
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -145,6 +161,65 @@ def log_user(user : UserSchema):
             return {'message': 'Wrong username or password'}
         else:
             return {'message': 'success','user' : user}
+        
+"""
+Api pour post
+"""
+
+@app.get("/posts")
+def get_posts():
+    with Session(db.engine) as session:
+        posts = session.query(Post).all()
+        return posts
+
+
+# @app.post("/posts")
+# def add_post(post: Post):
+#     with Session(db.engine) as session:
+#         new_post = Post(
+#             text = post.text,
+#             id_user = post.id_user,
+#             date = post.date,
+#             type = post.type,
+#             afficher = post.aficher,
+#             id_note = post.id_note,
+#             id_post_comm = post.id_post_comm,
+#         )
+#         session.add(new_post)
+#         session.commit()
+#         session.refresh(new_post)
+#         return new_post
+
+
+# @app.put("/posts")
+# def put_post(post: Post):
+#     with Session(db.engine) as session:
+#         stm = select(Post).where(
+#             Post.id == post.id
+#         )
+#         res = session.execute(stm)
+#         found_post = res.scalar()
+#         found_post.title = post.title
+#         found_post.body = post.body
+#         session.commit()
+#         return found_post
+
+
+# @app.delete("/posts/{postId}")
+# def delete_post(postId: str):
+#     with Session(db.engine) as session:
+#         stm = select(Post).where(
+#             Post.id == postId
+#         )
+#         res = session.execute(stm)
+#         found_post = res.scalar()
+#         if found_post is not None:
+#             session.delete(found_post)
+#             session.commit()
+#         else:
+#             raise HTTPException(404, "Post not found")
+
+
             
 if __name__ == "__main__":
     print(add_user(
