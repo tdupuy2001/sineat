@@ -4,10 +4,8 @@ import { Alert, AlertColor, MenuItem, TextField } from "@mui/material";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
-import { User } from "../../dto/User";
 import { useNavigate } from "react-router-dom";
-import { UserLogin } from "../../dto/UserLogin";
-
+import { User } from "../../dto/User";
 
 export function Register() {
   const context = useContext(MyBlogContext);
@@ -263,7 +261,7 @@ export function Register() {
 
 
   const _handleRegisterRequested = () => {
-    if (!username || !password || !email || !dateDeNaissance || !langue) {
+    if (!username || !password || !email || !langue) {
       setLoginMessage("Veuillez remplir tous les champs obligatoires.");
       setLoginMessageType("error");
     } else {
@@ -277,7 +275,7 @@ export function Register() {
             if (validatePasswords()) {
               if (username && password && email && langue) {
                 const userService = new UserService(config.API_URL);
-                const user: UserLogin = {
+                const user: User = {
                   username: username,
                   password: password,
                   role: "",

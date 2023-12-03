@@ -2,7 +2,6 @@ import React, {useCallback, useContext, useState} from "react";
 import { Alert, AlertColor, TextField } from "@mui/material";
 import { MyBlogContext } from "../../MyBlogContext";
 import { useNavigate } from "react-router-dom";
-import { User } from "../../dto/User";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
 
@@ -20,6 +19,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { User } from "../../dto/User";
 
 export function Login() {
 

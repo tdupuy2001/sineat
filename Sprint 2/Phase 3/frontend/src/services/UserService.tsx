@@ -1,6 +1,5 @@
 import axios, {AxiosInstance} from 'axios'
 import { User } from '../dto/User';
-import { UserLogin } from '../dto/UserLogin';
 
 export class UserService {
 
@@ -11,7 +10,7 @@ export class UserService {
         this.axiosInstance = axios.create({baseURL: this.apiUrl})
     }
 
-    addUser(user:UserLogin) {
+    addUser(user:User) {
         console.log(user)
         return this.axiosInstance.post<User>('/register', user);
     }
@@ -32,7 +31,7 @@ export class UserService {
         return this.axiosInstance.delete<void>('/users/'+username)
     }
 
-    log_user(user: UserLogin) {
+    log_user(user: User) {
         return this.axiosInstance.post<User>('/login_check', user);
     }
 }

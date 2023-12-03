@@ -39,13 +39,13 @@ class UserSchema(BaseModel):
     """
     username : str
     role : str
-    date_de_naissance : str
     email : str
     password : str
     langue : str
     """
     Les attributs facultatifs
     """
+    date_de_naissance : str = ""
     nom: str = ""
     prenom: str = ""
     genre: str = ""
