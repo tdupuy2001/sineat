@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
@@ -56,6 +57,7 @@ class PostSchema(BaseModel):
     """
     Les attributs obligatoires
     """
+    id_post: Optional[int] = None
     id_user: int
     date: str
     type: str
@@ -173,51 +175,52 @@ def get_posts():
         return posts
 
 
-# @app.post("/posts")
-# def add_post(post: Post):
-#     with Session(db.engine) as session:
-#         new_post = Post(
-#             text = post.text,
-#             id_user = post.id_user,
-#             date = post.date,
-#             type = post.type,
-#             afficher = post.aficher,
-#             id_note = post.id_note,
-#             id_post_comm = post.id_post_comm,
-#         )
-#         session.add(new_post)
-#         session.commit()
-#         session.refresh(new_post)
-#         return new_post
+@app.post("/posts")
+def add_post(post: PostSchema):
+    with Session(db.engine) as session:
+        new_post = Post(
+            text = post.text,
+            id_user = post.id_user,
+            date = post.date,
+            type = post.type,
+            afficher = post.afficher,
+            id_note = post.id_note,
+            id_post_comm = post.id_post_comm,
+        )
+        session.add(new_post)
+        session.commit()
+        session.refresh(new_post)
+        return new_post
+
+@app.put("/posts/{id_post}")
+def put_post(id_post: int, post: PostSchema):
+    with Session(db.engine) as session:
+        stm = select(Post).where(
+            Post.id_post == id_post
+        )
+        res = session.execute(stm)
+        found_post = res.scalar()
+        if found_post is None:
+            raise HTTPException(status_code=404, detail="Post not found")
+        found_post.text = post.text
+        session.commit()
+        session.refresh(found_post)
+        return found_post
 
 
-# @app.put("/posts")
-# def put_post(post: Post):
-#     with Session(db.engine) as session:
-#         stm = select(Post).where(
-#             Post.id == post.id
-#         )
-#         res = session.execute(stm)
-#         found_post = res.scalar()
-#         found_post.title = post.title
-#         found_post.body = post.body
-#         session.commit()
-#         return found_post
-
-
-# @app.delete("/posts/{postId}")
-# def delete_post(postId: str):
-#     with Session(db.engine) as session:
-#         stm = select(Post).where(
-#             Post.id == postId
-#         )
-#         res = session.execute(stm)
-#         found_post = res.scalar()
-#         if found_post is not None:
-#             session.delete(found_post)
-#             session.commit()
-#         else:
-#             raise HTTPException(404, "Post not found")
+@app.delete("/posts/{id_post}")
+def delete_post(id_post: int):
+    with Session(db.engine) as session:
+        stm = select(Post).where(
+            Post.id_post == id_post
+        )
+        res = session.execute(stm)
+        found_post = res.scalar()
+        if found_post is not None:
+            session.delete(found_post)
+            session.commit()
+        else:
+            raise HTTPException(404, "Post not found")
 
 
             
