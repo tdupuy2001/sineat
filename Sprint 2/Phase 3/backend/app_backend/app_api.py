@@ -64,7 +64,7 @@ class PostSchema(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole
+from .db_mapping import User, Collection, PossedeRole, Post
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
