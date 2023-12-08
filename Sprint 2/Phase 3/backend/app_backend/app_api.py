@@ -172,13 +172,19 @@ def get_posts():
     with Session(db.engine) as session:
         posts = session.query(Post).all()
         return posts
-    
+
 
 @app.get("/posts/{id_post}")
 def get_post(id_post: int):
+    error = False
     with Session(db.engine) as session:
         post = find_post(id_post=id_post, session=session)
-        return post
+        if post == None:
+            error = True
+        if error:
+            return {'message': 'Post not found'}
+        else:
+            return post
 
 
 @app.post("/posts")
