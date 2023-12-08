@@ -160,11 +160,25 @@ def log_user(user : UserSchema):
 Api pour post
 """
 
+def find_post(id_post: int, session:Session):
+    order = select(Post).where(Post.id_post == id_post)
+    result = session.execute(order)
+    found_post = result.scalar()
+    return(found_post)
+
+
 @app.get("/posts")
 def get_posts():
     with Session(db.engine) as session:
         posts = session.query(Post).all()
         return posts
+    
+
+@app.get("/posts/{id_post}")
+def get_post(id_post: int):
+    with Session(db.engine) as session:
+        post = find_post(id_post=id_post, session=session)
+        return post
 
 
 @app.post("/posts")
@@ -183,6 +197,7 @@ def add_post(post: PostSchema):
         session.commit()
         session.refresh(new_post)
         return new_post
+
 
 @app.put("/posts/{id_post}")
 def put_post(id_post: int, post: PostSchema):
