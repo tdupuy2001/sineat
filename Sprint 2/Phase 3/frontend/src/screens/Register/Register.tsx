@@ -278,16 +278,16 @@ export function Register() {
                 const user: User = {
                   username: username,
                   password: password,
-                  role: "",
+                  // role: "",
                   email: email,
-                  prenom: "",
-                  nom: "",
+                  // prenom: "",
+                  // nom: "",
                   langue: langue,
-                  description: "",
-                  adresse: "",
+                  // description: "",
+                  // adresse: "",
 
-                  date_de_naissance: "",
-                  genre: ""
+                  // date_de_naissance: "",
+                  // genre: ""
                 }
                 userService.addUser(user).then((u) => {
                   if (u.data) {

@@ -39,6 +39,8 @@ RegimeDeLUser = None
 TypeEtablissement = None
 TypeNote = None
 User = None
+Role = None
+PossedeRole = None
 
 class DBAcces:
     def __init__(self, db_name: str, recreate: bool):
@@ -64,7 +66,9 @@ class DBAcces:
             'regimes_de_l_user': 'RegimeDeLUser',
             'type_etablissement': 'TypeEtablissement',
             'type_note': 'TypeNote',
-            'user': 'User'
+            'user': 'User',
+            'role': 'Role',
+            'possede_role': 'PossedeRole'
         }
         relation_map = {
              'User=>User(user2_fk)': 'est_abonnee_a',
@@ -222,6 +226,18 @@ class DBAcces:
             def __str__(self):
                 return f"RegimeDeLUser({self.id_user},{self.id_regime})"
             
+        class Role(Base):
+            __tablename__ = 'role'
+
+            def __str__(self):
+                return f"Role({self.nom})"
+            
+        class PossedeRole(Base):
+            __tablename__ = 'possede_role'
+
+            def __str__(self):
+                return f"RoleDeLUser({self.nom_role},{self.id_user})"
+            
         def map_names(type, orig_func):
             """fonction d'aide à la mise en correspondance"""
             def _map_names(base, local_cls, referred_cls, constraint):
@@ -249,8 +265,8 @@ class DBAcces:
         # On rend les tables du modèle globales à ce module
         for cls in [
             User, Post, Collection, ContenuCollection,RegimeDeLUser,
-            Note, Abonnement, Etablissement,
-            EtablissementDeType, TypeEtablissement,
+            Note, Abonnement, Etablissement, Role,
+            EtablissementDeType, TypeEtablissement, PossedeRole,
             LikedCollection, LikedPost, MotCle, MotClePost,
             NoteConcerne, TypeNote, Regime, RegimeEtablissement,
             ]:

@@ -1,7 +1,6 @@
 export interface User {
     username: string;
-    role:string;
-    date_de_naissance?:string;
+    date_de_naissance?:Date;
     email:string;
     password: string;
     langue:string;

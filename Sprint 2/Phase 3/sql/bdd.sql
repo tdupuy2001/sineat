@@ -3,7 +3,7 @@
 -- -----------------------------------------------------
 
 drop table if exists abonnement cascade;
-drop table if exists collection cascade;
+drop table if exists "collection" cascade;
 drop table if exists contenu_collection cascade;
 -- drop table if exists enregistrement_post cascade;
 -- drop table if exists est_commentaire_de cascade;
@@ -22,6 +22,9 @@ drop table if exists regimes_de_l_user cascade;
 drop table if exists type_etablissement cascade;
 drop table if exists type_note cascade;
 drop table if exists "user" cascade;
+drop table if exists "role" cascade;
+drop table if exists possede_role cascade;
+
 
 -- -----------------------------------------------------
 -- Table user
@@ -30,10 +33,9 @@ drop table if exists "user" cascade;
 create table "user" (
   id_user serial primary key,
   username text not null,
-  role text not null default 'user',
   nom text,
   prenom text,
-  date_de_naissance text,
+  date_de_naissance date,
   genre text,
   email text not null,
   adresse text,
@@ -41,7 +43,7 @@ create table "user" (
   salt text not null,
   ppbin bytea,
   ppform text,
-  langue text not null,
+  langue text default 'Français',
   description text,
   constraint avatar check (
     (ppbin is null and ppform is null)
@@ -57,10 +59,20 @@ create table "user" (
 
 create table etablissement (
   id_etablissement serial primary key,
-  adresse text not null,
+  code_postal int not null,
+  ville text not null,
+  rue text not null,
+  numero_rue int not null,
   nom text not null,
-  approved boolean default false,
-  description text
+  date_ajout date default current_date,
+  description text,
+  id_user_approved int,
+  constraint approvement
+    foreign key (id_user_approved)
+    references "user" (id_user)
+    on delete cascade
+    on update cascade
+  
 );
 
 
@@ -120,6 +132,40 @@ create table post (
 );
 
 
+
+-- -----------------------------------------------------
+-- Table role
+-- -----------------------------------------------------
+
+create table "role" (
+  nom text not null,
+  primary key (nom)
+);
+
+
+
+-- -----------------------------------------------------
+-- Table possede_role
+-- -----------------------------------------------------
+
+create table  possede_role (
+  nom_role text not null,
+  id_user int not null,
+  primary key (id_user,nom_role),
+  constraint user_fk
+    foreign key (id_user)
+    references "user" (id_user)
+    on delete cascade
+    on update cascade,
+  constraint role_fk
+    foreign key (nom_role)
+    references "role" (nom)
+    on delete cascade
+    on update cascade
+);
+
+
+
 -- -----------------------------------------------------
 -- Table type_etablissement
 -- -----------------------------------------------------
@@ -167,12 +213,12 @@ create table abonnement (
 
 create table "collection" (
   id_collection serial primary key,
-  id_user int not null,
+  id_creator int not null,
   nom text not null,
   is_all_saves boolean default false,
   public boolean not null default true,
   constraint user_create_collection_fk
-    foreign key (id_user)
+    foreign key (id_creator)
     references "user" (id_user) 
     on delete cascade
     on update cascade
