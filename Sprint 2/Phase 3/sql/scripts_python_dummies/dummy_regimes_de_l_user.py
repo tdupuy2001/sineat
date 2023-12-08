@@ -6,7 +6,7 @@ from dummy_regime import DATA_NUMBER as nb_regime
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 historique=[]
 
 TABLE_NAME = "regimes_de_l_user";
@@ -26,8 +26,8 @@ for i in range(1,nb_user+1):
 #    while [user,regime_user] in historique:
 #        user=random.randint(1,nb_user)
 #        regime_user=random.randint(1,nb_regime)
-#    historique.append([i,regime_user]) 
-#    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES ("{user}","{regime_user}");\n'
+#    historique.append([user,regime_user]) 
+#    content += f'INSERT INTO {TABLE_NAME} ({",".join(TABLE_COLUMNS)}) VALUES (\'{user}\',\'{regime_user}\');\n'
 
 if __name__=="__main__":
     with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:

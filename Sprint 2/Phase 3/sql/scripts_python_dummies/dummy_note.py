@@ -1,11 +1,11 @@
 import faker 
 import random
 from dummy_user import DUMMY_DATA_NUMBER as nb_user
-from dummy_etablissement import DUMMY_DATA_NUMBER as nb_etablissement
+from utils import nb_etablissement
 
 fake = faker.Faker(["fr_FR"])
 
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 50;
 TABLE_NAME = "note";

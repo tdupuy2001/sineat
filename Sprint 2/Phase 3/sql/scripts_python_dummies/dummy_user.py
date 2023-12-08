@@ -5,21 +5,19 @@ import random
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-roles=['admin','user']
 genres=['homme','femme','']
 langues= ["Mandarin", "Espagnol", "Anglais", "Hindi", "Arabe"]
 ppforms=['JPG','PNG']
 taille_binaire=50
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 #user creation
 DUMMY_DATA_NUMBER = 300;
 TABLE_NAME = "\"user\"";
-TABLE_COLUMNS = ["username","role","nom","prenom","date_de_naissance","genre","email","adresse","password","salt","ppbin","ppform","langue","description"]
+TABLE_COLUMNS = ["username","nom","prenom","date_de_naissance","genre","email","adresse","password","salt","ppbin","ppform","langue","description"]
 content = "";
 
 for _ in range(DUMMY_DATA_NUMBER):
-    role=roles[random.randint(0,len(roles)-1)]
     prenom = fake.first_name()
     nom = fake.last_name()
     username=prenom[0]+nom
@@ -33,7 +31,7 @@ for _ in range(DUMMY_DATA_NUMBER):
     ppform=ppforms[random.randint(0,len(ppforms)-1)]
     ppbin=create_ppbin(taille_binaire)
     description=fake.paragraph(nb_sentences=3, variable_nb_sentences=False).replace("'","")
-    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{username}\',\'{role}\',\'{nom}\',\'{prenom}\',\'{date_de_naissance}\',\'{genre}\',\'{email}\',\'{adresse}\',\'{password}\',\'{salt}\',\'{ppbin}\',\'{ppform}\',\'{langue}\',\'{description}\');\n"
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{username}\',\'{nom}\',\'{prenom}\',\'{date_de_naissance}\',\'{genre}\',\'{email}\',\'{adresse}\',\'{password}\',\'{salt}\',\'{ppbin}\',\'{ppform}\',\'{langue}\',\'{description}\');\n"
 
 
 if __name__=="__main__":

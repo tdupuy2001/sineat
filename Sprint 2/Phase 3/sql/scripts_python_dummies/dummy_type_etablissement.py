@@ -4,7 +4,7 @@ fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
 noms=["restaurant","bar","magasin"]
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DATA_NUMBER = len(noms);
 TABLE_NAME = "type_etablissement";

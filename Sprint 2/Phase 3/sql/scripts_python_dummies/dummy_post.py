@@ -8,7 +8,7 @@ fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
 types=["commentaire","recette","post","commentaire_resto"]
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
 TABLE_NAME = "post";
@@ -17,7 +17,8 @@ content = "";
 
 for i in range(DUMMY_DATA_NUMBER):
     id_user=random.randint(1,nb_user)
-    id_note=random.randint(1,nb_note)
+    #id_note=random.choice([random.randint(1,nb_note),"null"])
+    id_note="null"
     text=fake.paragraph(nb_sentences=2, variable_nb_sentences=False).replace("'","")
     date=fake.date_between(datetime.date(2015, 9, 1), datetime.date(2023, 10, 27))
     type_=types[random.randint(0,len(types)-1)]
@@ -29,7 +30,7 @@ for i in range(DUMMY_DATA_NUMBER):
         afficher=random.choice(["true","false"])
     else:
         afficher = "true"
-    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_user}\',\'{text}\',\'{date}\',\'{type_}\',{afficher},\'{id_note}\',{id_post_comm});\n"
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_user}\',\'{text}\',\'{date}\',\'{type_}\',{afficher},{id_note},{id_post_comm});\n"
 
 
 with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:
