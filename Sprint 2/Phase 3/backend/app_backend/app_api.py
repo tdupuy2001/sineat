@@ -38,25 +38,15 @@ class UserSchema(BaseModel):
     Les attributs obligatoires
     """
     username : str
-    role : str
     email : str
     password : str
     langue : str
-    """
-    Les attributs facultatifs
-    """
-    date_de_naissance : str = ""
-    nom: str = ""
-    prenom: str = ""
-    genre: str = ""
-    adresse: str = ""
-    description: str = ""
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection
+from .db_mapping import User, Collection, PossedeRole
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -102,17 +92,10 @@ def add_user(user: UserSchema):
             hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), user_salt)
             new_user = User(
                 username = user.username,
-                role = "user",
-                date_de_naissance = user.date_de_naissance,
                 email = user.email,
                 password = hashed_password.decode('utf-8'),
                 salt = user_salt.decode('utf-8'),
                 langue = user.langue,
-                adresse = user.adresse,
-                nom = user.nom,
-                prenom = user.prenom,
-                genre = user.genre,
-                description = user.description
             )
             session.add(new_user)
             session.commit()
@@ -121,14 +104,23 @@ def add_user(user: UserSchema):
             user_id = session.query(User).filter_by(username=user.username).first().id_user
             
             new_collection = Collection(
-                id_user = user_id,
+                id_creator = user_id,
                 nom = 'all saves',
                 is_all_saves = True
+            )
+            
+            new_role = PossedeRole(
+                nom_role = 'user',
+                id_user = user_id
             )
             
             session.add(new_collection)
             session.commit()
             session.refresh(new_collection)
+            
+            session.add(new_role)
+            session.commit()
+            session.refresh(new_role)
             return new_user
 
 
