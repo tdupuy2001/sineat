@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from typing import Optional
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -42,11 +43,28 @@ class UserSchema(BaseModel):
     password : str
     langue : str
 
+class PostSchema(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    id_post: Optional[int] = None
+    id_user: int
+    date: str
+    type: str
+    afficher: bool
+    """
+    Les attributs facultatifs
+    """
+    text: str = ""
+    id_note: int = None
+    id_post_comm: int = None
+
+
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole
+from .db_mapping import User, Collection, PossedeRole, Post
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -137,6 +155,87 @@ def log_user(user : UserSchema):
             return {'message': 'Wrong username or password'}
         else:
             return {'message': 'success','user' : user}
+        
+"""
+Api pour post
+"""
+
+def find_post(id_post: int, session:Session):
+    order = select(Post).where(Post.id_post == id_post)
+    result = session.execute(order)
+    found_post = result.scalar()
+    return(found_post)
+
+
+@app.get("/posts")
+def get_posts():
+    with Session(db.engine) as session:
+        posts = session.query(Post).all()
+        return posts
+
+
+@app.get("/posts/{id_post}")
+def get_post(id_post: int):
+    error = False
+    with Session(db.engine) as session:
+        post = find_post(id_post=id_post, session=session)
+        if post == None:
+            error = True
+        if error:
+            return {'message': 'Post not found'}
+        else:
+            return post
+
+
+@app.post("/posts")
+def add_post(post: PostSchema):
+    with Session(db.engine) as session:
+        new_post = Post(
+            text = post.text,
+            id_user = post.id_user,
+            date = post.date,
+            type = post.type,
+            afficher = post.afficher,
+            id_note = post.id_note,
+            id_post_comm = post.id_post_comm,
+        )
+        session.add(new_post)
+        session.commit()
+        session.refresh(new_post)
+        return new_post
+
+
+@app.put("/posts/{id_post}")
+def put_post(id_post: int, post: PostSchema):
+    with Session(db.engine) as session:
+        stm = select(Post).where(
+            Post.id_post == id_post
+        )
+        res = session.execute(stm)
+        found_post = res.scalar()
+        if found_post is None:
+            raise HTTPException(status_code=404, detail="Post not found")
+        found_post.text = post.text
+        session.commit()
+        session.refresh(found_post)
+        return found_post
+
+
+@app.delete("/posts/{id_post}")
+def delete_post(id_post: int):
+    with Session(db.engine) as session:
+        stm = select(Post).where(
+            Post.id_post == id_post
+        )
+        res = session.execute(stm)
+        found_post = res.scalar()
+        if found_post is not None:
+            session.delete(found_post)
+            session.commit()
+        else:
+            raise HTTPException(404, "Post not found")
+
+
             
 if __name__ == "__main__":
     print(add_user(
