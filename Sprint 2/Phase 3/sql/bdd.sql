@@ -43,7 +43,7 @@ create table "user" (
   salt text not null,
   ppbin bytea,
   ppform text,
-  langue text not null,
+  langue text default 'Français',
   description text,
   constraint avatar check (
     (ppbin is null and ppform is null)
