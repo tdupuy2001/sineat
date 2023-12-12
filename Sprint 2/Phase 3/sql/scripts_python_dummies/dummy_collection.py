@@ -4,11 +4,11 @@ from dummy_user import DUMMY_DATA_NUMBER as nb_user
 
 fake = faker.Faker(["fr_FR"])
 
-chemin="Sprint 1/Phase 3/sql/bases_sql/"
+chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100
 TABLE_NAME = "\"collection\""
-TABLE_COLUMNS = ['nom','id_user','"public"','is_all_saves']
+TABLE_COLUMNS = ['nom','id_creator','"public"','is_all_saves']
 content = ""
 
 for i in range(DUMMY_DATA_NUMBER):

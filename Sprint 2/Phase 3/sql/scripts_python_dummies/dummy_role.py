@@ -3,13 +3,13 @@ import faker
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-noms=["sans gluten","ambiance"]
+noms=["user","admin"]
 chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
-DATA_NUMBER = len(noms);
-TABLE_NAME = "type_note";
+DATA_NUMBER = len(noms)
+TABLE_NAME = "\"role\""
 TABLE_COLUMNS = ['nom']
-content = "";
+content = ""
 
 for i in range(DATA_NUMBER):
     nom=noms[i]
