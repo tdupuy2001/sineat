@@ -12,6 +12,7 @@ import Contact from '../screens/Contact/Contact';
 import Map from '../screens/Map/Map';
 import { User } from '../dto/User';
 import Navbar from './Navbar/Navbar';
+import {News} from '../screens/News/News';
 
 
 
@@ -43,6 +44,7 @@ function App() {
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/*' element={<Navbar/>} />
+        <Route path='/news' element={<News/>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>
