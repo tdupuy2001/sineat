@@ -1,0 +1,26 @@
+.footer-main {
+    width: 100%;
+    height: auto;
+    background-color: #F2EADF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    color: #602A0F;
+    font-family: Courier New, sans-serif;
+  }
+  
+  .footer-content {
+    width: 80%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .footer-content p {
+    margin: 0;
+    font-size: 14px;
+  }
+  

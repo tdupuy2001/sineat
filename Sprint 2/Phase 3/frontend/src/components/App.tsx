@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState, useEffect } from "react";
 import { Route, Routes } from 'react-router-dom';
 import {Login}  from '../screens/Login/Login';
-import {Main } from '../screens/Main/Main';
+import Main from '../screens/Main/Main';
 import { MyBlogContext } from '../MyBlogContext';
 import { User } from "../dto/User";
 import { UserService } from "../services/UserService";
@@ -11,6 +11,8 @@ import {Register} from '../screens/Register/Register';
 import About from '../screens/About/About';
 import Contact from '../screens/Contact/Contact';
 import Map from '../screens/Map/Map';
+import Navbar from './Navbar/Navbar';
+
 
 
 function App() {
@@ -30,6 +32,7 @@ function App() {
   }, []);
 
   return (
+    
     <MyBlogContext.Provider value={{ user, setUser }}>
     <div>
       <Routes>
@@ -39,6 +42,7 @@ function App() {
         <Route path='/about' element={<About />} />
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
+        <Route path='/*' element={<Navbar/>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>
