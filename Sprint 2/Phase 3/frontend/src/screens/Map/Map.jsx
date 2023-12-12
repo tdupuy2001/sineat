@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from '../../components/Navbar/Navbar'; // Ajoutez cette ligne pour importer le composant Navbar
 import './Map.css';
 import Img from './assets/SIN-2-NoBG.png';
 import { Link,  useNavigate } from 'react-router-dom';
@@ -22,24 +23,7 @@ function Map() {
 
   return (
     <div className='cont-Main'>
-      <div className='navbar'>
-        <img src={Img} alt="Img-logo" className='logo-nav' />
-        <div className='navbar-main'>
-          <div className='search-login'>
-          <SearchBar />
-            <button className='btn-login' onClick={handleLogin}>Se connecter</button>
-          </div>
-          <div className='navItems'>
-            <ul className='navlist'>
-              <li><Link className='item' to="/">Accueil</Link></li>
-              <li><Link className='item current' to="/map">Notre carte</Link></li>
-              <li><Link className='item' to="/news">Fil d'actualité</Link></li>
-              <li><Link className='item' to="/about">Qui sommes nous ?</Link></li>
-              <li><Link className='item' to="/contact">Contact</Link></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <Navbar />
       <div className='content-map'>
         <div className='restau-side'>
           <div className='filter-cont'>

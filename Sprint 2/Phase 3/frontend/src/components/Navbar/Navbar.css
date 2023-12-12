@@ -1,0 +1,142 @@
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F2EADF;
+    padding: 10px 40px;
+  }
+
+  nav.fixed-navbar {
+    position: fixed;
+    width: 96%;
+    top: 0;
+    z-index: 1000;
+    background-color: #F2EADF;
+    padding: 10px 40px;
+    margin-bottom: 20px;
+  }
+  
+  .logo img {
+    width: 150px;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin-right: 40px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #602A0F;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-links a.active,
+  .nav-links a:hover {
+      color: #8B4513 !important;
+      font-weight: bold;
+  }
+  
+  .login-button button {
+    background-color: #602A0F;
+    color: #FAF6F1;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  .login-button button:hover {
+    background-color: #8B4513;
+    color: white;
+  }
+
+  /* Styles pour les écrans plus petits (par exemple, moins de 600px) */
+  
+  @media only screen and (max-width: 600px) {
+    .nav-links {
+      flex-direction: column; /* Mettez les éléments de la barre de navigation en colonne */
+      align-items: center; /* Centrez les éléments horizontalement */
+    }
+  
+    .nav-links li {
+      margin-right: 0; /* Ajustez la marge entre les éléments de la barre de navigation */
+      margin-bottom: 10px; /* Ajoutez un espacement entre les éléments en mode colonne */
+    }
+  
+    .search-bar {
+      display: flex;
+      flex-direction: column; /* Mettez les éléments de la barre de recherche en colonne */
+    }
+  
+    input[type="text"] {
+      width: 100%; /* Remplissez la largeur de la barre de recherche */
+      margin-bottom: 10px; /* Ajoutez un espacement entre la barre de recherche et les boutons */
+    }
+  
+    button {
+      width: 100%; /* Remplissez la largeur du bouton de recherche */
+    }
+  }
+  .profile-link {
+    text-decoration: none;
+    color: #602A0F;
+    font-size: 16px;
+    display: flex;
+    align-items: right;
+    font-weight: bold;
+    margin-right: 40px;
+  }
+  
+  .profile-link:hover {
+    color: #8B4513;
+  }
+  
+  .user-info img {
+    width: 40px; /* Ajustez la taille de l'image de profil */
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px; /* Ajoutez une marge entre l'image de profil et le lien du profil */
+  }
+
+  .profile {
+    text-decoration: none;
+    color: #602A0F;
+    font-size: 16px;
+    display: flex;
+    align-items: right;
+    margin-right: 40px;
+  }
+  
+/* Commentez les styles pour la barre de recherche
+.search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input {
+  padding: 8px;
+  margin-right: 8px;
+  border: 1px solid #602A0F;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  background-color: #602A0F;
+  color: #FAF6F1;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.search-bar button:hover {
+  background-color: #8B4513;
+}
+*/
