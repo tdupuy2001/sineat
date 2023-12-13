@@ -235,6 +235,7 @@ def delete_post(id_post: int):
         else:
             raise HTTPException(404, "Post not found")
 
+#ajouter une api pour récupérer les commentaires d'un post
 
             
 if __name__ == "__main__":

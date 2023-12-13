@@ -1,0 +1,26 @@
+.post-border-test {
+    border: 1px solid #000;
+    border-radius: 10 px;
+    padding: 20px;
+}
+
+.post-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.post-text {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+div[data-grid] {
+    border: 1px solid black;
+    margin-left: 1.5%;
+    padding: auto;
+}
+
+.post-border {
+    margin-left: 10%;
+    margin-right: 10%;
+}
