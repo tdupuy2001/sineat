@@ -7,7 +7,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Dans le dossier ./frontend, faites ces commandes pour télécharger les modules:
 
 ### `npm install axios`
-### `npm install @mui/material @emotion/react @emotion/styled @mui/icons-material react-leaflet`
+### `npm install @mui/material @emotion/react @emotion/styled @mui/icons-material react-leaflet axios react-router-dom`
 ### `npm install react-router-dom`
 
 Puis pour lancer:
