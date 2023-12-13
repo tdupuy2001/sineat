@@ -44,7 +44,7 @@ function App() {
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/*' element={<Navbar/>} />
-        <Route path='/Profile' element={<Profile/>}></Route>
+        <Route path="/profile/:usernameLink" element={<Profile/>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>

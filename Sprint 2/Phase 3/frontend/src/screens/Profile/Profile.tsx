@@ -1,9 +1,12 @@
 import React, {useCallback, useContext, useState} from "react";
 import { Alert, AlertColor, TextField } from "@mui/material";
 import { MyBlogContext } from "../../MyBlogContext";
-import { useNavigate } from "react-router-dom";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
+import { NavLink, useNavigate } from 'react-router-dom';
+import Navbar from '../../components/Navbar/Navbar';
+import Footer from '../../components/Footer/Footer';
+import { useParams } from 'react-router-dom';
 
 import Divider from '../../components/Divider/Divider'
 
@@ -71,75 +74,61 @@ export function Profile() {
     }
   };
 
-  const handleRegister = () => {
-    navigate("/Register");
-  };
-  
+
+  const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user 
 
 
 
   
   return (
-    <div className='mainLog'>
-        <div className='SignUp'>
-            <div className='ContSignUp'>
-                <div className='Img-signup'>
-                    {/* <img src={SignUpImg} alt="SignUpImg" /> */}
-                </div>
-                <Divider />   
-                <div className='Btn-signup'>
-                    <button className='btn-signup' onClick={handleRegister}>Créer un compte</button>
-                </div>
-                <div className='Texts'>
-                    <span>
-                    SINEAT , LE PARTENAIRE DE VOTRE ALIMENTAIRE GLUTEN FREE
-                    </span>
-                </div>
+    
+    <div>
+      <Navbar />
+      <div className="accueil-container">
+        <div className="two-columns">
+          <div className="column">
+            <div className="image-grid">
+              {/* <img src={imageList[currentImageIndex1]} alt="Current Image" /> */}
+              {/* <img src={imageList[currentImageIndex2]} alt="Current Image" /> */}
             </div>
-        </div>
-        <div className='SignIn'>
-            <div className='cont-signIn'>
-                {/* <img src={SigninImg} alt="SigninImg" className='Img-signin' /> */}
-                <div className='title-signin'> Se connecter</div>
-                {loginMessage && (<Alert severity={loginMessageType}>
-                  {loginMessage}
-                </Alert>)}
-                <TextField  sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Username" variant="outlined" onChange={(evt) => setUsername(evt.target.value)}/>
-                <FormControl sx={{ m: 1, width: '80%' }} variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                    <OutlinedInput
-                        id="outlined-adornment-password"
-                        type={showPassword ? 'text' : 'password'}
-                        endAdornment={
-                        <InputAdornment position="end">
-                            <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                            >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                        }
-                        label="Password"
-                        onChange={(evt) => setPassword(evt.target.value)}
-                        />
-                </FormControl>
-                <button className='btn-signin' onClick={handleLoginRequested}>Se connecter</button>
-                <div className='privacy'>
-                    <span>
-                        By continuing , you agree to the <a href="http://">Terms of use</a> and <a href="http://">Privacy policies</a>
-                    </span>
-                </div>
-                <div className='last-signin'>
-                    <div><a href="http://">Autres problemes</a></div>
-                    <div><a href="http://">Mot de passe oublié ?</a></div>
-                </div>
+            <p />
+            <div className="image-grid">
+              {/* <img src={imageList[currentImageIndex3]} alt="Current Image" /> */}
+              {/* <img src={imageList[currentImageIndex4]} alt="Current Image" /> */}
             </div>
+          </div>
+          <div className="column">
+            {/* <img src={Img} alt="Logo" /> */}
+            <p className='text1'>Votre partenaire sans gluten au quotidien</p>
+            <p className='text2'>Retrouvez des adresses sans gluten près de chez vous</p>
+            <div className="buttons">
+              <NavLink to="/map">
+                <button>Découvrez notre carte intéractive</button>
+              </NavLink>
+              <h2>Profil de {usernameLink}</h2>
+              <NavLink to="/address">
+                <button>Partager une adresse</button>
+              </NavLink>
+            </div>
+          </div>
         </div>
+      </div>
+      <div className="accueil-container2">
+        <p className='titre'>Le projet SINEAT</p>
+        <p className='text'>
+        Bienvenue dans l'univers gourmand de SINEAT, où le gluten ne fait pas le poids face à la délicieuse aventure que nous vous proposons. Notre application transcende les simples listes d'adresses pour se métamorphoser en une communauté vibrante, dévouée à rendre votre expérience sans gluten aussi succulente que possible. </p>
+        <p className='text'>
+        Plongez dans un monde où chaque coin de rue devient une opportunité de déguster des mets exquis sans craindre le gluten. SINEAT n'est pas seulement une application, c'est un compagnon de voyage gastronomique, un guide qui transforme chaque repas sans gluten en une expérience inoubliable.</p>
+        <p className='text'>
+        Explorez nos fonctionnalités innovantes, où les adresses se transforment en rencontres, et où les établissements deviennent des joyaux découverts par une communauté passionnée. Notre plateforme est bien plus qu'un outil pratique ; elle est le reflet d'une passion commune pour le goût authentique, sans compromis sur la sécurité alimentaire.</p>
+        <p className='text'>
+        Rejoignez-nous dans cette aventure culinaire sans frontières, où chaque plat est une découverte, chaque échange est une célébration. Que vous soyez un explorateur curieux de nouvelles saveurs sans gluten ou un établissement désireux de se connecter avec une clientèle attentive, SINEAT est votre portail vers un monde où la gourmandise est sans limites et où le gluten est relégué au second plan.</p>
+        <p className='text'>
+        Bienvenue chez SINEAT, où chaque bouchée est une invitation à savourer la vie sans gluten avec passion et plaisir. Explorez, connectez-vous et délectez-vous de chaque moment culinaire, car chez SINEAT, nous croyons que la liberté gastronomique n'a pas de frontières.</p>
+      </div>
+      <Footer />
     </div>
-  )
+  );
 }
 
 export default Profile

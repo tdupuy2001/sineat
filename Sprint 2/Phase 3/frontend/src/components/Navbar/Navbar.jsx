@@ -75,7 +75,7 @@ export default function Navbar() {
         {isLoggedIn ? (
           <div className="user-info">
             {profileImage && <img src={profileImage} alt="Profile" />}
-            <NavLink to="/profile" className="profile-link">{username}</NavLink>
+            <NavLink to={`/profile/${username}`} className="profile-link">{username}</NavLink>
             <p className="profile">{nom}</p>
             
           </div>
