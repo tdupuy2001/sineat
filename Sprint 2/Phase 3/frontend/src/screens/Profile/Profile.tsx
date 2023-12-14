@@ -7,6 +7,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { useParams } from 'react-router-dom';
+import { useEffect } from "react";
 
 import Divider from '../../components/Divider/Divider'
 
@@ -21,7 +22,7 @@ import { User } from "../../dto/User";
 
 export function Profile() {
 
-  const [showPassword, setShowPassword] = useState(false);
+
 
   const _ = "";
 
@@ -29,53 +30,31 @@ export function Profile() {
 
   const context = useContext(MyBlogContext);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
+  const [username, setUsername] = useState<string>(() => {
+    return localStorage.getItem('username') || '';
+  });
 
-  const [username, setUsername] = useState<string>();
-  const [password, setPassword] = useState<string>();
+  // ...
 
-  const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
-    "info"
-  );
-
-  const [loginMessage, setLoginMessage] = useState("");
-
-  const login = useCallback(
-    (user: User) => {
-      context.setUser(user);
-      sessionStorage.setItem("username", user.username);
-      setLoginMessage("");
-      setLoginMessageType("info");
-      navigate("/");
-    },
-    [context, navigate]
-  );
-
-
-  const handleLoginRequested = () => {
-    if (username && password) {
-      const userService = new UserService(config.API_URL);
-      userService.log_user({ username, date_de_naissance: undefined, email: _, password, langue: _, nom: _, prenom: _, genre: _, adresse: _, description: _ }).then((response: any) => {
-        if (response.data.message === 'success') {
-          const user = response.data.user;
-          login(user); // This will update the context and navigate to "/"
-        } else {
-          setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !");
-          setLoginMessageType("error");
-        }
-      });
+  useEffect(() => {
+    if (context.user) {
+      setUsername(context.user.username);
+      localStorage.setItem('username', context.user.username);
     } else {
-      setLoginMessage("Veuillez entrer un nom d'utilisateur et un mot de passe.");
-      setLoginMessageType("error");
+        setUsername("")
     }
-  };
+  }, [context.user]);
+
+
+
 
 
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user 
+  useEffect(() => {
+    console.log(`username: '${username}'`);
+    console.log(`usernameLink: '${usernameLink}'`);
+  }, [username, usernameLink]);
 
 
 
@@ -106,9 +85,11 @@ export function Profile() {
                 <button>Découvrez notre carte intéractive</button>
               </NavLink>
               <h2>Profil de {usernameLink}</h2>
-              <NavLink to="/address">
-                <button>Partager une adresse</button>
-              </NavLink>
+              {username == usernameLink && (
+                    <NavLink to="/update-profile">
+                    <button>Update Profile</button>
+                    </NavLink>
+                )}
             </div>
           </div>
         </div>
