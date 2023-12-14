@@ -46,6 +46,8 @@ function App() {
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
         <Route path="/profile/:usernameLink" element={<Profile/>} />
+        <Route path="/updateprofile/:usernameLink" element={<UpdateProfile/>} />
+        <Route path="*" element={<Error404/>}></Route>
       </Routes>
     </div>
     </MyBlogContext.Provider>
