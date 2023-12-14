@@ -13,6 +13,7 @@ import Map from '../screens/Map/Map';
 import { User } from '../dto/User';
 import Navbar from './Navbar/Navbar';
 import Profile from '../screens/Profile/Profile.tsx';
+import UpdateProfile from '../screens/UpdateProfile/UpdateProfile.tsx';
 
 
 
@@ -45,6 +46,7 @@ function App() {
         <Route path='/contact' element={<Contact />} />
         <Route path='/*' element={<Navbar/>} />
         <Route path="/profile/:usernameLink" element={<Profile/>} />
+        <Route path="/updateprofile/:usernameLink" element={<UpdateProfile/>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>

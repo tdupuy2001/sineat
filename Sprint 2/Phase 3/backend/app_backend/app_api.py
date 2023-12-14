@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from .db_mapping import DBAcces
 import bcrypt
@@ -58,6 +58,20 @@ class PostSchema(BaseModel):
     text: str = ""
     id_note: int = None
     id_post_comm: int = None
+
+class UserUpdate(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    username : Optional[str]
+    langue : str
+    nom : Optional[str]
+    prenom : Optional[str]
+    date_de_naissance : Optional[str]
+    genre : Optional[str]
+    adresse : Optional[str]
+    old_username : str
+    
 
 
 """
@@ -156,6 +170,33 @@ def log_user(user : UserSchema):
         else:
             return {'message': 'success','user' : user}
         
+@app.put("/update")
+def update_user(user : UserUpdate):
+    error = False
+    with Session(db.engine) as session:
+        found_user = find_user(user.old_username, session)
+        if found_user == None:
+            error = True
+        else:
+            #TODO checker si les champs obligatoires ne sont pas vide 
+            order = update(User).where(User.username == user.old_username).values(
+                username = user.username,
+                langue = user.langue,
+                nom = user.nom,
+                prenom = user.prenom,
+                date_de_naissance = user.date_de_naissance,
+                genre = user.genre,
+                adresse = user.adresse
+            )
+            result = session.execute(order)
+            session.commit()
+            print(result)
+            
+        if error:
+            return {'message': 'Username doesn\'t exist'}
+        else:
+            return {'message': 'success','user' : user}
+            
 """
 Api pour post
 """
@@ -234,6 +275,9 @@ def delete_post(id_post: int):
             session.commit()
         else:
             raise HTTPException(404, "Post not found")
+        
+        
+
 
 
             

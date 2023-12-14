@@ -28,14 +28,34 @@ export function Profile() {
 
   const navigate = useNavigate();
 
+  
+
   const context = useContext(MyBlogContext);
+
+  useEffect(() => {
+    if (context.user) {
+      setUsername(context.user?.username)
+      setIsLoggedIn(true)
+    }
+  }, [context.user])
+  
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
   const [username, setUsername] = useState<string>(() => {
     return localStorage.getItem('username') || '';
   });
 
-  // ...
+
+  const handleLogout = () => {
+
+    context.setUser(null);
+    setIsLoggedIn(false);
+    sessionStorage.removeItem("username");
+    localStorage.removeItem("username");
+
+  };
 
   useEffect(() => {
     if (context.user) {
@@ -81,12 +101,14 @@ export function Profile() {
             <p className='text1'>Votre partenaire sans gluten au quotidien</p>
             <p className='text2'>Retrouvez des adresses sans gluten près de chez vous</p>
             <div className="buttons">
-              <NavLink to="/map">
-                <button>Découvrez notre carte intéractive</button>
+            {username == usernameLink && (
+                <NavLink to="/">
+                <button onClick={handleLogout}>Deconnexion</button>
               </NavLink>
+              )}
               <h2>Profil de {usernameLink}</h2>
               {username == usernameLink && (
-                    <NavLink to="/update-profile">
+                    <NavLink to={`/updateprofile/${usernameLink}`}>
                     <button>Update Profile</button>
                     </NavLink>
                 )}
