@@ -235,7 +235,13 @@ def delete_post(id_post: int):
         else:
             raise HTTPException(404, "Post not found")
 
-#ajouter une api pour récupérer les commentaires d'un post
+#api pour récupérer les commentaires d'un post
+@app.get("/posts/{id_post}/comments")
+def get_post_comments(id_post: int):
+    with Session(db.engine) as session:
+        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
+        return comments
+
 
             
 if __name__ == "__main__":

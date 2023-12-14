@@ -15,7 +15,7 @@ export class PostService {
     }
 
     getPost(id_post:number) {
-        return this.axiosInstance.get<Post>('/posts'+id_post);
+        return this.axiosInstance.get<Post>('/posts/'+id_post);
     }
 
     getPosts() {
@@ -23,10 +23,14 @@ export class PostService {
     }
 
     updatePost(id_post:number, post:Post) {
-        return this.axiosInstance.put<Post>('/posts'+id_post, post);
+        return this.axiosInstance.put<Post>('/posts/'+id_post, post);
     }
 
     deletePost(id_post:number) {
-        return this.axiosInstance.delete<void>('/posts'+id_post);
+        return this.axiosInstance.delete<void>('/posts/'+id_post);
+    }
+
+    getPostComments(id_post:number) {
+        return this.axiosInstance.get<Post []>('/posts/'+id_post+'/comments');
     }
 }
