@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes} from 'react-router-dom';
 import {Login}  from '../screens/Login/Login';
 import Main from '../screens/Main/Main';
 import { MyBlogContext } from '../MyBlogContext';
@@ -13,6 +13,7 @@ import Map from '../screens/Map/Map';
 import { User } from '../dto/User';
 import Navbar from './Navbar/Navbar';
 import Profile from '../screens/Profile/Profile.tsx';
+import Error404 from '../screens/Error/Error404.tsx';
 
 
 
@@ -43,8 +44,8 @@ function App() {
         <Route path='/about' element={<About />} />
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
-        <Route path='/*' element={<Navbar/>} />
         <Route path="/profile/:usernameLink" element={<Profile/>} />
+        <Route path="*" element={<Error404/>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>
