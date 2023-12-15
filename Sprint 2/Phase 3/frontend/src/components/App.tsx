@@ -11,11 +11,12 @@ import About from '../screens/About/About';
 import Contact from '../screens/Contact/Contact';
 import Map from '../screens/Map/Map';
 import { User } from '../dto/User';
-import Navbar from './Navbar/Navbar';
 import Profile from '../screens/Profile/Profile.tsx';
-import Error404 from '../screens/Error/Error404.tsx';
+import Error404 from '../screens/Error/error_404/Error404.tsx';
 import UpdateProfile from '../screens/UpdateProfile/UpdateProfile.tsx';
 import ProtectedRoute from '../util/ProtectedRoute.tsx';
+import ProfileRoute from '../util/ProfileRoute.tsx';
+import UnknownUser from '../screens/Error/unknown_user/UnknownUser.tsx';
 
 
 
@@ -46,9 +47,10 @@ function App() {
         <Route path='/about' element={<About />} />
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
-        <Route path="/profile/:usernameLink" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+        <Route path="/profile/:usernameLink" element={<ProfileRoute><ProtectedRoute><Profile/></ProtectedRoute></ProfileRoute>} />
         <Route path="/updateprofile/:usernameLink" element={<UpdateProfile/>} />
-        <Route path="*" element={<Error404/>}></Route>
+        <Route path="/unknown_user" element={<UnknownUser/>}></Route>
+        <Route path="/*" element={<Error404/>}></Route>
       </Routes>
     </div>
     </MyBlogContext.Provider>

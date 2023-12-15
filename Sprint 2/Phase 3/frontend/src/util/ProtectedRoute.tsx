@@ -16,7 +16,7 @@ const ProtectedRoute = (props: React.PropsWithChildren<{}>) => {
     }
     useEffect(() => {
             checkUserToken();
-        }, [isLoggedIn]);
+        }, [localStorage.getItem]);
 
 
 

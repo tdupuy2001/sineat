@@ -1,6 +1,6 @@
 import React from "react";
 import './Error404.css'
-import Navbar from "../../components/Navbar/Navbar";
+import Navbar from "../../../components/Navbar/Navbar";
 import { NavLink } from "react-router-dom";
 
 
