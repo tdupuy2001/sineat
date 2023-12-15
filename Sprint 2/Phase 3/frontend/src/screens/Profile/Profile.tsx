@@ -60,7 +60,6 @@ export function Profile() {
   useEffect(() => {
     if (context.user) {
       setUsername(context.user.username);
-      localStorage.setItem('username', context.user.username);
     } else {
         setUsername("")
     }

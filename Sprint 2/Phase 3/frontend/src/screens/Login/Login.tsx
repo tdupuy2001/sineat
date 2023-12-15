@@ -49,10 +49,13 @@ export function Login() {
   const login = useCallback(
     (user: User) => {
       context.setUser(user);
-      sessionStorage.setItem("username", user.username);
-      setLoginMessage("");
-      setLoginMessageType("info");
-      navigate("/");
+      if (context.user){
+        sessionStorage.setItem("username", user.username);
+        localStorage.setItem('username', context.user.username);
+        setLoginMessage("");
+        setLoginMessageType("info");
+        navigate("/");
+      }
     },
     [context, navigate]
   );
