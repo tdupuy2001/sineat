@@ -70,6 +70,7 @@ class UserUpdate(BaseModel):
     date_de_naissance : Optional[str]
     genre : Optional[str]
     adresse : Optional[str]
+    description : Optional[str]
     old_username : str
     
 
@@ -170,7 +171,7 @@ def log_user(user : UserSchema):
         else:
             return {'message': 'success','user' : user}
         
-@app.put("/update")
+@app.put("/users")
 def update_user(user : UserUpdate):
     error = False
     with Session(db.engine) as session:
@@ -178,22 +179,26 @@ def update_user(user : UserUpdate):
         if found_user == None:
             error = True
         else:
-            #TODO checker si les champs obligatoires ne sont pas vide 
-            order = update(User).where(User.username == user.old_username).values(
-                username = user.username,
-                langue = user.langue,
-                nom = user.nom,
-                prenom = user.prenom,
-                date_de_naissance = user.date_de_naissance,
-                genre = user.genre,
-                adresse = user.adresse
-            )
-            result = session.execute(order)
-            session.commit()
-            print(result)
+            #TODO checker si les champs obligatoires ne sont pas vide
+            other_username = find_user(user.username,session)
+            if other_username == None or user.username == user.old_username:
+                order = update(User).where(User.username == user.old_username).values(
+                    username = user.username,
+                    langue = user.langue,
+                    nom = user.nom,
+                    prenom = user.prenom,
+                    date_de_naissance = user.date_de_naissance,
+                    genre = user.genre,
+                    adresse = user.adresse,
+                    description = user.description
+                )
+                result = session.execute(order)
+                session.commit()
+            else:
+                error = True
             
         if error:
-            return {'message': 'Username doesn\'t exist'}
+            return {'message': 'User doesn\'t exist or username already used'}
         else:
             return {'message': 'success','user' : user}
             
