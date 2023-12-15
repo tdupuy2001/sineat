@@ -15,6 +15,7 @@ import Navbar from './Navbar/Navbar';
 import Profile from '../screens/Profile/Profile.tsx';
 import Error404 from '../screens/Error/Error404.tsx';
 import UpdateProfile from '../screens/UpdateProfile/UpdateProfile.tsx';
+import ProtectedRoute from '../util/ProtectedRoute.tsx';
 
 
 
@@ -45,7 +46,7 @@ function App() {
         <Route path='/about' element={<About />} />
         <Route path='/map' element={<Map />} />
         <Route path='/contact' element={<Contact />} />
-        <Route path="/profile/:usernameLink" element={<Profile/>} />
+        <Route path="/profile/:usernameLink" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
         <Route path="/updateprofile/:usernameLink" element={<UpdateProfile/>} />
         <Route path="*" element={<Error404/>}></Route>
       </Routes>
