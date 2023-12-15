@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 import { Post } from '../dto/Post';
+import { User } from '../dto/User';
 
 export class PostService {
 
@@ -32,5 +33,9 @@ export class PostService {
 
     getPostComments(id_post:number) {
         return this.axiosInstance.get<Post []>('/posts/'+id_post+'/comments');
+    }
+
+    getUserFromPost(id_post:number) {
+        return this.axiosInstance.get<User>('/posts/'+id_post+'/user');
     }
 }

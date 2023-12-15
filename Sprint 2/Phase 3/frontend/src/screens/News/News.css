@@ -35,3 +35,35 @@ div[data-grid] {
     font-size: 20px; */
     cursor: pointer;
 }
+.post-com{
+    /* padding-top: 100px; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid black;
+    /* margin-top: 10%; */
+    /* margin: 10%; */
+    margin-top: 10%;
+    margin-left: 35%;
+    margin-right: 35%;
+    border-radius: 5%;
+    border-bottom-left-radius: 0%;
+    border-bottom-right-radius: 0%;
+}
+
+
+.post-com-com {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid black;
+    margin-left: 35%;
+    margin-right: 35%;
+    border-bottom-left-radius: 5%;
+    border-bottom-right-radius: 5%;
+}
+
+.post-com-margin {
+    margin-left: 10%;
+    margin-right: 10%;
+}

@@ -242,6 +242,16 @@ def get_post_comments(id_post: int):
         comments = session.query(Post).where(Post.id_post_comm==id_post).all()
         return comments
 
+#api pour récupérer le user d'un post
+@app.get("/posts/{id_post}/user")
+def get_user_from_post(id_post: int):
+    with Session(db.engine) as session:
+        post = session.query(Post).filter(Post.id_post==id_post).first()
+        if post is not None:
+            user = session.query(User).filter(User.id_user==post.id_user).first()
+            return user
+        else:
+            return ["error : Post not found"]
 
             
 if __name__ == "__main__":
