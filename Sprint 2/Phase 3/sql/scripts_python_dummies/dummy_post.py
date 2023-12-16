@@ -7,7 +7,7 @@ from dummy_note import DUMMY_DATA_NUMBER as nb_note
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-types=["commentaire","recette","post","commentaire_resto"]
+types=['texte', 'recette', 'restaurant', 'santé']
 chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
