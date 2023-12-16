@@ -12,6 +12,7 @@ import logo from './assets/logo_sineat.png';
 import Modal from '../../components/Modal/Modal';
 import { error } from 'console';
 import { User } from '../../dto/User';
+import { Button } from '@mui/material';
 
 
 export function News() {
@@ -22,6 +23,30 @@ export function News() {
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [comments, setComments] = useState<Post[]>([]);
     const [users, setUsers] = useState<User[]>([]);
+    const [filter, setFilter] = useState<string | null>(null);
+
+    const sortOldestToNewest = () => {
+      const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      setPosts(sortedPosts);
+    };
+  
+    const sortNewestToOldest = () => {
+      const sortedPosts = [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setPosts(sortedPosts);
+    };
+  
+    const filterPosts = () => {
+      setFilter("post");
+    };
+  
+    const filterRecipes = () => {
+      setFilter("recette");
+    };
+  
+    const filterRestaurant = () => {
+      setFilter("commentaire_resto");
+    };
+  
 
    
     useEffect(() => {
@@ -52,14 +77,22 @@ export function News() {
     return (
     <div>
       <Navbar />
-      {/*il faudra rajouter de mettre du plus récent ou plus vieux et nom user et date*/}
-      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={90}>
-        {posts.filter(post => post.type === "post" || post.type === "recette" || post.type === "commentaire_resto").map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 2, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post'>
+      <div>
+        <text className='filtres'>Filtres</text>
+        <button className= 'button-filtres' onClick={sortOldestToNewest}>Le plus ancien</button>
+        <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button>
+        <button className= 'button-filtres' onClick={filterPosts}>Posts</button>
+        <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button>
+        <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button>
+      </div>
+      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={230}>
+        {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.7, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post'>
             <div className='post-border' >
                 <h2 className='post-title'>Titre du Post</h2>
                 <p>{post.type}</p>
                 <p className='post-text'>{post.text}</p>
+                <p>{post.date.toString()} {users.find(user => user.id_user === post.id_user)?.username}</p>
             </div>
           </div>
         ))}
@@ -69,20 +102,20 @@ export function News() {
         setSelectedPost(null);
       }}>
         {selectedPost && (
-          <div>
+          <div className='post-avec-com'>
             <div className='post-com'>
               <div className='post-com-margin'>
                 <h2>Titre du Post</h2>
-                {/* Mettre le nom de l'user et la date */}
                 <p>{selectedPost.type}</p>
                 <p>{selectedPost.text}</p>
+                <p>{selectedPost.date.toString()} {users.find(user => user.id_user === selectedPost.id_user)?.username}</p>
               </div>
             </div>
            {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
             <div className='post-com-com'>
               <div key={comment.id_post}>
-                {/* Mettre le nom de l'user et la date */}
                 <p className='post-com-margin'>{comment.text}</p>
+                <p className='post-com-margin'>{comment.date.toString()} {users.find(user => user.id_user === comment.id_user)?.username}</p>
               </div>
             </div>
             ))}

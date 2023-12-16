@@ -26,4 +26,42 @@
    .display-none {
     display: none;
    }
+
+   .btn-close {
+    height: 10%;
+    width: 10%;
+    border-radius: 10px ;
+    background-color:  #602A0F; 
+    /* background-color:#F2EADF; */
+    color: white;
+    font-size: 100%;
+    cursor: pointer;
+    /* margin-top: 110px; */
+    padding: 1%;
+    /* margin-left: 1%; */
+    /* margin-right: 1%; */
+    font-family: Courier New, sans-serif;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 45%;
+    margin-right: 45%;
+    }
+
+    .btn-close:hover {
+        height: 10%;
+        width: 10%;
+    border-radius: 10px ;
+    /* border: #602A0F solid 1px; */
+    /* background-color:  #602A0F;  */
+    /* color: white; */
+    font-size: 100%;
+    cursor: pointer;
+    padding: 1%;
+    border: #602A0F solid 1px;
+    background-color:  white; 
+    color: black;
+    }
+
    

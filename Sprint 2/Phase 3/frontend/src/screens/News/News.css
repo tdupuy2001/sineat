@@ -16,8 +16,9 @@
 
 div[data-grid] {
     border: 1px solid black;
-    margin-left: 1.5%;
+    margin-left: 5%;
     padding: auto;
+    border-radius: 5%;
 }
 
 .post-border {
@@ -35,6 +36,7 @@ div[data-grid] {
     font-size: 20px; */
     cursor: pointer;
 }
+
 .post-com{
     /* padding-top: 100px; */
     display: flex;
@@ -47,8 +49,6 @@ div[data-grid] {
     margin-left: 35%;
     margin-right: 35%;
     border-radius: 5%;
-    border-bottom-left-radius: 0%;
-    border-bottom-right-radius: 0%;
 }
 
 
@@ -59,11 +59,36 @@ div[data-grid] {
     border: 1px solid black;
     margin-left: 35%;
     margin-right: 35%;
-    border-bottom-left-radius: 5%;
-    border-bottom-right-radius: 5%;
+    border-radius: 10%;
+    margin-top: 0.5%;
 }
 
 .post-com-margin {
     margin-left: 10%;
     margin-right: 10%;
+}
+
+.button-filtres {
+    height: 15%;
+    width: 15%;
+    border-radius: 10px ;
+    /* background-color:  #602A0F;  */
+    background-color:#F2EADF;
+    color: black;
+    font-size: 100%;
+    cursor: pointer;
+    margin-top: 110px;
+    padding: 1%;
+    margin-left: 1%;
+    margin-right: 1%;
+    font-family: Courier New, sans-serif;
+    text-align: center;
+}
+
+.filtres {
+    font-size: 18px;
+    color: #602A0F;
+    font-family: Courier New, sans-serif;
+    text-align: center;
+    margin-left: 5%;
 }

@@ -1,4 +1,5 @@
 export interface User {
+    id_user: number;
     username: string;
     date_de_naissance?:Date;
     email:string;
