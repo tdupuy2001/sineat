@@ -7,6 +7,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { User } from "../../dto/User";
+import { readAndCompressImage } from 'browser-image-resizer';
 
 export function UpdateProfile() {
   const [prenom, setPrenom] = useState<string | undefined>();
@@ -35,6 +36,29 @@ export function UpdateProfile() {
     return localStorage.getItem("username") || "";
   });
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const config = {
+        quality: 0.5,
+        maxWidth: 800,
+        maxHeight: 800,
+        autoRotate: true,
+        debug: true,
+      };
+      try {
+        const compressedFile = await readAndCompressImage(file, config);
+        const newFile = new File([compressedFile], file.name, { type: compressedFile.type });
+        setSelectedFile(newFile);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+
   useEffect(() => {
     if (context.user) {
       setUsername(context.user.username);
@@ -49,9 +73,53 @@ export function UpdateProfile() {
     }
   }, [context.user]);
 
+  
+
   const handleUpdate = () => {
     userService.getUser(username).then((e) => {
       if (!e.data || e.data.username === username) {
+        let binaryData;
+        let extension;
+
+        if (selectedFile) {
+          const reader = new FileReader();
+          reader.readAsDataURL(selectedFile);
+          reader.onload = () => {
+            binaryData = reader.result;
+            console.log('selected file : ', selectedFile, 'Binary : ', binaryData)
+            extension = selectedFile.name.split('.').pop();
+            const updatedUser: User = {
+              ...context.user, // spread operator to include all properties of the current user
+              username,
+              langue,
+              nom,
+              prenom,
+              date_de_naissance: dateDeNaissance,
+              genre,
+              adresse,
+              description,
+              old_username: usernameLink,
+              ppbin: typeof binaryData === 'string' ? binaryData : undefined,
+              ppform: extension,
+            };
+            userService
+          .updateUser(updatedUser)
+          .then((response) => {
+            // handle success
+            console.log(response.data);
+            context.setUser(updatedUser); // Update the context with the updated user
+          })
+          .catch((error) => {
+            // handle error
+            console.log(error);
+          });
+          };
+          
+          reader.onerror = function (error) {
+            console.log('Error: ', error);
+          };
+          
+        } else {
         const updatedUser: User = {
           ...context.user, // spread operator to include all properties of the current user
           username,
@@ -63,23 +131,29 @@ export function UpdateProfile() {
           adresse,
           description,
           old_username: usernameLink,
+          ppbin: binaryData,
+          ppform: extension,
         };
         userService
-          .updateUser(updatedUser)
-          .then((response) => {
-            // handle success
-            console.log(response.data);
-            context.setUser(updatedUser); // Update the context with the updated user
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-          });
+        .updateUser(updatedUser)
+        .then((response) => {
+          // handle success
+          console.log(response.data);
+          context.setUser(updatedUser); // Update the context with the updated user
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
+        });
+      };
+        
       } else {
         console.log("c'est pas good mais j'ai pas encore géré l'erreur");
       }
     });
   };
+
+  
 
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user
 
@@ -368,7 +442,7 @@ export function UpdateProfile() {
             defaultValue={
               context.user?.genre !== null && context.user?.genre !== undefined
                 ? context.user?.genre
-                : "Non Précisé"
+                : "Non précisé"
             }
             onChange={(e) => setGenre(e.target.value)}
           >
@@ -378,6 +452,11 @@ export function UpdateProfile() {
               </MenuItem>
             ))}
           </TextField>
+
+          <TextField
+          type="file"
+          onChange={handleFileChange}
+        />
 
           <TextField
             required

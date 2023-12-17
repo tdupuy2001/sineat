@@ -23,9 +23,6 @@ import { User } from "../../dto/User";
 export function Profile() {
 
 
-
-  const _ = "";
-
   const navigate = useNavigate();
 
   
@@ -41,6 +38,7 @@ export function Profile() {
   
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profileImage, setPP] = useState<File | null>(null);
 
 
   const [username, setUsername] = useState<string>(() => {
@@ -66,14 +64,30 @@ export function Profile() {
   }, [context.user]);
 
 
-
+  const urlToFile = async (url: string, filename: string, mimeType: any) => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new File([blob], filename, { type: mimeType });
+  };
 
 
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user 
   useEffect(() => {
+    if (context.user?.ppbin){
+      urlToFile(context.user.ppbin, `image.${context.user.ppform}`, `image/${context.user.ppform}`)
+        .then(image => {
+          // Do something with the image File object here
+          setPP(image)
+        })
+        .catch(error => {
+          console.error('Error converting URL to file:', error);
+        });
+    }
     console.log(`username: '${username}'`);
     console.log(`usernameLink: '${usernameLink}'`);
   }, [username, usernameLink]);
+
+  
 
 
 
@@ -105,6 +119,7 @@ export function Profile() {
                 <button onClick={handleLogout}>Deconnexion</button>
               </NavLink>
               )}
+              <img src={`${context.user?.ppbin}`} alt="User" style= {{width: '100px', height: '100px', objectFit: 'cover'}} /> {/* je dois changer parce que c'est bien sur pas le context de l'image mais d'un getUser avec le nom du machin*/}
               <h2>Profil de {usernameLink}</h2>
               {username == usernameLink && (
                     <NavLink to={`/updateprofile/${usernameLink}`}>

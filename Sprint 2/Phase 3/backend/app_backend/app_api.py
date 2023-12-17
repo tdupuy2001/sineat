@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from .db_mapping import DBAcces
 import bcrypt
 import logging
+import base64
 
 logging.basicConfig(
     filename='app.log',  # Nom du fichier de logs
@@ -42,6 +43,7 @@ class UserSchema(BaseModel):
     email : str
     password : str
     langue : str
+    image_data: Optional[str] = None
 
 class PostSchema(BaseModel):
     """
@@ -72,6 +74,8 @@ class UserUpdate(BaseModel):
     adresse : Optional[str]
     description : Optional[str]
     old_username : str
+    ppbin: Optional[str] = None
+    ppform: Optional[str] = None
     
 
 
@@ -110,7 +114,13 @@ def get_users():
 def get_user(username: str):
     with Session(db.engine) as session:
         user = find_user(username=username, session=session)
+        if user.ppbin:
+            image_data = base64.b64encode(user.ppbin).decode('utf-8')
+        else:
+            image_data = None
+        user.ppbin = image_data
         return user
+
 
 
 @app.post("/register")
@@ -169,7 +179,12 @@ def log_user(user : UserSchema):
         if error:
             return {'message': 'Wrong username or password'}
         else:
-            return {'message': 'success','user' : user}
+            if found_user.ppbin:
+                image_data = base64.b64encode(found_user.ppbin).decode('utf-8')
+            else:
+                image_data = None
+            found_user.ppbin = image_data
+            return {'message': 'success','user' : found_user}
         
 @app.put("/users")
 def update_user(user : UserUpdate):
@@ -182,6 +197,10 @@ def update_user(user : UserUpdate):
             #TODO checker si les champs obligatoires ne sont pas vide
             other_username = find_user(user.username,session)
             if other_username == None or user.username == user.old_username:
+                if user.ppbin:
+                    image_data = base64.b64decode(user.ppbin)
+                else:
+                    image_data = None
                 order = update(User).where(User.username == user.old_username).values(
                     username = user.username,
                     langue = user.langue,
@@ -190,7 +209,9 @@ def update_user(user : UserUpdate):
                     date_de_naissance = user.date_de_naissance,
                     genre = user.genre,
                     adresse = user.adresse,
-                    description = user.description
+                    description = user.description,
+                    ppbin = image_data,
+                    ppform = user.ppform
                 )
                 result = session.execute(order)
                 session.commit()
@@ -200,7 +221,16 @@ def update_user(user : UserUpdate):
         if error:
             return {'message': 'User doesn\'t exist or username already used'}
         else:
-            return {'message': 'success','user' : user}
+            if found_user.ppbin:
+                image_data = base64.b64encode(found_user.ppbin).decode('utf-8')
+            else:
+                image_data = None
+
+            return {
+                'message': 'success',
+                'user': 
+                    {**user.dict(),'image_data': image_data,}
+            }
             
 """
 Api pour post

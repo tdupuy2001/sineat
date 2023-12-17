@@ -41,9 +41,8 @@ export default function Navbar() {
       setUsername(user?.username);
       setIsLoggedIn(true);
       // Extract the profile image binary and format from user object
-      const { ppbin, ppform } = user;
-      if (ppbin && ppform) {
-        const base64Image = `data:${ppform};base64,${ppbin}`;
+      if (user.ppbin) {
+        const base64Image = user.ppbin;
         setProfileImage(base64Image);
       }
     }
