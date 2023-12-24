@@ -13,6 +13,7 @@ import Modal from '../../components/Modal/Modal';
 import { error } from 'console';
 import { User } from '../../dto/User';
 import { Button } from '@mui/material';
+import nuage from './assets/nuage_rose.png';
 
 
 export function News() {
@@ -75,8 +76,15 @@ export function News() {
 
 
     return (
-    <div>
+    <div className='back-color'>
       <Navbar />
+      <div className='fil-dactu'>
+        <ul className='bandeau'>
+          <li><img className='nuage' src={nuage} alt="Logo" /></li>
+          <li><text className='filtres'>Fil d'actualité</text></li>
+          <li><img className='nuage' src={nuage} alt="Logo" /></li>
+        </ul>
+      </div>
       <div>
         <text className='filtres'>Filtres</text>
         <button className= 'button-filtres' onClick={sortOldestToNewest}>Le plus ancien</button>

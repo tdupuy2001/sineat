@@ -1,3 +1,32 @@
+.fil-dactu {
+    padding: 4%;
+    /* border: 1px solid black; */
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: white;
+    
+}
+
+.back-color {
+    background-color: #F2EADF;
+}
+
+.nuage {
+    height: 10%;
+    width: 10%;
+}
+
+.bandeau {
+    list-style: none;
+    display: flex;
+}
+
+.bandeau li {
+    margin-right: 40px;
+}
+
 .post-border-test {
     border: 1px solid #000;
     border-radius: 10 px;
@@ -77,7 +106,6 @@ div[data-grid] {
     color: black;
     font-size: 100%;
     cursor: pointer;
-    margin-top: 110px;
     padding: 1%;
     margin-left: 1%;
     margin-right: 1%;
