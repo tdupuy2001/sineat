@@ -9,7 +9,9 @@ import { useEffect } from "react";
 import { User } from "../../dto/User";
 import { readAndCompressImage } from 'browser-image-resizer';
 
+
 export function UpdateProfile() {
+
   const [prenom, setPrenom] = useState<string | undefined>();
   const [nom, setNom] = useState<string | undefined>();
   const [dateDeNaissance, setDateDeNaissance] = useState<string | undefined>();
@@ -57,6 +59,7 @@ export function UpdateProfile() {
       }
     }
   };
+
 
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { useParams } from 'react-router-dom';
 import { useEffect } from "react";
+import img from "./assets/profile.png"
 
 import Divider from '../../components/Divider/Divider'
 
@@ -119,7 +120,7 @@ export function Profile() {
                 <button onClick={handleLogout}>Deconnexion</button>
               </NavLink>
               )}
-              <img src={`${context.user?.ppbin}`} alt="User" style= {{width: '100px', height: '100px', objectFit: 'cover'}} /> {/* je dois changer parce que c'est bien sur pas le context de l'image mais d'un getUser avec le nom du machin*/}
+              <img src={`${img}`} alt="User" style= {{width: '100px', height: '100px', objectFit: 'cover'}} /> {/* je dois changer parce que c'est bien sur pas le context de l'image mais d'un getUser avec le nom du machin*/}
               <h2>Profil de {usernameLink}</h2>
               {username == usernameLink && (
                     <NavLink to={`/updateprofile/${usernameLink}`}>

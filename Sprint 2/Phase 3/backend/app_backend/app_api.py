@@ -7,6 +7,11 @@ from .db_mapping import DBAcces
 import bcrypt
 import logging
 import base64
+import os
+from io import BytesIO
+from PIL import Image
+import re
+# import cStringIO
 
 logging.basicConfig(
     filename='app.log',  # Nom du fichier de logs
@@ -44,6 +49,8 @@ class UserSchema(BaseModel):
     password : str
     langue : str
     image_data: Optional[str] = None
+    ppbin: Optional[str] = None
+    ppform: Optional[str] = None
 
 class PostSchema(BaseModel):
     """
@@ -114,11 +121,15 @@ def get_users():
 def get_user(username: str):
     with Session(db.engine) as session:
         user = find_user(username=username, session=session)
-        if user.ppbin:
-            image_data = base64.b64encode(user.ppbin).decode('utf-8')
-        else:
-            image_data = None
-        user.ppbin = image_data
+        if user:
+            if user.ppbin:
+                image_data2 = base64.b64encode(user.ppbin)
+                image_data = image_data2.decode('utf-8')
+                image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                image.save(os.path.join('../frontend/src/screens/Profile/assets', 'profile.png'))
+            else:
+                image_data = None
+            user.ppbin = image_data
         return user
 
 
@@ -133,12 +144,21 @@ def add_user(user: UserSchema):
             logging.debug(f"voici l'user qui rentre {user}")
             user_salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), user_salt)
+            with open('../frontend/public/user.png', 'rb') as image_file:
+                base64_bytes = base64.b64encode(image_file.read())
+                # img_bin = base64.b64decode(base64_bytes)
+                img_bin = base64_bytes.decode('utf-8')
+            image_data2 = re.sub('^data:image/.+;base64,', '', img_bin)
+            image_data = base64.b64decode(image_data2)
+            
             new_user = User(
                 username = user.username,
                 email = user.email,
                 password = hashed_password.decode('utf-8'),
                 salt = user_salt.decode('utf-8'),
                 langue = user.langue,
+                ppbin = image_data,
+                ppform = "png",
             )
             session.add(new_user)
             session.commit()
@@ -180,12 +200,15 @@ def log_user(user : UserSchema):
             return {'message': 'Wrong username or password'}
         else:
             if found_user.ppbin:
-                image_data = base64.b64encode(found_user.ppbin).decode('utf-8')
+                image_data2 = base64.b64encode(found_user.ppbin)
+                image_data = image_data2.decode('utf-8')
+                image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
             else:
                 image_data = None
             found_user.ppbin = image_data
             return {'message': 'success','user' : found_user}
-        
+         
 @app.put("/users")
 def update_user(user : UserUpdate):
     error = False
@@ -198,7 +221,10 @@ def update_user(user : UserUpdate):
             other_username = find_user(user.username,session)
             if other_username == None or user.username == user.old_username:
                 if user.ppbin:
-                    image_data = base64.b64decode(user.ppbin)
+                    image_data2 = re.sub('^data:image/.+;base64,', '', user.ppbin)
+                    image_data = base64.b64decode(image_data2)
+                    image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                    image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
                 else:
                     image_data = None
                 order = update(User).where(User.username == user.old_username).values(

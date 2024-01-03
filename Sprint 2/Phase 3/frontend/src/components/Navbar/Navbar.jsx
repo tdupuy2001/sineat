@@ -12,6 +12,7 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Navbar.css';
 import logo from './logo_sineat.png';
+import img from '../../screens/Login/assets/user.png'
 import { MyBlogContext } from '../../MyBlogContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Description } from '@mui/icons-material';
@@ -41,10 +42,10 @@ export default function Navbar() {
       setUsername(user?.username);
       setIsLoggedIn(true);
       // Extract the profile image binary and format from user object
-      if (user.ppbin) {
-        const base64Image = user.ppbin;
-        setProfileImage(base64Image);
-      }
+      // if (user.ppbin) {
+      //   const base64Image = ;
+      //   setProfileImage(base64Image);
+      // }
     }
   }, [user]);
 
@@ -73,7 +74,7 @@ export default function Navbar() {
       <div className="login-button">
         {isLoggedIn ? (
           <div className="user-info">
-            {profileImage && <img src={profileImage} alt="Profile" />}
+            {<img src={img} alt="Profile" />}
             <NavLink to={`/profile/${username}`} className="profile-link">{username}</NavLink>
             <p className="profile">{nom}</p>
             
