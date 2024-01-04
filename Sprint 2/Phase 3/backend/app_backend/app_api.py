@@ -90,7 +90,7 @@ class UserUpdate(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -337,9 +337,59 @@ def delete_post(id_post: int):
         else:
             raise HTTPException(404, "Post not found")
         
+
+#api pour abonné/abonnement
         
+@app.get("/community/{username}")
+def get_community(username: str):
+
+    with Session(db.engine) as session:
+        user = find_user(username=username, session=session)
+        if user:
+            id_user=user.id_user
+            abonnement = select(Abonnement).where(Abonnement.id_user1 == id_user)
+            abonne = select(Abonnement).where(Abonnement.id_user2 == id_user)
+            nb_abonnement=session.query(abonnement.alias("subquery")).count()
+            nb_abonne=session.query(abonne.alias("subquery")).count()
+    return  nb_abonnement,nb_abonne
 
 
+@app.post("follow/{username1}/{username2}")
+def follow(username1: str,username2:str):
+    with Session(db.engine) as session:
+        user1 = find_user(username=username1, session=session)
+        user2 = find_user(username=username2, session=session)
+        if user1 and user2:
+            id_user1=user1.id_user
+            id_user2=user2.id_user
+            new_sub=Abonnement(
+                id_user1=id_user1,
+                id_user2=id_user2
+            )
+            session.add(new_sub)
+            session.commit()
+            session.refresh(new_sub)
+            return new_sub
+
+
+def find_sub(id_user1:int, id_user2:int, session:Session):
+    order = select(Abonnement).where(Abonnement.id_user1 == id_user1, Abonnement.id_user2 == id_user2)
+    result = session.execute(order)
+    found_sub = result.scalar()
+    return(found_sub)
+  
+@app.delete("/unfollow/{username1}/{username2}")
+def unfollow(username1: str,username2:str):
+    with Session(db.engine) as session:
+        user1 = find_user(username=username1, session=session)
+        user2 = find_user(username=username2, session=session)
+        if user1 and user2:
+            id_user1=user1.id_user
+            id_user2=user2.id_user
+            sub=find_sub(id_user1,id_user2,session)
+            if sub:
+                session.delete(sub)
+                session.commit()
 
             
 if __name__ == "__main__":
@@ -352,3 +402,4 @@ if __name__ == "__main__":
     # genre: str = ""
     # adresse: str = ""
     # description: str = ""
+ 

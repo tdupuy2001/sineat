@@ -34,4 +34,18 @@ export class UserService {
     log_user(user: User) {
         return this.axiosInstance.post<User>('/login_check', user);
     }
+
+    community_user(username:string) {
+        return this.axiosInstance.post<User>('/community/'+username);
+    }
+
+    follow_user(username1:string, username2:string) {
+        return this.axiosInstance.post<User>('/follow/'+username1+'/'+username2);
+    }
+
+    unfollow_user(username1:string, username2:string) {
+        return this.axiosInstance.post<User>('/unfollow/'+username1+'/'+username2);
+    }
+
+
 }
