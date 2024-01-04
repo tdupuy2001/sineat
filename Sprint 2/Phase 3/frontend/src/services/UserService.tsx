@@ -35,12 +35,15 @@ export class UserService {
         return this.axiosInstance.post<User>('/login_check', user);
     }
 
-    community_user(username:string) {
-        return this.axiosInstance.post<User>('/community/'+username);
+    communityUser(username:string) {
+        return this.axiosInstance.get<number[]>('/community/'+username);
     }
 
-    handle_follow_user(username1:string, username2:string) {
-        return this.axiosInstance.post<User>('/handle_follow/'+username1+'/'+username2);
+    findFollow(username1:string, username2:string) {
+        return this.axiosInstance.get<string>('/find_follow/'+username1+'/'+username2);
+    }
+    handleFollow(username1:string, username2:string) {
+        return this.axiosInstance.post<string>('/handle_follow/'+username1+'/'+username2);
     }
 
 

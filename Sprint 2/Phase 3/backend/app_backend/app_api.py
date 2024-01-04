@@ -342,7 +342,6 @@ def delete_post(id_post: int):
         
 @app.get("/community/{username}")
 def get_community(username: str):
-
     with Session(db.engine) as session:
         user = find_user(username=username, session=session)
         if user:
@@ -351,40 +350,46 @@ def get_community(username: str):
             abonne = select(Abonnement).where(Abonnement.id_user2 == id_user)
             nb_abonnement=session.query(abonnement.alias("subquery")).count()
             nb_abonne=session.query(abonne.alias("subquery")).count()
-    return  nb_abonnement,nb_abonne
+    return  [nb_abonnement,nb_abonne]
 
-def find_sub(id_user1:int, id_user2:int, session:Session):
-    order = select(Abonnement).where(Abonnement.id_user1 == id_user1, Abonnement.id_user2 == id_user2)
-    result = session.execute(order)
-    found_sub = result.scalar()
-    return(found_sub)
 
-@app.get("find_follow/{username1}/{username2}")
+def find_sub(username1:str, username2:str, session:Session):
+    user1 = find_user(username=username1, session=session)
+    user2 = find_user(username=username2, session=session)
+    if user1 and user2:
+        id_user1=user1.id_user
+        id_user2=user2.id_user
+        order = select(Abonnement).where(Abonnement.id_user1 == id_user1, Abonnement.id_user2 == id_user2)
+        result = session.execute(order)
+        found_sub = result.scalar()
+        if found_sub:
+            return {'message':True,'sub':found_sub}
+        else:
+            return {'message': False,'id_user1':id_user1,'id_user2':id_user2}
+    else:
+        return {'message': 'User not found'}
+
+
+@app.get("/find_follow/{username1}/{username2}")
 def find_follow(username1: str,username2:str):
     with Session(db.engine) as session:
-        user1 = find_user(username=username1, session=session)
-        user2 = find_user(username=username2, session=session)
-        if user1 and user2:
-            id_user1=user1.id_user
-            id_user2=user2.id_user
-            sub=find_sub(id_user1,id_user2,session)
-            if sub:
-                return {'message': True}
-            else:
-                return {'message': False}
-        else:
-            return {'message': 'User not found'}
+        response=find_sub(username1,username2,session)
+        return response['message']
+        
 
-@app.post("handle_follow/{username1}/{username2}")
+@app.post("/handle_follow/{username1}/{username2}")
 def handle_follow(username1: str,username2:str):
     with Session(db.engine) as session:
-        user1 = find_user(username=username1, session=session)
-        user2 = find_user(username=username2, session=session)
-        if user1 and user2:
-            id_user1=user1.id_user
-            id_user2=user2.id_user
-            sub=find_sub(id_user1,id_user2,session)
-            if not sub:
+        response=find_sub(username1,username2,session)
+        try:
+            sub=response['sub']
+            session.delete(sub)
+            session.commit()
+            return 'Follow erased'
+        except:
+            try:
+                id_user1=response['id_user1']
+                id_user2=response['id_user2']
                 new_sub=Abonnement(
                     id_user1=id_user1,
                     id_user2=id_user2
@@ -392,10 +397,11 @@ def handle_follow(username1: str,username2:str):
                 session.add(new_sub)
                 session.commit()
                 session.refresh(new_sub)
-                return new_sub
-            else:
-                session.delete(sub)
-                session.commit()
+                return 'Follow added'
+            except:
+                return response['message']
+
+            
     
 
             
