@@ -473,7 +473,7 @@ export function UpdateProfile() {
           type="file"
           onChange={handleFileChange}
         />
-        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={img} alt="Default" />}
+        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={img} style={{width: '100px', height: '100px', objectFit: 'cover'}} alt="Default" />}
 
           <TextField
             required
