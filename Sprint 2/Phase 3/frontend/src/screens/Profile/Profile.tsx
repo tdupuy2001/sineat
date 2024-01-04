@@ -93,7 +93,11 @@ export function Profile() {
     }
    }, [usernameLink]);
 
-
+  const handleFollow = () => {
+    if (usernameLink) {
+    userService.handleFollow(username,usernameLink)
+    }
+  }
   
   return (
     
@@ -130,6 +134,9 @@ export function Profile() {
             </div>
             <h2>{nb_abonne} Abonné</h2>
             <h2>{nb_abonnement} Abonnement</h2>
+            {username!=usernameLink &&(
+              <button onClick={handleFollow}>Follow/Unfollow</button>
+            )}   
           </div>
         </div>
       </div>
