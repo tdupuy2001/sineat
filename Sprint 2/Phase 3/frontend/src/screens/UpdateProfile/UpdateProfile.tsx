@@ -7,6 +7,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { User } from "../../dto/User";
+import img from "../Profile/assets/profile.png"
 import { readAndCompressImage } from 'browser-image-resizer';
 
 
@@ -472,7 +473,7 @@ export function UpdateProfile() {
           type="file"
           onChange={handleFileChange}
         />
-        {previewUrl && <img src={previewUrl} alt="Preview" />}
+        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={img} alt="Default" />}
 
           <TextField
             required
