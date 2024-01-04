@@ -25,6 +25,7 @@ export function Profile() {
 
 
   const navigate = useNavigate();
+  const userService = new UserService(config.API_URL);
 
   
 
@@ -35,11 +36,14 @@ export function Profile() {
       setUsername(context.user?.username)
       setIsLoggedIn(true)
     }
+    if(usernameLink){
+      userService.getUser(usernameLink)
+    }
   }, [context.user])
   
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [profileImage, setPP] = useState<File | null>(null);
+  // const [profileImage, setPP] = useState<File | null>(null);
 
 
   const [username, setUsername] = useState<string>(() => {
@@ -65,28 +69,28 @@ export function Profile() {
   }, [context.user]);
 
 
-  const urlToFile = async (url: string, filename: string, mimeType: any) => {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return new File([blob], filename, { type: mimeType });
-  };
+  // const urlToFile = async (url: string, filename: string, mimeType: any) => {
+  //   const res = await fetch(url);
+  //   const blob = await res.blob();
+  //   return new File([blob], filename, { type: mimeType });
+  // };
 
 
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user 
-  useEffect(() => {
-    if (context.user?.ppbin){
-      urlToFile(context.user.ppbin, `image.${context.user.ppform}`, `image/${context.user.ppform}`)
-        .then(image => {
-          // Do something with the image File object here
-          setPP(image)
-        })
-        .catch(error => {
-          console.error('Error converting URL to file:', error);
-        });
-    }
-    console.log(`username: '${username}'`);
-    console.log(`usernameLink: '${usernameLink}'`);
-  }, [username, usernameLink]);
+  // useEffect(() => {
+  //   if (context.user?.ppbin){
+  //     urlToFile(context.user.ppbin, `image.${context.user.ppform}`, `image/${context.user.ppform}`)
+  //       .then(image => {
+  //         // Do something with the image File object here
+  //         setPP(image)
+  //       })
+  //       .catch(error => {
+  //         console.error('Error converting URL to file:', error);
+  //       });
+  //   }
+  //   console.log(`username: '${username}'`);
+  //   console.log(`usernameLink: '${usernameLink}'`);
+  // }, [username, usernameLink]);
 
   
 

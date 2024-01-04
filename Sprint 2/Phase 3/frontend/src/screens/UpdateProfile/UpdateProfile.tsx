@@ -19,6 +19,7 @@ export function UpdateProfile() {
   const [langue, setLangue] = useState<string>();
   const [description, setDescription] = useState<string | undefined>();
   const [adresse, setAdresse] = useState<string | undefined>();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -44,16 +45,26 @@ export function UpdateProfile() {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const config = {
-        quality: 0.5,
+        quality: 0.8,
         maxWidth: 800,
         maxHeight: 800,
         autoRotate: true,
         debug: true,
       };
+      const configPreview = {
+        quality: 0.8,
+        maxWidth: 100,
+        maxHeight: 100,
+        autoRotate: true,
+        debug: true,
+      };
       try {
         const compressedFile = await readAndCompressImage(file, config);
+        const previewFile = await readAndCompressImage(file, configPreview);
         const newFile = new File([compressedFile], file.name, { type: compressedFile.type });
+        const newPreviewFile = new File([previewFile], file.name, { type: previewFile.type });
         setSelectedFile(newFile);
+        setPreviewUrl(URL.createObjectURL(newPreviewFile));
       } catch (error) {
         console.error(error);
       }
@@ -85,6 +96,7 @@ export function UpdateProfile() {
         let extension;
 
         if (selectedFile) {
+          // userService.getUser(username);
           const reader = new FileReader();
           reader.readAsDataURL(selectedFile);
           reader.onload = () => {
@@ -460,6 +472,7 @@ export function UpdateProfile() {
           type="file"
           onChange={handleFileChange}
         />
+        {previewUrl && <img src={previewUrl} alt="Preview" />}
 
           <TextField
             required
