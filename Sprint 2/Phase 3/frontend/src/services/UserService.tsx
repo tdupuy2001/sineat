@@ -40,7 +40,7 @@ export class UserService {
     }
 
     findFollow(username1:string, username2:string) {
-        return this.axiosInstance.get<string>('/find_follow/'+username1+'/'+username2);
+        return this.axiosInstance.get<boolean>('/find_follow/'+username1+'/'+username2);
     }
     handleFollow(username1:string, username2:string) {
         return this.axiosInstance.post<string>('/handle_follow/'+username1+'/'+username2);

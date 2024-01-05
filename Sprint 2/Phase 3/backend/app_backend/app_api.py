@@ -367,7 +367,7 @@ def find_sub(username1:str, username2:str, session:Session):
         else:
             return {'message': False,'id_user1':id_user1,'id_user2':id_user2}
     else:
-        return {'message': 'User not found'}
+        return {'message': False}
 
 
 @app.get("/find_follow/{username1}/{username2}")
@@ -399,7 +399,7 @@ def handle_follow(username1: str,username2:str):
                 session.refresh(new_sub)
                 return 'Follow added'
             except:
-                return response['message']
+                return 'User not found'
 
             
     

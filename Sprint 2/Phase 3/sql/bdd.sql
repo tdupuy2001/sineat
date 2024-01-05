@@ -154,7 +154,8 @@ create table post (
     on update cascade,
   constraint check_post_type check (
     type IN ('texte', 'recette', 'restaurant', 'santé')
-  )
+  ),
+  constraint check_diff_post check (id_post <> id_post_comm)
   
 );
 
@@ -228,7 +229,8 @@ create table abonnement (
     foreign key (id_user2)
     references "user" (id_user)
     on delete cascade
-    on update cascade
+    on update cascade,
+  constraint check_diff_user check (id_user1 <> id_user2)
 );
 
 

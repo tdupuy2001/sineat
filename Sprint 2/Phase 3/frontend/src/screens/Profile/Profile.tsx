@@ -12,12 +12,7 @@ import img from "./assets/profile.png"
 
 export function Profile() {
 
-
-  const navigate = useNavigate();
   const userService = new UserService(config.API_URL);
-
-  
-
   const context = useContext(MyBlogContext);
 
   useEffect(() => {
@@ -81,7 +76,7 @@ export function Profile() {
   //   console.log(`usernameLink: '${usernameLink}'`);
   // }, [username, usernameLink]);
 
-
+  // gérer les abonnements/abonnés
   const [nb_abonnement, setAbonnement] = useState<number>();
   const [nb_abonne, setAbonne] = useState<number>();
   useEffect(() => {
@@ -93,12 +88,34 @@ export function Profile() {
     }
    }, [usernameLink]);
 
-  const handleFollow = () => {
+
+  const [isSub, setSub] = useState(false);
+  useEffect(() => {
     if (usernameLink) {
-    userService.handleFollow(username,usernameLink)
+      userService.findFollow(username,usernameLink).then((response) => {
+      setSub(response.data)
+      });
     }
-  }
+  }, [usernameLink]);
+
   
+   const handleFollow = () => {
+    if (usernameLink) {
+      userService.handleFollow(username,usernameLink)
+        .then(() => {
+          userService.communityUser(usernameLink).then((response) => {
+            setAbonnement(response.data[0]);
+            setAbonne(response.data[1]);
+          });
+          userService.findFollow(username,usernameLink).then((response) => {
+            setSub(response.data)
+          });
+        });
+    }
+   }
+
+ 
+
   return (
     
     <div>
@@ -134,9 +151,13 @@ export function Profile() {
             </div>
             <h2>{nb_abonne} Abonné</h2>
             <h2>{nb_abonnement} Abonnement</h2>
+            <div className="buttons">
             {username!=usernameLink &&(
-              <button onClick={handleFollow}>Follow/Unfollow</button>
-            )}   
+              <NavLink to={`/profile/${usernameLink}`}>
+                <button onClick={handleFollow}>{isSub ? 'Unfollow' : 'Follow'}</button>
+              </NavLink>
+            )}  
+            </div> 
           </div>
         </div>
       </div>
