@@ -8,6 +8,7 @@ import Footer from '../../components/Footer/Footer';
 import { useParams } from 'react-router-dom';
 import { useEffect } from "react";
 import img from "./assets/profile.png"
+import './Profile.css';
 
 
 export function Profile() {
@@ -116,54 +117,61 @@ export function Profile() {
 
  
 
-  return (
-    
-    <div>
-      <Navbar />
-      <div className="accueil-container">
-        <div className="two-columns">
-          <div className="column">
-            <div className="image-grid">
-              {/* <img src={imageList[currentImageIndex1]} alt="Current Image" /> */}
-              {/* <img src={imageList[currentImageIndex2]} alt="Current Image" /> */}
-            </div>
-            <p />
-            <div className="image-grid">
-              {/* <img src={imageList[currentImageIndex3]} alt="Current Image" /> */}
-              {/* <img src={imageList[currentImageIndex4]} alt="Current Image" /> */}
-            </div>
+   // ...
+return (
+  <div>
+    <Navbar />
+    <div className="profile-container">
+      <div className="profile-header">
+        <img className="profile-picture" src={img} alt="Profile" />
+        <div className="profile-info">
+          <h2>Profil de {usernameLink}</h2>
+          <div className="subscribers">
+            <span>{nb_abonne} Abonné</span>
+            <span>{nb_abonnement} Abonnement</span>
           </div>
-          <div className="column">
-            {/* <img src={Img} alt="Logo" /> */}
-            <div className="buttons">
+          <div className="buttons">
             {username == usernameLink && (
+              <>
                 <NavLink to="/">
-                <button onClick={handleLogout}>Deconnexion</button>
-              </NavLink>
-              )}
-              <img src={`${img}`} alt="User" style= {{width: '100px', height: '100px', objectFit: 'cover'}} /> {/* je dois changer parce que c'est bien sur pas le context de l'image mais d'un getUser avec le nom du machin*/}
-              <h2>Profil de {usernameLink}</h2>
-              {username == usernameLink && (
-                    <NavLink to={`/updateprofile/${usernameLink}`}>
-                    <button>Update Profile</button>
-                    </NavLink>
-                )}
-            </div>
-            <h2>{nb_abonne} Abonné</h2>
-            <h2>{nb_abonnement} Abonnement</h2>
-            <div className="buttons">
+                  <button onClick={handleLogout}>Deconnexion</button>
+                </NavLink>
+                <NavLink to={`/updateprofile/${usernameLink}`}>
+                  <button>Update Profile</button>
+                </NavLink>
+              </>
+            )}
             {username!=usernameLink &&(
               <NavLink to={`/profile/${usernameLink}`}>
                 <button onClick={handleFollow}>{isSub ? 'Unfollow' : 'Follow'}</button>
               </NavLink>
-            )}  
-            </div> 
+            )}
           </div>
         </div>
       </div>
-      <Footer />
+      <div className="collections-section">
+        <div className="collection"></div>
+        <div className="collection"></div>
+        <div className="collection"></div>
+        {username == usernameLink && (
+          <div className="add-collection">
+            <p>&#43;</p>
+          </div>
+        )};        
+      </div>
+      <div className="posts-section">
+        <div className="post"></div>
+        <div className="post"></div>
+        <div className="post"></div>
+        <div className="post"></div>
+        <div className="post"></div>
+        <div className="post"></div>
+        <div className="post"></div>
+      </div>
     </div>
-  );
+    <Footer />
+  </div>
+ );
 }
 
 export default Profile
