@@ -342,15 +342,28 @@ def delete_post(id_post: int):
         
 @app.get("/community/{username}")
 def get_community(username: str):
+    liste_abonnement=[]
+    liste_abonne=[]
     with Session(db.engine) as session:
         user = find_user(username=username, session=session)
         if user:
             id_user=user.id_user
-            abonnement = select(Abonnement).where(Abonnement.id_user1 == id_user)
-            abonne = select(Abonnement).where(Abonnement.id_user2 == id_user)
-            nb_abonnement=session.query(abonnement.alias("subquery")).count()
-            nb_abonne=session.query(abonne.alias("subquery")).count()
-    return  [nb_abonnement,nb_abonne]
+            query_abonnement = select(Abonnement).where(Abonnement.id_user1 == id_user)
+            query_abonne = select(Abonnement).where(Abonnement.id_user2 == id_user)
+            res_abonnement = session.execute(query_abonnement).all()
+            res_abonne = session.execute(query_abonne).all()
+            for abonnement in res_abonnement:
+                query_username=select(User.username).where(User.id_user == abonnement.Abonnement.id_user2)
+                username=session.execute(query_username).scalar()
+                liste_abonnement.append(username)
+            for abonne in res_abonne:
+                query_username=select(User.username).where(User.id_user == abonne.Abonnement.id_user1)
+                username=session.execute(query_username).scalar()
+                liste_abonne.append(username)
+            nb_abonnement=session.query(query_abonnement.alias("subquery")).count()
+            nb_abonne=session.query(query_abonne.alias("subquery")).count()
+    return  {'nb_abonnement':nb_abonnement,'nb_abonne':nb_abonne,'liste_abonnement': liste_abonnement ,'liste_abonne': liste_abonne }
+
 
 
 def find_sub(username1:str, username2:str, session:Session):

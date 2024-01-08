@@ -1,6 +1,12 @@
 import axios, {AxiosInstance} from 'axios'
 import { User } from '../dto/User';
 
+interface CommunityUserResponse {
+    nb_abonnement: number;
+    nb_abonne: number;
+    liste_abonnement: string[];
+    liste_abonne: string[];
+  }
 export class UserService {
 
     private apiUrl: string;
@@ -36,7 +42,7 @@ export class UserService {
     }
 
     communityUser(username:string) {
-        return this.axiosInstance.get<number[]>('/community/'+username);
+        return this.axiosInstance.get<CommunityUserResponse>('/community/'+username);
     }
 
     findFollow(username1:string, username2:string) {

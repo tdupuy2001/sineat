@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import img from "./assets/profile.png";
 import "./Profile.css";
+import Modal from 'react-modal';
 
 export function Profile() {
   const userService = new UserService(config.API_URL);
@@ -70,13 +71,18 @@ export function Profile() {
 
   // gérer les abonnements/abonnés
   //FIXME: Ici on a pas la possibilité d'avoir plusieurs connexion simultanée...
-  const [nb_abonnement, setAbonnement] = useState<number>();
-  const [nb_abonne, setAbonne] = useState<number>();
+  const [nb_abonnement, setNbAbonnement] = useState<number>();
+  const [nb_abonne, setNbAbonne] = useState<number>();
+  const [abonnement, setAbonnement] = useState<string[]>();
+  const [abonne, setAbonne] = useState<string[]>();
+
   useEffect(() => {
     if (usernameLink) {
       userService.communityUser(usernameLink).then((response) => {
-        setAbonnement(response.data[0]);
-        setAbonne(response.data[1]);
+        setNbAbonnement(response.data.nb_abonnement);
+        setNbAbonne(response.data.nb_abonne);
+        setAbonnement(response.data.liste_abonnement);
+        setAbonne(response.data.liste_abonne);
       });
     }
   }, [usernameLink]);
@@ -94,8 +100,8 @@ export function Profile() {
     if (usernameLink) {
       userService.handleFollow(username, usernameLink).then(() => {
         userService.communityUser(usernameLink).then((response) => {
-          setAbonnement(response.data[0]);
-          setAbonne(response.data[1]);
+          setNbAbonnement(response.data.nb_abonnement);
+          setNbAbonne(response.data.nb_abonne);
         });
         userService.findFollow(username, usernameLink).then((response) => {
           setSub(response.data);
@@ -103,6 +109,17 @@ export function Profile() {
       });
     }
   };
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const openModal = () => {
+    setModalIsOpen(true);
+   };
+
+   const closeModal = () => {
+    setModalIsOpen(false);
+   };
+
+
   return (
     <div>
       <Navbar />
@@ -112,8 +129,10 @@ export function Profile() {
           <div className="profile-info">
             <h2>Profil de {usernameLink}</h2>
             <div className="subscribers">
-              <span>{nb_abonne} Abonné</span>
-              <span>{nb_abonnement} Abonnement</span>
+              <button onClick={openModal}> {nb_abonne} Abonné(s)</button>
+              <NavLink to="/profile/${username}/following">
+                <button> {nb_abonnement} Abonnement(s)</button>
+              </NavLink>  
             </div>
             <div className="buttons">
               {username == usernameLink && (
@@ -157,6 +176,21 @@ export function Profile() {
           <div className="post"></div>
         </div>
       </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Example Modal"
+        >
+        <h2>Abonnés</h2>
+        <ul>
+          {abonne && abonne.map((abonneUsername) => (
+            <li key={abonneUsername}>
+              <NavLink to={`/profile/${abonneUsername}`}>{abonneUsername}</NavLink>
+            </li>
+          ))}
+        </ul>
+        <button onClick={closeModal}>Close</button>
+      </Modal>
       <Footer />
     </div>
   );
