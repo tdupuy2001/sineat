@@ -106,6 +106,8 @@ export function Profile() {
         userService.communityUser(usernameLink).then((response) => {
           setNbAbonnement(response.data.nb_abonnement);
           setNbAbonne(response.data.nb_abonne);
+          setAbonnement(response.data.liste_abonnement);
+          setAbonne(response.data.liste_abonne);
         });
         userService.findFollow(username, usernameLink).then((response) => {
           setSub(response.data);
