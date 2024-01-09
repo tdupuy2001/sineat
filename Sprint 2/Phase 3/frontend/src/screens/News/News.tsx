@@ -80,31 +80,60 @@ export function News() {
       <Navbar />
       <div className='fil-dactu'>
         <ul className='bandeau'>
-          <li><img className='nuage' src={nuage} alt="Logo" /></li>
-          <li><text className='filtres'>Fil d'actualité</text></li>
-          <li><img className='nuage' src={nuage} alt="Logo" /></li>
+          <li><img className='nuage_1' src={nuage} alt="Logo" /></li>
+          <li><img className='nuage_2' src={nuage} alt="Logo" /></li>
+          <li><img className='nuage_1' src={nuage} alt="Logo" /></li>
+
+          <li><text className='fil_dal'>Fil d'actualité</text></li>
+          
+          <li><img className='nuage_1' src={nuage} alt="Logo" /></li>
+          <li><img className='nuage_2' src={nuage} alt="Logo" /></li>
+          <li><img className='nuage_1' src={nuage} alt="Logo" /></li>
         </ul>
       </div>
-      <div>
-        <text className='filtres'>Filtres</text>
-        <button className= 'button-filtres' onClick={sortOldestToNewest}>Le plus ancien</button>
-        <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button>
-        <button className= 'button-filtres' onClick={filterPosts}>Posts</button>
-        <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button>
-        <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button>
+      <div className='button-container'>
+        {/* <text className='filtres'>Filtres</text> */}
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className= 'button-filtres' onClick={sortOldestToNewest}>Le plus ancien</button>
+        </div>
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button>
+        </div>
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className= 'button-filtres' onClick={filterPosts}>Posts</button>
+        </div>
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button>
+        </div>
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button>
+        </div>
       </div>
-      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={230}>
+      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
         {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.7, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post'>
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post'>
             <div className='post-border' >
                 <h2 className='post-title'>Titre du Post</h2>
-                <p>{post.type}</p>
+                <div className='post-info'>
+                  <p className='post-type'>{post.type}</p>
+                  <p className='post-user'>@{users.find(user => user.id_user === post.id_user)?.username}</p>
+                </div>
+
+                <img className='img-test' src={logo} alt="Logo" />
+
                 <p className='post-text'>{post.text}</p>
-                <p>{post.date.toString()} {users.find(user => user.id_user === post.id_user)?.username}</p>
+                <p className='post-date'>{post.date.toString()} </p>
             </div>
           </div>
         ))}
       </ResponsiveGridLayout>
+      {/*problème sur la modal on voit les filtres!!! */}
+      {/*rajouter une + pour ajouter publication */}
       <Modal show={isModalOpen} handleClose={()=> {
         setIsModalOpen(false);
         setSelectedPost(null);
