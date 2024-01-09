@@ -10,6 +10,10 @@ import { useEffect } from "react";
 import img from "./assets/profile.png";
 import "./Profile.css";
 import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faCog, faSignOut } from '@fortawesome/free-solid-svg-icons';
+
+
 
 export function Profile() {
   const userService = new UserService(config.API_URL);
@@ -110,13 +114,23 @@ export function Profile() {
     }
   };
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const openModal = () => {
-    setModalIsOpen(true);
+  const [abonneIsOpen, setAbonneIsOpen] = useState(false);
+  const [abonnementIsOpen, setAbonnementIsOpen] = useState(false);
+
+  const openAbonne = () => {
+    setAbonneIsOpen(true);
    };
 
-   const closeModal = () => {
-    setModalIsOpen(false);
+   const closeAbonne = () => {
+    setAbonneIsOpen(false);
+   };
+
+   const openAbonnement = () => {
+    setAbonnementIsOpen(true);
+   };
+
+   const closeAbonnement = () => {
+    setAbonnementIsOpen(false);
    };
 
 
@@ -127,21 +141,23 @@ export function Profile() {
         <div className="profile-header">
           <img className="profile-picture" src={img} alt="Profile" />
           <div className="profile-info">
-            <h2>Profil de {usernameLink}</h2>
+            <h2>{usernameLink}</h2>
             <div className="subscribers">
-              <button onClick={openModal}> {nb_abonne} Abonné(s)</button>
-              <NavLink to="/profile/${username}/following">
-                <button> {nb_abonnement} Abonnement(s)</button>
-              </NavLink>  
+              <button onClick={openAbonne} id="button_sub"> {nb_abonne} Abonné(s)</button>
+              <button onClick={openAbonnement} id="button_sub"> {nb_abonnement} Abonnement(s)</button>
             </div>
             <div className="buttons">
               {username == usernameLink && (
                 <>
                   <NavLink to="/">
-                    <button onClick={handleLogout}>Deconnexion</button>
+                    <button onClick={handleLogout}>
+                      <FontAwesomeIcon icon={faSignOut}/>
+                    </button>
                   </NavLink>
                   <NavLink to={`/updateprofile/${usernameLink}`}>
-                    <button>Update Profile</button>
+                    <button>
+                      <FontAwesomeIcon icon={faCog}/>
+                    </button>
                   </NavLink>
                 </>
               )}
@@ -177,19 +193,52 @@ export function Profile() {
         </div>
       </div>
       <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Example Modal"
+        isOpen={abonneIsOpen}
+        onRequestClose={closeAbonne}
+        contentLabel="Abonne Modal"
+        style={{
+          content: {
+            background: '#FAF6F1',
+          }
+        }}
         >
-        <h2>Abonnés</h2>
+        <div className="title_sticky">
+          <h2>Abonné(s)</h2>
+        </div>
         <ul>
           {abonne && abonne.map((abonneUsername) => (
-            <li key={abonneUsername}>
-              <NavLink to={`/profile/${abonneUsername}`}>{abonneUsername}</NavLink>
+            <li key={abonneUsername} id="list_username">
+              <NavLink to={`/profile/${abonneUsername}`} onClick={closeAbonne} className="username_link">{abonneUsername}</NavLink>
             </li>
           ))}
         </ul>
-        <button onClick={closeModal}>Close</button>
+        <button className="close-button" onClick={closeAbonne}>
+          <FontAwesomeIcon icon={faTimes}/>
+        </button>
+      </Modal>
+      <Modal
+        isOpen={abonnementIsOpen}
+        onRequestClose={closeAbonnement}
+        contentLabel="Abonnement Modal"
+        style={{
+          content: {
+            background: '#FAF6F1',
+          }
+        }}
+        >
+        <div className="title_sticky">
+          <h2>Abonnement(s)</h2>
+        </div>
+        <ul>
+          {abonnement && abonnement.map((abonnementUsername) => (
+            <li key={abonnementUsername} id="list_username">
+              <NavLink to={`/profile/${abonnementUsername}`} onClick={closeAbonnement} className="username_link">{abonnementUsername}</NavLink>
+            </li>
+          ))}
+        </ul>
+        <button className="close-button" onClick={closeAbonnement}>
+          <FontAwesomeIcon icon={faTimes}/>
+        </button>
       </Modal>
       <Footer />
     </div>
