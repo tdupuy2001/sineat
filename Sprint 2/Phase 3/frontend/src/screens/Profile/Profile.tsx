@@ -149,14 +149,14 @@ export function Profile() {
             <div className="buttons">
               {username == usernameLink && (
                 <>
-                  <NavLink to="/">
-                    <button onClick={handleLogout}>
-                      <FontAwesomeIcon icon={faSignOut}/>
-                    </button>
-                  </NavLink>
                   <NavLink to={`/updateprofile/${usernameLink}`}>
                     <button>
                       <FontAwesomeIcon icon={faCog}/>
+                    </button>
+                  </NavLink>
+                  <NavLink to="/">
+                    <button onClick={handleLogout}>
+                      <FontAwesomeIcon icon={faSignOut}/>
                     </button>
                   </NavLink>
                 </>
