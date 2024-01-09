@@ -95,23 +95,26 @@ export function News() {
         {/* <text className='filtres'>Filtres</text> */}
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className= 'button-filtres' onClick={sortOldestToNewest}>Le plus ancien</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortOldestToNewest}>Le plus ancien</button>        </div>
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortNewestToOldest}>Le plus récent</button>
+          {/* <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Posts</button>
+          {/* <button className= 'button-filtres' onClick={filterPosts}>Posts</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className= 'button-filtres' onClick={filterPosts}>Posts</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRecipes}>Recettes</button>
+          {/* <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button>
-        </div>
-        <div className="button-wrapper">
-          <div className='button-underline'></div>
-          <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRestaurant}>Restaurants</button>
+          {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
       </div>
       <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
@@ -132,7 +135,6 @@ export function News() {
           </div>
         ))}
       </ResponsiveGridLayout>
-      {/*problème sur la modal on voit les filtres!!! */}
       {/*rajouter une + pour ajouter publication */}
       <Modal show={isModalOpen} handleClose={()=> {
         setIsModalOpen(false);
@@ -142,21 +144,32 @@ export function News() {
           <div className='post-avec-com'>
             <div className='post-com'>
               <div className='post-com-margin'>
-                <h2>Titre du Post</h2>
-                <p>{selectedPost.type}</p>
-                <p>{selectedPost.text}</p>
-                <p>{selectedPost.date.toString()} {users.find(user => user.id_user === selectedPost.id_user)?.username}</p>
-              </div>
-            </div>
-           {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
-            <div className='post-com-com'>
-              <div key={comment.id_post}>
-                <p className='post-com-margin'>{comment.text}</p>
-                <p className='post-com-margin'>{comment.date.toString()} {users.find(user => user.id_user === comment.id_user)?.username}</p>
-              </div>
-            </div>
-            ))}
+                <h2 className='post-title'>Titre du Post</h2>
+                <div className='post-info'>
+                  <p className='post-type'>{selectedPost.type}</p>
+                  <p className='post-user'>@{users.find(user => user.id_user === selectedPost.id_user)?.username}</p>
+                </div>
 
+                <img className='img-test' src={logo} alt="Logo" />
+
+                {/*changer le post-text car là on peut afficher toutes les lignes */}
+                <p className='post-text'>{selectedPost.text}</p>
+                <p className='post-date'>{selectedPost.date.toString()} </p>
+              </div>
+            </div>
+            <div className='comments-container'>
+              {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
+                <div className='post-com-com'>
+                  <div key={comment.id_post}>
+                    <div className='post-info-com'>
+                      <p className='post-user'>@{users.find(user => user.id_user === comment.id_user)?.username}</p>
+                      <p className='post-com-date'>{comment.date.toString()} </p>
+                    </div>
+                    <p className='post-text-com'>{comment.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </Modal>
