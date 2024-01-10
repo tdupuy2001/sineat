@@ -37,7 +37,7 @@ export function News() {
     };
   
     const filterPosts = () => {
-      setFilter("post");
+      setFilter("texte");
     };
   
     const filterRecipes = () => {
@@ -45,8 +45,12 @@ export function News() {
     };
   
     const filterRestaurant = () => {
-      setFilter("commentaire_resto");
+      setFilter("restaurant");
     };
+
+    const filterSante = () => {
+      setFilter("santé")
+    }
   
 
    
@@ -103,23 +107,28 @@ export function News() {
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Posts</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Post</button>
           {/* <button className= 'button-filtres' onClick={filterPosts}>Posts</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRecipes}>Recettes</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRecipes}>Recette</button>
           {/* <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRestaurant}>Restaurants</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRestaurant}>Restaurant</button>
+          {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
+        </div>
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterSante}>Santé</button>
           {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
       </div>
       <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
         {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post'>
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post-news'>
             <div className='post-border' >
                 <h2 className='post-title'>Titre du Post</h2>
                 <div className='post-info'>

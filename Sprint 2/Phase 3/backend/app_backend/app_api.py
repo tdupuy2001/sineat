@@ -423,7 +423,7 @@ def get_post_comments(id_post: int):
         comments = session.query(Post).where(Post.id_post_comm==id_post).all()
         return comments
 
-#api pour récupérer le user d'un post
+#api pour récupérer le user d'un post, changer pour avec find_user_by_id
 @app.get("/posts/{id_post}/user")
 def get_user_from_post(id_post: int):
     with Session(db.engine) as session:
