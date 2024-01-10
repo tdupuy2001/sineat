@@ -17,6 +17,7 @@ import UpdateProfile from '../screens/UpdateProfile/UpdateProfile.tsx';
 import ProtectedRoute from '../util/ProtectedRoute.tsx';
 import ProfileRoute from '../util/ProfileRoute.tsx';
 import UnknownUser from '../screens/Error/unknown_user/UnknownUser.tsx';
+import {News} from '../screens/News/News';
 
 
 
@@ -51,6 +52,7 @@ function App() {
         <Route path="/updateprofile/:usernameLink" element={<UpdateProfile/>} />
         <Route path="/unknown_user" element={<UnknownUser/>}></Route>
         <Route path="/*" element={<Error404/>}></Route>
+        <Route path='/news' element={<News/>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>
