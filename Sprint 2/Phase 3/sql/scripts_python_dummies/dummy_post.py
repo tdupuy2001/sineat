@@ -12,7 +12,7 @@ chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DUMMY_DATA_NUMBER = 100;
 TABLE_NAME = "post";
-TABLE_COLUMNS = ["id_user","text","date","type","afficher","id_note","id_post_comm"]
+TABLE_COLUMNS = ["id_user","text","date","type","afficher","titre_post","id_note","id_post_comm"]
 content = "";
 
 for i in range(DUMMY_DATA_NUMBER):
@@ -30,7 +30,8 @@ for i in range(DUMMY_DATA_NUMBER):
         afficher=random.choice(["true","false"])
     else:
         afficher = "true"
-    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_user}\',\'{text}\',\'{date}\',\'{type_}\',{afficher},{id_note},{id_post_comm});\n"
+    titre_post=fake.sentence(nb_words=5).replace("'","")
+    content += f"INSERT INTO {TABLE_NAME} ({','.join(TABLE_COLUMNS)}) VALUES (\'{id_user}\',\'{text}\',\'{date}\',\'{type_}\',{afficher},\'{titre_post}\',{id_note},{id_post_comm});\n"
 
 
 with open(chemin+f"dummy_{TABLE_NAME}.sql", 'w') as f:

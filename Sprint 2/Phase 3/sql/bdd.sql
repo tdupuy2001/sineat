@@ -129,6 +129,7 @@ create table post (
   date date not null,
   type text not null,
   afficher boolean not null default true,
+  titre_post text,
   id_note int,
   id_post_comm int,
   id_photo int,
