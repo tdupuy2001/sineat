@@ -26,16 +26,18 @@ export function Register() {
   );
   const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
+  
   //ici à changer pour le register
-  const login = useCallback(
-    (user: User) => {
-      context.setUser(user);
-      setLoginMessage("");
-      setLoginMessageType("info");
-      navigate("/Login");
-    },
-    [context, navigate]
-  );
+
+  // const login = useCallback(
+  //   (user: User) => {
+  //     context.setUser(user);
+  //     setLoginMessage("");
+  //     setLoginMessageType("info");
+  //     navigate("/Login");
+  //   },
+  //   [context, navigate]
+  // );
 
   const genres = [
     {
@@ -289,11 +291,8 @@ export function Register() {
                   // date_de_naissance: "",
                   // genre: ""
                 }
-                userService.addUser(user).then((u) => {
-                  if (u.data) {
-                    login(u.data);
-                  }
-                });
+                userService.addUser(user)
+                navigate('/login')
               }
             } else {
               setLoginMessage("Les mots de passe ne correspondent pas !")

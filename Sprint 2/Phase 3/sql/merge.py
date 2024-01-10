@@ -1,7 +1,7 @@
 #Déjà créé donc pas à relancer.
 
-#enlever commentaire sql_files et changer id_note de dummy_post quand etablissement.sql créé
-#enlver commentaire de regime_user et de regime_etablissement si ajout d'un autre régime
+
+#enlever commentaire de regime_user et de regime_etablissement si ajout d'un autre régime
 
 sql_files=['dummy_"user".sql',
            'dummy_abonnement.sql',

@@ -24,6 +24,7 @@ drop table if exists type_note cascade;
 drop table if exists "user" cascade;
 drop table if exists "role" cascade;
 drop table if exists possede_role cascade;
+drop table if exists photo_post cascade;
 
 
 -- -----------------------------------------------------
@@ -45,6 +46,8 @@ create table "user" (
   ppform text,
   langue text default 'Français',
   description text,
+  constraint username_unique
+    unique (username),
   constraint avatar check (
     (ppbin is null and ppform is null)
     or
@@ -99,7 +102,21 @@ create table note (
     unique (id_note)
 );
 
+-- -----------------------------------------------------
+-- Table photo_post
+-- -----------------------------------------------------
 
+create table photo_post (
+  id_photo serial primary key,
+  picbin bytea,
+  picform text,
+  constraint picture check (
+    (picbin is null and picform is null)
+    or
+    (picbin is not null and picform is not null)
+  )
+  
+);
 
 -- -----------------------------------------------------
 -- Table post
@@ -112,8 +129,10 @@ create table post (
   date date not null,
   type text not null,
   afficher boolean not null default true,
+  titre_post text,
   id_note int,
   id_post_comm int,
+  id_photo int,
   constraint id_user_post_fk
     foreign key (id_user)
     references "user" (id_user)
@@ -128,10 +147,18 @@ create table post (
     foreign key (id_post_comm)
     references post (id_post)
     on delete cascade
-    on update cascade
+    on update cascade,
+  constraint id_photo_fk
+    foreign key (id_photo)
+    references photo_post (id_photo)
+    on delete cascade
+    on update cascade,
+  constraint check_post_type check (
+    type IN ('texte', 'recette', 'restaurant', 'santé')
+  ),
+  constraint check_diff_post check (id_post <> id_post_comm)
+  
 );
-
-
 
 -- -----------------------------------------------------
 -- Table role
@@ -203,7 +230,8 @@ create table abonnement (
     foreign key (id_user2)
     references "user" (id_user)
     on delete cascade
-    on update cascade
+    on update cascade,
+  constraint check_diff_user check (id_user1 <> id_user2)
 );
 
 

@@ -3,7 +3,7 @@ import faker
 fake = faker.Faker(["fr_FR"])
 
 #creation of useful data
-noms=["sans gluten"]
+noms=["intolerance_gluten","allergie_gluten"]
 chemin="Sprint 2/Phase 3/sql/bases_sql/"
 
 DATA_NUMBER = len(noms);
