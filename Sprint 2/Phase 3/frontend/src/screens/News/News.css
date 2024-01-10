@@ -159,6 +159,7 @@ div[data-grid] {
     margin-right: 1%;
     /* border-radius: 10%; */
     margin-top: 0.5%;
+    cursor: pointer;
 }
 
 .post-com-margin {

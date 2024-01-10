@@ -159,8 +159,8 @@ export function News() {
             </div>
             <div className='comments-container'>
               {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
-                <div className='post-com-com'>
-                  <div key={comment.id_post}>
+                <div className='post-com-com' onClick={() => {setSelectedPost(comment); setIsModalOpen(true);}}>
+                  <div key={comment.id_post} >
                     <div className='post-info-com'>
                       <p className='post-user'>@{users.find(user => user.id_user === comment.id_user)?.username}</p>
                       <p className='post-com-date'>{comment.date.toString()} </p>
