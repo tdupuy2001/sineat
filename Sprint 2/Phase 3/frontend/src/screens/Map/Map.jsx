@@ -4,7 +4,7 @@ import './Map.css';
 import Img from './assets/SIN-2-NoBG.png';
 import { Link,  useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/SearchBar/searchbar';
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { MapContainer, TileLayer,ZoomControl  } from 'react-leaflet'
 import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from "leaflet";
@@ -13,6 +13,9 @@ import Stack from '@mui/material/Stack';
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import LeafletGeocoder from './LeafletGeocoder';
+import { useState} from 'react';
+import {useMapEvents } from 'react-leaflet';
+import LeafletRouting from './LeafletRouting';
 
 function Map() {
   const navigate = useNavigate();
@@ -23,6 +26,25 @@ function Map() {
   };
 
   /*TomTom   Free api adresse to cordinate*/
+
+  function LocationMarker() {
+    const [position, setPosition] = useState(null)
+    const map = useMapEvents({
+      click() {
+        map.locate()
+      },
+      locationfound(e) {
+        setPosition(e.latlng)
+        map.flyTo(e.latlng, map.getZoom())
+      },
+    })
+  
+    return position === null ? null : (
+      <Marker position={position}>
+        <Popup>You are here</Popup>
+      </Marker>
+    )
+  }
 
   return (
     <div className='cont-Main'>
@@ -43,13 +65,12 @@ function Map() {
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              /> {/*
-              <Marker position={[43.92517082408836, 2.147408244346074]}>
-                <Popup>
-                  Restaurant <br /> Description.
-                </Popup>
-              </Marker>*/}
-              <LeafletGeocoder></LeafletGeocoder>
+              /> 
+                {/*<ZoomControl position="bottomright" />*/}
+
+             <LocationMarker />
+            {/* <LeafletGeocoder/> */} 
+            <LeafletRouting/>
             </MapContainer>
           </div>
         </div>
