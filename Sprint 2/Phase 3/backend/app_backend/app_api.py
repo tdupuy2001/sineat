@@ -84,13 +84,19 @@ class UserUpdate(BaseModel):
     ppbin: Optional[str] = None
     ppform: Optional[str] = None
     
+class LikeSchema(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    id_post : int
+    id_user : int
 
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -337,9 +343,27 @@ def delete_post(id_post: int):
         else:
             raise HTTPException(404, "Post not found")
         
+#api pour récupérer les commentaires d'un post
+@app.get("/posts/{id_post}/comments")
+def get_post_comments(id_post: int):
+    with Session(db.engine) as session:
+        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
+        return comments
 
-#api pour abonné/abonnement
+#api pour récupérer le user d'un post, changer pour avec find_user_by_id
+@app.get("/posts/{id_post}/user")
+def get_user_from_post(id_post: int):
+    with Session(db.engine) as session:
+        post = session.query(Post).filter(Post.id_post==id_post).first()
+        if post is not None:
+            user = session.query(User).filter(User.id_user==post.id_user).first()
+            return user
+        else:
+            return ["error : Post not found"]
         
+"""
+Api pour abonné/abonnement
+"""    
 @app.get("/community/{username}")
 def get_community(username: str):
     liste_abonnement=[]
@@ -414,27 +438,51 @@ def handle_follow(username1: str,username2:str):
             except:
                 return 'User not found'
 
-            
-    
-#api pour récupérer les commentaires d'un post
-@app.get("/posts/{id_post}/comments")
-def get_post_comments(id_post: int):
-    with Session(db.engine) as session:
-        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
-        return comments
+"""
+Api pour les likes
+""" 
 
-#api pour récupérer le user d'un post, changer pour avec find_user_by_id
-@app.get("/posts/{id_post}/user")
-def get_user_from_post(id_post: int):
+@app.get("/likes")
+def get_likes():
     with Session(db.engine) as session:
-        post = session.query(Post).filter(Post.id_post==id_post).first()
-        if post is not None:
-            user = session.query(User).filter(User.id_user==post.id_user).first()
-            return user
+        stars = session.query(LikedPost).all()
+        return stars
+
+
+@app.post("/likes")
+def add_like(like: LikeSchema):
+    with Session(db.engine) as session:
+        stars = get_likes()
+        found_like = next(
+            (
+                s
+                for s in stars
+                if s.id_post == like.id_post and s.id_user == like.id_user
+            ),
+            None,
+        )
+        if found_like is None:
+            new_like = LikedPost(
+                id_post=like.id_post, id_user=like.id_user
+            )
+            session.add(new_like)
+            session.commit()
+    return like
+
+
+#lui marche pas
+@app.delete("/likes/{id_post}/{id_user}")
+def delete_like(id_post: int, id_user: int):
+    with Session(db.engine) as session:
+        stars = get_likes()
+        found_like = next(
+            (s for s in stars if s.id_post == id_post and s.id_user == id_user), None
+        )
+        if found_like is not None:
+            session.delete(found_like)
         else:
-            return ["error : Post not found"]
+            raise HTTPException(404, "Star not found")
 
-            
 if __name__ == "__main__":
     print(add_user(
         UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",

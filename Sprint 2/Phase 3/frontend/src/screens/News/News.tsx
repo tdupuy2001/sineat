@@ -130,7 +130,7 @@ export function News() {
         {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
           <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post-news'>
             <div className='post-border' >
-                <h2 className='post-title'>Titre du Post</h2>
+                <h2 className='post-title'>{post.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{post.type}</p>
                   <p className='post-user'>@{users.find(user => user.id_user === post.id_user)?.username}</p>
@@ -153,7 +153,7 @@ export function News() {
           <div className='post-avec-com'>
             <div className='post-com'>
               <div className='post-com-margin'>
-                <h2 className='post-title'>Titre du Post</h2>
+                <h2 className='post-title'>{selectedPost.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{selectedPost.type}</p>
                   <p className='post-user'>@{users.find(user => user.id_user === selectedPost.id_user)?.username}</p>
@@ -170,6 +170,7 @@ export function News() {
               {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
                 <div className='post-com-com' onClick={() => {setSelectedPost(comment); setIsModalOpen(true);}}>
                   <div key={comment.id_post} >
+                    {/* mettre un titre ici ? */}
                     <div className='post-info-com'>
                       <p className='post-user'>@{users.find(user => user.id_user === comment.id_user)?.username}</p>
                       <p className='post-com-date'>{comment.date.toString()} </p>
