@@ -16,11 +16,17 @@ DUMMY_DATA_NUMBER = 300;
 TABLE_NAME = "\"user\"";
 TABLE_COLUMNS = ["username","nom","prenom","date_de_naissance","genre","email","adresse","password","salt","ppbin","ppform","langue","description"]
 content = "";
+usernames=[]
 
 for _ in range(DUMMY_DATA_NUMBER):
     prenom = fake.first_name()
     nom = fake.last_name()
     username=prenom[0]+nom
+    while username in usernames:
+        prenom = fake.first_name()
+        nom = fake.last_name()
+        username=prenom[0]+nom
+    usernames.append(username)
     date_de_naissance=fake.date_of_birth(minimum_age=10,maximum_age=90)
     genre=genres[random.randint(0,len(genres)-1)]
     email = fake.ascii_safe_email()

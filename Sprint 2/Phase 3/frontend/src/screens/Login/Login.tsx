@@ -49,21 +49,25 @@ export function Login() {
   const login = useCallback(
     (user: User) => {
       context.setUser(user);
-      sessionStorage.setItem("username", user.username);
-      setLoginMessage("");
-      setLoginMessageType("info");
-      navigate("/");
+      if (user){
+        sessionStorage.setItem("username", user.username);
+        localStorage.setItem('username', user.username);
+        setLoginMessage("");
+        setLoginMessageType("info");
+        navigate("/");
+      }
     },
     [context, navigate]
   );
 
-
+ 
   const handleLoginRequested = () => {
     if (username && password) {
       const userService = new UserService(config.API_URL);
-      userService.log_user({ username, role: _, date_de_naissance: _, email: _, password, langue: _, nom: _, prenom: _, genre: _, adresse: _, description: _ }).then((response: any) => {
+      userService.log_user({ username, date_de_naissance: undefined, email: _, password, langue: _, nom: _, prenom: _, genre: _, adresse: _, description: _, ppbin: _ }).then((response: any) => {
         if (response.data.message === 'success') {
           const user = response.data.user;
+          console.log(user)
           login(user); // This will update the context and navigate to "/"
         } else {
           setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !");

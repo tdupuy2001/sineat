@@ -1,11 +1,17 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from .db_mapping import DBAcces
 import bcrypt
 import logging
+import base64
+import os
+from io import BytesIO
+from PIL import Image
+import re
+# import cStringIO
 
 logging.basicConfig(
     filename='app.log',  # Nom du fichier de logs
@@ -42,6 +48,9 @@ class UserSchema(BaseModel):
     email : str
     password : str
     langue : str
+    image_data: Optional[str] = None
+    ppbin: Optional[str] = None
+    ppform: Optional[str] = None
 
 class PostSchema(BaseModel):
     """
@@ -59,12 +68,29 @@ class PostSchema(BaseModel):
     id_note: int = None
     id_post_comm: int = None
 
+class UserUpdate(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    username : Optional[str]
+    langue : str
+    nom : Optional[str]
+    prenom : Optional[str]
+    date_de_naissance : Optional[str]
+    genre : Optional[str]
+    adresse : Optional[str]
+    description : Optional[str]
+    old_username : str
+    ppbin: Optional[str] = None
+    ppform: Optional[str] = None
+    
+
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -95,7 +121,17 @@ def get_users():
 def get_user(username: str):
     with Session(db.engine) as session:
         user = find_user(username=username, session=session)
+        if user:
+            if user.ppbin:
+                image_data2 = base64.b64encode(user.ppbin)
+                image_data = image_data2.decode('utf-8')
+                image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                image.save(os.path.join('../frontend/src/screens/Profile/assets', 'profile.png'))
+            else:
+                image_data = None
+            user.ppbin = image_data
         return user
+
 
 
 @app.post("/register")
@@ -108,12 +144,21 @@ def add_user(user: UserSchema):
             logging.debug(f"voici l'user qui rentre {user}")
             user_salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), user_salt)
+            with open('../frontend/public/user.png', 'rb') as image_file:
+                base64_bytes = base64.b64encode(image_file.read())
+                # img_bin = base64.b64decode(base64_bytes)
+                img_bin = base64_bytes.decode('utf-8')
+            image_data2 = re.sub('^data:image/.+;base64,', '', img_bin)
+            image_data = base64.b64decode(image_data2)
+            
             new_user = User(
                 username = user.username,
                 email = user.email,
                 password = hashed_password.decode('utf-8'),
                 salt = user_salt.decode('utf-8'),
                 langue = user.langue,
+                ppbin = image_data,
+                ppform = "png",
             )
             session.add(new_user)
             session.commit()
@@ -154,8 +199,65 @@ def log_user(user : UserSchema):
         if error:
             return {'message': 'Wrong username or password'}
         else:
-            return {'message': 'success','user' : user}
-        
+            if found_user.ppbin:
+                image_data2 = base64.b64encode(found_user.ppbin)
+                image_data = image_data2.decode('utf-8')
+                image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
+            else:
+                image_data = None
+            found_user.ppbin = image_data
+            return {'message': 'success','user' : found_user}
+         
+@app.put("/users")
+def update_user(user : UserUpdate):
+    error = False
+    with Session(db.engine) as session:
+        found_user = find_user(user.old_username, session)
+        if found_user == None:
+            error = True
+        else:
+            #TODO checker si les champs obligatoires ne sont pas vide
+            other_username = find_user(user.username,session)
+            if other_username == None or user.username == user.old_username:
+                if user.ppbin:
+                    image_data2 = re.sub('^data:image/.+;base64,', '', user.ppbin)
+                    image_data = base64.b64decode(image_data2)
+                    image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                    image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
+                else:
+                    image_data = None
+                order = update(User).where(User.username == user.old_username).values(
+                    username = user.username,
+                    langue = user.langue,
+                    nom = user.nom,
+                    prenom = user.prenom,
+                    date_de_naissance = user.date_de_naissance,
+                    genre = user.genre,
+                    adresse = user.adresse,
+                    description = user.description,
+                    ppbin = image_data,
+                    ppform = user.ppform
+                )
+                result = session.execute(order)
+                session.commit()
+            else:
+                error = True
+            
+        if error:
+            return {'message': 'User doesn\'t exist or username already used'}
+        else:
+            if found_user.ppbin:
+                image_data = base64.b64encode(found_user.ppbin).decode('utf-8')
+            else:
+                image_data = None
+
+            return {
+                'message': 'success',
+                'user': 
+                    {**user.dict(),'image_data': image_data,}
+            }
+            
 """
 Api pour post
 """
@@ -234,7 +336,86 @@ def delete_post(id_post: int):
             session.commit()
         else:
             raise HTTPException(404, "Post not found")
+        
 
+#api pour abonné/abonnement
+        
+@app.get("/community/{username}")
+def get_community(username: str):
+    liste_abonnement=[]
+    liste_abonne=[]
+    with Session(db.engine) as session:
+        user = find_user(username=username, session=session)
+        if user:
+            id_user=user.id_user
+            query_abonnement = select(Abonnement).where(Abonnement.id_user1 == id_user)
+            query_abonne = select(Abonnement).where(Abonnement.id_user2 == id_user)
+            res_abonnement = session.execute(query_abonnement).all()
+            res_abonne = session.execute(query_abonne).all()
+            for abonnement in res_abonnement:
+                query_username=select(User.username).where(User.id_user == abonnement.Abonnement.id_user2)
+                username=session.execute(query_username).scalar()
+                liste_abonnement.append(username)
+            for abonne in res_abonne:
+                query_username=select(User.username).where(User.id_user == abonne.Abonnement.id_user1)
+                username=session.execute(query_username).scalar()
+                liste_abonne.append(username)
+            nb_abonnement=session.query(query_abonnement.alias("subquery")).count()
+            nb_abonne=session.query(query_abonne.alias("subquery")).count()
+    return  {'nb_abonnement':nb_abonnement,'nb_abonne':nb_abonne,'liste_abonnement': liste_abonnement ,'liste_abonne': liste_abonne }
+
+
+
+def find_sub(username1:str, username2:str, session:Session):
+    user1 = find_user(username=username1, session=session)
+    user2 = find_user(username=username2, session=session)
+    if user1 and user2:
+        id_user1=user1.id_user
+        id_user2=user2.id_user
+        order = select(Abonnement).where(Abonnement.id_user1 == id_user1, Abonnement.id_user2 == id_user2)
+        result = session.execute(order)
+        found_sub = result.scalar()
+        if found_sub:
+            return {'message':True,'sub':found_sub}
+        else:
+            return {'message': False,'id_user1':id_user1,'id_user2':id_user2}
+    else:
+        return {'message': False}
+
+
+@app.get("/find_follow/{username1}/{username2}")
+def find_follow(username1: str,username2:str):
+    with Session(db.engine) as session:
+        response=find_sub(username1,username2,session)
+        return response['message']
+        
+
+@app.post("/handle_follow/{username1}/{username2}")
+def handle_follow(username1: str,username2:str):
+    with Session(db.engine) as session:
+        response=find_sub(username1,username2,session)
+        try:
+            sub=response['sub']
+            session.delete(sub)
+            session.commit()
+            return 'Follow erased'
+        except:
+            try:
+                id_user1=response['id_user1']
+                id_user2=response['id_user2']
+                new_sub=Abonnement(
+                    id_user1=id_user1,
+                    id_user2=id_user2
+                )
+                session.add(new_sub)
+                session.commit()
+                session.refresh(new_sub)
+                return 'Follow added'
+            except:
+                return 'User not found'
+
+            
+    
 #api pour récupérer les commentaires d'un post
 @app.get("/posts/{id_post}/comments")
 def get_post_comments(id_post: int):
@@ -264,3 +445,4 @@ if __name__ == "__main__":
     # genre: str = ""
     # adresse: str = ""
     # description: str = ""
+ 
