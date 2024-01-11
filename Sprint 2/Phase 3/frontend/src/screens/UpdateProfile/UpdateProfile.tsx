@@ -7,7 +7,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { User } from "../../dto/User";
-import img from "../Profile/assets/profile.png"
+// import img from "../Profile/assets/profile.png"
 import { readAndCompressImage } from 'browser-image-resizer';
 
 
@@ -21,6 +21,7 @@ export function UpdateProfile() {
   const [description, setDescription] = useState<string | undefined>();
   const [adresse, setAdresse] = useState<string | undefined>();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState("");
 
   const navigate = useNavigate();
 
@@ -31,8 +32,20 @@ export function UpdateProfile() {
     if (context.user) {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
+      setProfilePicture("data:image/png;base64,"+context.user.ppbin);
     }
   }, [context.user]);
+
+  let blob = null;
+  if (profilePicture) {
+   let byteCharacters = atob(profilePicture.split(',')[1]);
+   let byteNumbers = new Array(byteCharacters.length);
+   for (let i = 0; i < byteCharacters.length; i++) {
+     byteNumbers[i] = byteCharacters.charCodeAt(i);
+   }
+   let byteArray = new Uint8Array(byteNumbers);
+   blob = new Blob([byteArray], {type: 'image/jpeg'});
+  }
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -106,6 +119,7 @@ export function UpdateProfile() {
             extension = selectedFile.name.split('.').pop();
             const updatedUser: User = {
               ...context.user, // spread operator to include all properties of the current user
+              // id_user: context.user.id_user, Ici c'est special car il y a forcement un id
               username,
               langue,
               nom,
@@ -147,8 +161,8 @@ export function UpdateProfile() {
           adresse,
           description,
           old_username: usernameLink,
-          ppbin: binaryData,
-          ppform: extension,
+          ppbin: profilePicture,
+          ppform: "png",
         };
         userService
         .updateUser(updatedUser)
@@ -473,7 +487,7 @@ export function UpdateProfile() {
           type="file"
           onChange={handleFileChange}
         />
-        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={img} style={{width: '100px', height: '100px', objectFit: 'cover'}} alt="Default" />}
+        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={blob ? URL.createObjectURL(blob) : ''} style={{width: '100px', height: '100px', objectFit: 'cover'}} alt="Default" />}
 
           <TextField
             required

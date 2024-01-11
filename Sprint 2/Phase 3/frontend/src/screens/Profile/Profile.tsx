@@ -7,7 +7,7 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import img from "./assets/profile.png";
+// import img from "./assets/profile.png";
 import "./Profile.css";
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,6 +18,7 @@ import { faTimes, faCog, faSignOut } from '@fortawesome/free-solid-svg-icons';
 export function Profile() {
   const userService = new UserService(config.API_URL);
   const context = useContext(MyBlogContext);
+  const [profilePicture, setProfilePicture] = useState<string>();
 
   useEffect(() => {
     if (context.user) {
@@ -25,9 +26,29 @@ export function Profile() {
       setIsLoggedIn(true);
     }
     if (usernameLink) {
-      userService.getUser(usernameLink);
-    }
+      userService.getUser(usernameLink)
+        .then((profileUser) => {
+          setProfilePicture("data:image/png;base64,"+profileUser.data.ppbin);
+          console.log(profilePicture)
+        })
+        .catch((error) => {
+          console.error('An error occurred:', error);
+        });
+     }
   }, [context.user]);
+
+  let blob = null;
+if (profilePicture) {
+ let byteCharacters = atob(profilePicture.split(',')[1]);
+ let byteNumbers = new Array(byteCharacters.length);
+ for (let i = 0; i < byteCharacters.length; i++) {
+   byteNumbers[i] = byteCharacters.charCodeAt(i);
+ }
+ let byteArray = new Uint8Array(byteNumbers);
+ blob = new Blob([byteArray], {type: 'image/png'});
+}
+
+
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // const [profileImage, setPP] = useState<File | null>(null);
@@ -141,7 +162,7 @@ export function Profile() {
       <Navbar />
       <div className="profile-container">
         <div className="profile-header">
-          <img className="profile-picture" src={img} alt="Profile" />
+          <img className="profile-picture" src={blob ? URL.createObjectURL(blob) : ''} alt="Profile" />
           <div className="profile-info">
             <h2>{usernameLink}</h2>
             <div className="subscribers">
