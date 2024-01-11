@@ -474,14 +474,16 @@ def add_like(like: LikeSchema):
 @app.delete("/likes/{id_post}/{id_user}")
 def delete_like(id_post: int, id_user: int):
     with Session(db.engine) as session:
-        stars = get_likes()
-        found_like = next(
-            (s for s in stars if s.id_post == id_post and s.id_user == id_user), None
+        stm = select(LikedPost).where(
+            LikedPost.id_post == id_post and LikedPost.id_user == id_user
         )
+        res = session.execute(stm)
+        found_like = res.scalar()
         if found_like is not None:
             session.delete(found_like)
-        else:
-            raise HTTPException(404, "Star not found")
+            session.commit()
+        else: 
+            raise HTTPException(404, "Like not found")
 
 if __name__ == "__main__":
     print(add_user(
