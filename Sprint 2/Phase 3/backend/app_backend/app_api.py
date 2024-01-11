@@ -440,13 +440,21 @@ def handle_follow(username1: str,username2:str):
 
 """
 Api pour les likes
-""" 
+"""  
 
 @app.get("/likes")
 def get_likes():
     with Session(db.engine) as session:
         stars = session.query(LikedPost).all()
         return stars
+
+@app.get("/likes/{id_post}")
+def get_likes_for_post(id_post:int):
+    with Session(db.engine) as session:
+        order = select(LikedPost).where(LikedPost.id_post == id_post)
+        result = session.execute(order)
+        likes = result.scalar().all()
+        return likes
 
 
 @app.post("/likes")

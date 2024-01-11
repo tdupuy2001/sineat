@@ -14,6 +14,7 @@ import { error } from 'console';
 import { User } from '../../dto/User';
 import { Button } from '@mui/material';
 import nuage from './assets/nuage_rose.png';
+import { LikeService } from '../../services/LikeService';
 
 
 export function News() {
@@ -25,6 +26,7 @@ export function News() {
     const [comments, setComments] = useState<Post[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [filter, setFilter] = useState<string | null>(null);
+    const [likesCount, setLikesCount] = useState<Record<number, number>>({});
 
     const sortOldestToNewest = () => {
       const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -56,6 +58,7 @@ export function News() {
    
     useEffect(() => {
         const postService = new PostService(config.API_URL)
+        const likeService = new LikeService(config.API_URL)
         postService.getPosts()
         .then(response => response.data)
         .then(data => {
@@ -72,6 +75,19 @@ export function News() {
           .then(userData => {
             const allUsers = userData.map(user => user.data);
             setUsers(allUsers);
+          })
+          .catch(error => console.error(error));
+
+          const likesPromises = data.map(post => likeService.getPostLikes(post.id_post));
+          Promise.all(likesPromises)
+          .then(likesData => {
+            const likesCount = likesData.reduce((count, likesArray) => {
+              likesArray.data.forEach(like => {
+                count[like.id_post] = likesArray.data.length;
+              });
+              return count;
+            }, {} as Record<number, number>);
+            setLikesCount(likesCount);
           })
           .catch(error => console.error(error));
         })
@@ -137,6 +153,7 @@ export function News() {
                 </div>
 
                 <img className='img-test' src={logo} alt="Logo" />
+                <p>&lt;3 {likesCount[post.id_post] || 0}</p>
 
                 <p className='post-text'>{post.text}</p>
                 <p className='post-date'>{post.date.toString()} </p>
