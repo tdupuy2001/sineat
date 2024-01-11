@@ -8,11 +8,9 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { User } from "../../dto/User";
 // import img from "../Profile/assets/profile.png"
-import { readAndCompressImage } from 'browser-image-resizer';
-
+import { readAndCompressImage } from "browser-image-resizer";
 
 export function UpdateProfile() {
-
   const [prenom, setPrenom] = useState<string | undefined>();
   const [nom, setNom] = useState<string | undefined>();
   const [dateDeNaissance, setDateDeNaissance] = useState<string | undefined>();
@@ -32,19 +30,19 @@ export function UpdateProfile() {
     if (context.user) {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
-      setProfilePicture("data:image/png;base64,"+context.user.ppbin);
+      setProfilePicture("data:image/png;base64," + context.user.ppbin);
     }
   }, [context.user]);
 
   let blob = null;
   if (profilePicture) {
-   let byteCharacters = atob(profilePicture.split(',')[1]);
-   let byteNumbers = new Array(byteCharacters.length);
-   for (let i = 0; i < byteCharacters.length; i++) {
-     byteNumbers[i] = byteCharacters.charCodeAt(i);
-   }
-   let byteArray = new Uint8Array(byteNumbers);
-   blob = new Blob([byteArray], {type: 'image/jpeg'});
+    let byteCharacters = atob(profilePicture.split(",")[1]);
+    let byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    let byteArray = new Uint8Array(byteNumbers);
+    blob = new Blob([byteArray], { type: "image/jpeg" });
   }
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -55,7 +53,9 @@ export function UpdateProfile() {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const config = {
@@ -75,8 +75,12 @@ export function UpdateProfile() {
       try {
         const compressedFile = await readAndCompressImage(file, config);
         const previewFile = await readAndCompressImage(file, configPreview);
-        const newFile = new File([compressedFile], file.name, { type: compressedFile.type });
-        const newPreviewFile = new File([previewFile], file.name, { type: previewFile.type });
+        const newFile = new File([compressedFile], file.name, {
+          type: compressedFile.type,
+        });
+        const newPreviewFile = new File([previewFile], file.name, {
+          type: previewFile.type,
+        });
         setSelectedFile(newFile);
         setPreviewUrl(URL.createObjectURL(newPreviewFile));
       } catch (error) {
@@ -84,8 +88,6 @@ export function UpdateProfile() {
       }
     }
   };
-
-
 
   useEffect(() => {
     if (context.user) {
@@ -101,8 +103,6 @@ export function UpdateProfile() {
     }
   }, [context.user]);
 
-  
-
   const handleUpdate = () => {
     userService.getUser(username).then((e) => {
       if (!e.data || e.data.username === username) {
@@ -115,8 +115,13 @@ export function UpdateProfile() {
           reader.readAsDataURL(selectedFile);
           reader.onload = () => {
             binaryData = reader.result;
-            console.log('selected file : ', selectedFile, 'Binary : ', binaryData)
-            extension = selectedFile.name.split('.').pop();
+            console.log(
+              "selected file : ",
+              selectedFile,
+              "Binary : ",
+              binaryData
+            );
+            extension = selectedFile.name.split(".").pop();
             const updatedUser: User = {
               ...context.user, // spread operator to include all properties of the current user
               // id_user: context.user.id_user, Ici c'est special car il y a forcement un id
@@ -129,61 +134,57 @@ export function UpdateProfile() {
               adresse,
               description,
               old_username: usernameLink,
-              ppbin: typeof binaryData === 'string' ? binaryData : undefined,
+              ppbin: typeof binaryData === "string" ? binaryData : undefined,
               ppform: extension,
             };
             userService
-          .updateUser(updatedUser)
-          .then((response) => {
-            // handle success
-            console.log(response.data);
-            context.setUser(updatedUser); // Update the context with the updated user
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-          });
+              .updateUser(updatedUser)
+              .then((response) => {
+                // handle success
+                console.log(response.data);
+                context.setUser(updatedUser); // Update the context with the updated user
+              })
+              .catch((error) => {
+                // handle error
+                console.log(error);
+              });
           };
-          
+
           reader.onerror = function (error) {
-            console.log('Error: ', error);
+            console.log("Error: ", error);
           };
-          
         } else {
-        const updatedUser: User = {
-          ...context.user, // spread operator to include all properties of the current user
-          username,
-          langue,
-          nom,
-          prenom,
-          date_de_naissance: dateDeNaissance,
-          genre,
-          adresse,
-          description,
-          old_username: usernameLink,
-          ppbin: profilePicture,
-          ppform: "png",
-        };
-        userService
-        .updateUser(updatedUser)
-        .then((response) => {
-          // handle success
-          console.log(response.data);
-          context.setUser(updatedUser); // Update the context with the updated user
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        });
-      };
-        
+          const updatedUser: User = {
+            ...context.user, // spread operator to include all properties of the current user
+            username,
+            langue,
+            nom,
+            prenom,
+            date_de_naissance: dateDeNaissance,
+            genre,
+            adresse,
+            description,
+            old_username: usernameLink,
+            ppbin: profilePicture,
+            ppform: "png",
+          };
+          userService
+            .updateUser(updatedUser)
+            .then((response) => {
+              // handle success
+              console.log(response.data);
+              context.setUser(updatedUser); // Update the context with the updated user
+            })
+            .catch((error) => {
+              // handle error
+              console.log(error);
+            });
+        }
       } else {
         console.log("c'est pas good mais j'ai pas encore géré l'erreur");
       }
     });
   };
-
-  
 
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user
 
@@ -483,11 +484,16 @@ export function UpdateProfile() {
             ))}
           </TextField>
 
-          <TextField
-          type="file"
-          onChange={handleFileChange}
-        />
-        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={blob ? URL.createObjectURL(blob) : ''} style={{width: '100px', height: '100px', objectFit: 'cover'}} alt="Default" />}
+          <TextField type="file" onChange={handleFileChange} />
+          {previewUrl ? (
+            <img src={previewUrl} alt="Preview" />
+          ) : (
+            <img
+              src={blob ? URL.createObjectURL(blob) : ""}
+              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              alt="Default"
+            />
+          )}
 
           <TextField
             required

@@ -9,11 +9,9 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 // import img from "./assets/profile.png";
 import "./Profile.css";
-import Modal from 'react-modal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCog, faSignOut } from '@fortawesome/free-solid-svg-icons';
-
-
+import Modal from "react-modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faCog, faSignOut } from "@fortawesome/free-solid-svg-icons";
 
 export function Profile() {
   const userService = new UserService(config.API_URL);
@@ -26,29 +24,28 @@ export function Profile() {
       setIsLoggedIn(true);
     }
     if (usernameLink) {
-      userService.getUser(usernameLink)
+      userService
+        .getUser(usernameLink)
         .then((profileUser) => {
-          setProfilePicture("data:image/png;base64,"+profileUser.data.ppbin);
-          console.log(profilePicture)
+          setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
+          console.log(profilePicture);
         })
         .catch((error) => {
-          console.error('An error occurred:', error);
+          console.error("An error occurred:", error);
         });
-     }
+    }
   }, [context.user]);
 
   let blob = null;
-if (profilePicture) {
- let byteCharacters = atob(profilePicture.split(',')[1]);
- let byteNumbers = new Array(byteCharacters.length);
- for (let i = 0; i < byteCharacters.length; i++) {
-   byteNumbers[i] = byteCharacters.charCodeAt(i);
- }
- let byteArray = new Uint8Array(byteNumbers);
- blob = new Blob([byteArray], {type: 'image/png'});
-}
-
-
+  if (profilePicture) {
+    let byteCharacters = atob(profilePicture.split(",")[1]);
+    let byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    let byteArray = new Uint8Array(byteNumbers);
+    blob = new Blob([byteArray], { type: "image/png" });
+  }
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // const [profileImage, setPP] = useState<File | null>(null);
@@ -142,44 +139,53 @@ if (profilePicture) {
 
   const openAbonne = () => {
     setAbonneIsOpen(true);
-   };
+  };
 
-   const closeAbonne = () => {
+  const closeAbonne = () => {
     setAbonneIsOpen(false);
-   };
+  };
 
-   const openAbonnement = () => {
+  const openAbonnement = () => {
     setAbonnementIsOpen(true);
-   };
+  };
 
-   const closeAbonnement = () => {
+  const closeAbonnement = () => {
     setAbonnementIsOpen(false);
-   };
-
+  };
 
   return (
     <div>
       <Navbar />
       <div className="profile-container">
         <div className="profile-header">
-          <img className="profile-picture" src={blob ? URL.createObjectURL(blob) : ''} alt="Profile" />
+          <img
+            className="profile-picture"
+            src={blob ? URL.createObjectURL(blob) : ""}
+            alt="Profile"
+          />
           <div className="profile-info">
             <h2>{usernameLink}</h2>
             <div className="subscribers">
-              <button onClick={openAbonne} id="button_sub"> {nb_abonne} Abonné(s)</button>
-              <button onClick={openAbonnement} id="button_sub"> {nb_abonnement} Abonnement(s)</button>
+              <button onClick={openAbonne} id="button_sub">
+                {" "}
+                {nb_abonne} Abonné(s)
+              </button>
+              <button onClick={openAbonnement} id="button_sub">
+                {" "}
+                {nb_abonnement} Abonnement(s)
+              </button>
             </div>
             <div className="buttons">
               {username == usernameLink && (
                 <>
                   <NavLink to={`/updateprofile/${usernameLink}`}>
                     <button>
-                      <FontAwesomeIcon icon={faCog}/>
+                      <FontAwesomeIcon icon={faCog} />
                     </button>
                   </NavLink>
                   <NavLink to="/">
                     <button onClick={handleLogout}>
-                      <FontAwesomeIcon icon={faSignOut}/>
+                      <FontAwesomeIcon icon={faSignOut} />
                     </button>
                   </NavLink>
                 </>
@@ -221,22 +227,29 @@ if (profilePicture) {
         contentLabel="Abonne Modal"
         style={{
           content: {
-            background: '#FAF6F1',
-          }
+            background: "#FAF6F1",
+          },
         }}
-        >
+      >
         <div className="title_sticky">
           <h2>Abonné(s)</h2>
         </div>
         <ul>
-          {abonne && abonne.map((abonneUsername) => (
-            <li key={abonneUsername} id="list_username">
-              <NavLink to={`/profile/${abonneUsername}`} onClick={closeAbonne} className="username_link">{abonneUsername}</NavLink>
-            </li>
-          ))}
+          {abonne &&
+            abonne.map((abonneUsername) => (
+              <li key={abonneUsername} id="list_username">
+                <NavLink
+                  to={`/profile/${abonneUsername}`}
+                  onClick={closeAbonne}
+                  className="username_link"
+                >
+                  {abonneUsername}
+                </NavLink>
+              </li>
+            ))}
         </ul>
         <button className="close-button" onClick={closeAbonne}>
-          <FontAwesomeIcon icon={faTimes}/>
+          <FontAwesomeIcon icon={faTimes} />
         </button>
       </Modal>
       <Modal
@@ -245,22 +258,29 @@ if (profilePicture) {
         contentLabel="Abonnement Modal"
         style={{
           content: {
-            background: '#FAF6F1',
-          }
+            background: "#FAF6F1",
+          },
         }}
-        >
+      >
         <div className="title_sticky">
           <h2>Abonnement(s)</h2>
         </div>
         <ul>
-          {abonnement && abonnement.map((abonnementUsername) => (
-            <li key={abonnementUsername} id="list_username">
-              <NavLink to={`/profile/${abonnementUsername}`} onClick={closeAbonnement} className="username_link">{abonnementUsername}</NavLink>
-            </li>
-          ))}
+          {abonnement &&
+            abonnement.map((abonnementUsername) => (
+              <li key={abonnementUsername} id="list_username">
+                <NavLink
+                  to={`/profile/${abonnementUsername}`}
+                  onClick={closeAbonnement}
+                  className="username_link"
+                >
+                  {abonnementUsername}
+                </NavLink>
+              </li>
+            ))}
         </ul>
         <button className="close-button" onClick={closeAbonnement}>
-          <FontAwesomeIcon icon={faTimes}/>
+          <FontAwesomeIcon icon={faTimes} />
         </button>
       </Modal>
       <Footer />
