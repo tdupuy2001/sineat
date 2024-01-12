@@ -1,5 +1,5 @@
 export interface User {
-    id_user: number;
+    id_user?: number;
     username: string;
     date_de_naissance?:string|undefined;
     email?:string;
@@ -11,6 +11,6 @@ export interface User {
     adresse?:string|undefined;
     description?:string|undefined;
     old_username?: string|undefined;
-    ppbin?: string|undefined;
+    ppbin?: string;
     ppform?: string|undefined;
 }

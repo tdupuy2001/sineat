@@ -17,6 +17,7 @@ export function Profile() {
   const userService = new UserService(config.API_URL);
   const context = useContext(MyBlogContext);
   const [profilePicture, setProfilePicture] = useState<string>();
+  const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user
 
   useEffect(() => {
     if (context.user) {
@@ -28,13 +29,13 @@ export function Profile() {
         .getUser(usernameLink)
         .then((profileUser) => {
           setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
-          console.log(profilePicture);
+          // console.log(profilePicture);
         })
         .catch((error) => {
           console.error("An error occurred:", error);
         });
     }
-  }, [context.user]);
+  }, [usernameLink, context.user]);
 
   let blob = null;
   if (profilePicture) {
@@ -59,6 +60,7 @@ export function Profile() {
     setIsLoggedIn(false);
     sessionStorage.removeItem("username");
     localStorage.removeItem("username");
+
   };
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export function Profile() {
   //   return new File([blob], filename, { type: mimeType });
   // };
 
-  const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user
+  
   // useEffect(() => {
   //   if (context.user?.ppbin){
   //     urlToFile(context.user.ppbin, `image.${context.user.ppform}`, `image/${context.user.ppform}`)
@@ -92,7 +94,6 @@ export function Profile() {
   // }, [username, usernameLink]);
 
   // gérer les abonnements/abonnés
-  //FIXME: Ici on a pas la possibilité d'avoir plusieurs connexion simultanée...
   const [nb_abonnement, setNbAbonnement] = useState<number>();
   const [nb_abonne, setNbAbonne] = useState<number>();
   const [abonnement, setAbonnement] = useState<string[]>();

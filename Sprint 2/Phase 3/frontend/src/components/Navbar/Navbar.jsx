@@ -5,6 +5,8 @@ import logo from "./logo_sineat.png";
 // import img from '../../screens/Login/assets/user.png'
 import { MyBlogContext } from "../../MyBlogContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserService } from "../../services/UserService";
+import { config } from "../../config";
 
 export default function Navbar() {
   const context = useContext(MyBlogContext);
@@ -15,6 +17,7 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [open, setOpen] = useState(false);
   const [profilePicture, setProfilePicture] = useState("");
+  const userService = new UserService(config.API_URL);
 
   const handleList = () => {
     setOpen(!open);
@@ -33,19 +36,23 @@ export default function Navbar() {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
 
-      setProfilePicture("data:image/png;base64," + context.user.ppbin);
-      console.log(profilePicture);
-      // console.log(profilePicture)
+      // setProfilePicture("data:image/png;base64," + context.user.ppbin);
 
-      // Extract the profile image binary and format from user object
-      // if (user.ppbin) {
-      //   const base64Image = ;
-      //   setProfileImage(base64Image);
-      // }
+
+      userService
+        .getUser(username)
+        .then((profileUser) => {
+          setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
+          // console.log(profilePicture);
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
     }
   }, [context.user]);
 
   if (profilePicture) {
+    // console.log(profilePicture)
     let byteCharacters = atob(profilePicture.split(",")[1]);
     let byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -54,6 +61,8 @@ export default function Navbar() {
     let byteArray = new Uint8Array(byteNumbers);
     blob = new Blob([byteArray], { type: "image/png" });
   }
+
+  
 
   const navigate = useNavigate();
 

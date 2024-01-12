@@ -23,6 +23,12 @@ export function UpdateProfile() {
 
   const navigate = useNavigate();
 
+  // TODO: preview bonne forme
+  // TODO: Attention au bon username verifier qu'il n'est pas déjà utilisé
+  // TODO: Rajouter adresse et description
+  // TODO: Améliorer la beauté
+  
+
   const context = useContext(MyBlogContext);
   const userService = new UserService(config.API_URL);
 
@@ -31,12 +37,14 @@ export function UpdateProfile() {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
       setProfilePicture("data:image/png;base64," + context.user.ppbin);
+      
     }
   }, [context.user]);
 
   let blob = null;
   if (profilePicture) {
     let byteCharacters = atob(profilePicture.split(",")[1]);
+    // let byteCharacters = atob(context.user.ppbin);
     let byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -50,6 +58,7 @@ export function UpdateProfile() {
   const [username, setUsername] = useState<string>(() => {
     return localStorage.getItem("username") || "";
   });
+  const [ppbin, setPpbin] = useState<string>();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -83,6 +92,7 @@ export function UpdateProfile() {
         });
         setSelectedFile(newFile);
         setPreviewUrl(URL.createObjectURL(newPreviewFile));
+  
       } catch (error) {
         console.error(error);
       }
@@ -98,6 +108,7 @@ export function UpdateProfile() {
       setGenre(context.user.genre);
       setDateDeNaissance(context.user.date_de_naissance);
       localStorage.setItem("username", context.user.username);
+      console.log(context.user.ppbin)
     } else {
       setUsername("");
     }
@@ -115,13 +126,21 @@ export function UpdateProfile() {
           reader.readAsDataURL(selectedFile);
           reader.onload = () => {
             binaryData = reader.result;
-            console.log(
-              "selected file : ",
-              selectedFile,
-              "Binary : ",
-              binaryData
-            );
+            // setPpbin(binaryData)
+            // console.log(
+            //   "selected file : ",
+            //   selectedFile,
+            //   "Binary : ",
+            //   binaryData
+            // );
+            if (binaryData && typeof binaryData === "string"){
+              binaryData = binaryData.replace(/^data:image\/[a-z]+;base64,/, "")
+            }
             extension = selectedFile.name.split(".").pop();
+            console.log(context.user?.ppbin)
+
+            console.log(typeof binaryData === "string" ? binaryData : undefined)
+            console.log(typeof binaryData)
             const updatedUser: User = {
               ...context.user, // spread operator to include all properties of the current user
               // id_user: context.user.id_user, Ici c'est special car il y a forcement un id
@@ -135,13 +154,14 @@ export function UpdateProfile() {
               description,
               old_username: usernameLink,
               ppbin: typeof binaryData === "string" ? binaryData : undefined,
+              // ppbin,
               ppform: extension,
             };
             userService
               .updateUser(updatedUser)
               .then((response) => {
                 // handle success
-                console.log(response.data);
+                // console.log(response.data);
                 context.setUser(updatedUser); // Update the context with the updated user
               })
               .catch((error) => {
@@ -154,6 +174,9 @@ export function UpdateProfile() {
             console.log("Error: ", error);
           };
         } else {
+          // setPpbin(context.user?.ppbin)
+          // console.log(ppbin)
+          // console.log(typeof  context.user?.ppbin)
           const updatedUser: User = {
             ...context.user, // spread operator to include all properties of the current user
             username,
@@ -164,15 +187,16 @@ export function UpdateProfile() {
             genre,
             adresse,
             description,
+            ppbin: context.user?.ppbin,
             old_username: usernameLink,
-            ppbin: profilePicture,
+            
             ppform: "png",
           };
           userService
             .updateUser(updatedUser)
             .then((response) => {
               // handle success
-              console.log(response.data);
+              // console.log(response.data);
               context.setUser(updatedUser); // Update the context with the updated user
             })
             .catch((error) => {
