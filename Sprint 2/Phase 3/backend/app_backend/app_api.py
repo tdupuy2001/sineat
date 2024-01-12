@@ -451,9 +451,7 @@ def get_likes():
 @app.get("/likes/{id_post}")
 def get_likes_for_post(id_post:int):
     with Session(db.engine) as session:
-        order = select(LikedPost).where(LikedPost.id_post == id_post)
-        result = session.execute(order)
-        likes = result.scalar().all()
+        likes = session.query(LikedPost).filter(LikedPost.id_post == id_post).all()
         return likes
 
 

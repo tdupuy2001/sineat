@@ -52,7 +52,7 @@ function App() {
         <Route path="/updateprofile/:usernameLink" element={<UpdateProfile/>} />
         <Route path="/unknown_user" element={<UnknownUser/>}></Route>
         <Route path="/*" element={<Error404/>}></Route>
-        <Route path='/news' element={<News/>} />
+        <Route path='/news' element={<ProtectedRoute><News/></ProtectedRoute>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>

@@ -24,7 +24,7 @@ export class LikeService {
         return this.axiosInstance.get<Like[]>('likes/'+id_post)
     }
 
-    deletePost(id_post:number, id_user:number) {
+    deleteLike(id_post:number, id_user:number) {
         return this.axiosInstance.delete<void>('/likes/'+id_post+'/'+id_user);
     }
 

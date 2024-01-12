@@ -102,9 +102,21 @@ div[data-grid] {
     cursor: pointer;
 }
 
+.img-wrapper {
+    position: relative;
+}
+
 .img-test {
     width: 90%;
     height: 90%;
+}
+
+.likes-count {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    /* color: white; */
+    /* background-color: rgba(0,0,0,0.5); */
 }
 
 .post-news {
@@ -274,5 +286,66 @@ div[data-grid] {
     display: none;
 }
 
+.ajout-com {
+    background-color: transparent;
+    color: #8B4513;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: color 0.3s ease;
+    margin-left: 3%;
+    margin-right: 3%;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
 
+.ajout-com:hover {
+    color: #602A0F;
+    font-weight: bold;
+}
+
+.submit {
+    background-color: transparent;
+    color: #8B4513;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: color 0.3s ease;
+    margin-left: 3%;
+    margin-right: 3%;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+.submit:hover {
+    color: #602A0F;
+    font-weight: bold; 
+}
+
+.button-ajout-com-close {
+    background-color: transparent;
+    color: #8B4513;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: color 0.3s ease;
+    margin-left: 3%;
+    margin-right: 3%;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+.button-ajout-com-close:hover {
+    color: #602A0F;
+    font-weight: bold;
+}
 
