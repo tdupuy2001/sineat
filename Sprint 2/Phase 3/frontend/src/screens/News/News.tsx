@@ -16,6 +16,7 @@ import { Button, TextField } from '@mui/material';
 import nuage from './assets/nuage_rose.png';
 import { LikeService } from '../../services/LikeService';
 import { Like } from '../../dto/Like';
+import { CreatePostButton } from '../../components/CreatePostButton/CreatePostButton';
 
 
 export function News() {
@@ -82,7 +83,7 @@ export function News() {
   
     const handleSubmitComment = async () => {
       if (!commentText || !commentTitle || !commentType) {
-        // mettre les messages d'erreur
+        // mettre les messages d'erreur avec alertes à rajouter
       } else {
         if (user) {
           const postService = new PostService(config.API_URL);
@@ -143,6 +144,7 @@ export function News() {
     return (
     <div className='back-color'>
       <Navbar />
+      <CreatePostButton/>
       <div className='fil-dactu'>
         <ul className='bandeau'>
           <li><img className='nuage_1' src={nuage} alt="Logo" /></li>

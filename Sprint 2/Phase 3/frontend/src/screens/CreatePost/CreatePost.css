@@ -1,0 +1,39 @@
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.bordered-content {
+    border: 1px solid black;
+    padding: 20px;
+    margin-bottom: 20px;
+    margin-top: 120px;
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 2%;
+    /* font-family: Courier New, sans-serif; */
+    color: #602A0F;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical; */
+}
+
+.create-post-titre {
+    
+}
+
+.create-post-type {
+
+}
+
+.create-post-desc {
+
+}
