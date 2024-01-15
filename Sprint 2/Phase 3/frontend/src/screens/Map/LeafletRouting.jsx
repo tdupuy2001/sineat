@@ -7,21 +7,27 @@ import 'leaflet-routing-machine';
 const LeafletRouting = () => {
     const Map = useMap();
     useEffect(()=>{
-        L.Routing.control({
-            waypoints: [
-              L.latLng(57.74, 11.94),
-              L.latLng(57.6792, 11.949)
-            ],
-            lineOptions : {
-                styles : [
-                    {
-                        color: "blue",
-                        weight: 4,
-                    },
+        const marker1 = L.marker([43.92705634325587, 2.143642370562761]).addTo(Map);
+        Map.on("click", function(e){
+            L.marker([e.latlng.lat,e.latlng.lng]).addTo(Map);
+            L.Routing.control({
+                waypoints: [
+                  L.latLng(43.92705634325587, 2.143642370562761),
+                  L.latLng(e.latlng.lat,e.latlng.lng)
                 ],
-            },
-            geocoder : L.Control.Geocoder.nominatim(),
-          }).addTo(Map);
+                lineOptions : {
+                    styles : [
+                        {
+                            color: "blue",
+                            weight: 4,
+                        },
+                    ],
+                },
+                geocoder : L.Control.Geocoder.nominatim(),
+                addWaypoints: false,
+                fitSelectedRoutes: true,
+              }).addTo(Map);
+        })
 
     },[])
     

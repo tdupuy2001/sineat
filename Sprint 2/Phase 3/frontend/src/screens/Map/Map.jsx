@@ -16,6 +16,7 @@ import LeafletGeocoder from './LeafletGeocoder';
 import { useState} from 'react';
 import {useMapEvents } from 'react-leaflet';
 import LeafletRouting from './LeafletRouting';
+import FilterBar from './FilterBar';
 
 function Map() {
   const navigate = useNavigate();
@@ -49,16 +50,22 @@ function Map() {
   return (
     <div className='cont-Main'>
       <Navbar />
+   
       <div className='content-map'>
         <div className='restau-side'>
           <div className='filter-cont'>
+            
           </div>
           <div className='restau-rect'>
+          <div>
+      <FilterBar/>
+    </div>
           <Skeleton variant="rectangular" width="90%" height="30%" />
           <Skeleton variant="rectangular" width="90%" height="30%" />
           <Skeleton variant="rectangular" width="90%" height="30%" />
           </div>
         </div>
+       
         <div className='map-side'>
           <div className='map-cont'>
             <MapContainer center={[43.92517082408836, 2.147408244346074]} zoom={13} scrollWheelZoom={false}>
@@ -68,8 +75,8 @@ function Map() {
               /> 
                 {/*<ZoomControl position="bottomright" />*/}
 
-             <LocationMarker />
-            {/* <LeafletGeocoder/> */} 
+            {/*  <LocationMarker />
+            <LeafletGeocoder/> */} 
             <LeafletRouting/>
             </MapContainer>
           </div>
