@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { MenuItem, TextField } from "@mui/material";
+import { Alert, AlertColor, MenuItem, TextField } from "@mui/material";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { User } from "../../dto/User";
 // import img from "../Profile/assets/profile.png"
+import "./UpdateProfile.css";
 import { readAndCompressImage } from "browser-image-resizer";
 
 export function UpdateProfile() {
@@ -21,13 +22,16 @@ export function UpdateProfile() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [profilePicture, setProfilePicture] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageType, setErrorMessageType] = useState<AlertColor>(
+    "info"
+  );
+
   const navigate = useNavigate();
 
-  // TODO: preview bonne forme
-  // TODO: Attention au bon username verifier qu'il n'est pas déjà utilisé
-  // TODO: Rajouter adresse et description
   // TODO: Améliorer la beauté
-  
+  // FIXME: Le label de la photo de profil est absolument affreux
+
 
   const context = useContext(MyBlogContext);
   const userService = new UserService(config.API_URL);
@@ -37,6 +41,8 @@ export function UpdateProfile() {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
       setProfilePicture("data:image/png;base64," + context.user.ppbin);
+      setDescription(context.user.description)
+      setAdresse(context.user.adresse)
       
     }
   }, [context.user]);
@@ -68,30 +74,18 @@ export function UpdateProfile() {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const config = {
-        quality: 0.8,
         maxWidth: 800,
         maxHeight: 800,
         autoRotate: true,
         debug: true,
       };
-      const configPreview = {
-        quality: 0.8,
-        maxWidth: 100,
-        maxHeight: 100,
-        autoRotate: true,
-        debug: true,
-      };
       try {
         const compressedFile = await readAndCompressImage(file, config);
-        const previewFile = await readAndCompressImage(file, configPreview);
         const newFile = new File([compressedFile], file.name, {
           type: compressedFile.type,
         });
-        const newPreviewFile = new File([previewFile], file.name, {
-          type: previewFile.type,
-        });
         setSelectedFile(newFile);
-        setPreviewUrl(URL.createObjectURL(newPreviewFile));
+        setPreviewUrl(URL.createObjectURL(newFile));
   
       } catch (error) {
         console.error(error);
@@ -116,7 +110,7 @@ export function UpdateProfile() {
 
   const handleUpdate = () => {
     userService.getUser(username).then((e) => {
-      if (!e.data || e.data.username === username) {
+      if (!e.data || e.data.username === context.user?.username) {
         let binaryData;
         let extension;
 
@@ -174,9 +168,6 @@ export function UpdateProfile() {
             console.log("Error: ", error);
           };
         } else {
-          // setPpbin(context.user?.ppbin)
-          // console.log(ppbin)
-          // console.log(typeof  context.user?.ppbin)
           const updatedUser: User = {
             ...context.user, // spread operator to include all properties of the current user
             username,
@@ -204,8 +195,11 @@ export function UpdateProfile() {
               console.log(error);
             });
         }
+        navigate(`/profile/${username}`)
       } else {
-        console.log("c'est pas good mais j'ai pas encore géré l'erreur");
+        // console.log("c'est pas good mais j'ai pas encore géré l'erreur");
+        setErrorMessage("Username already used")
+        setErrorMessageType("error")
       }
     });
   };
@@ -425,7 +419,6 @@ export function UpdateProfile() {
   ];
 
   return (
-    // <div><Navbar />
     <div className="main-update-profile">
       <div className="SignIn">
         <div className="cont-signIn">
@@ -436,6 +429,9 @@ export function UpdateProfile() {
           />
 
           <div className="title-signin">Modifie ton Profil !</div>
+          {errorMessage && (<Alert severity={errorMessageType}>
+                {errorMessage}
+              </Alert>)} 
 
           {/* {loginMessage && (<Alert severity={loginMessageType}>
                 {loginMessage}
@@ -508,14 +504,25 @@ export function UpdateProfile() {
             ))}
           </TextField>
 
-          <TextField type="file" onChange={handleFileChange} />
+          <TextField
+            className="text-field"
+            sx={{ m: 1, width: "80%" }}
+            id="outlined-basic"
+            label="Adresse"
+            variant="outlined"
+            defaultValue={context.user?.adresse}
+            onChange={(e) => setAdresse(e.target.value)}
+          />
+
+
+          <TextField type="file" onChange={handleFileChange} label="Photo de profil"/>
           {previewUrl ? (
-            <img src={previewUrl} alt="Preview" />
+            <img src={previewUrl} alt="Preview" className="preview"/>
           ) : (
             <img
-              src={blob ? URL.createObjectURL(blob) : ""}
-              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              src={blob ? URL.createObjectURL(blob) : ""} // Il y a forcement un blob mais on evite d'avoir un message d'erreur
               alt="Default"
+              className="preview"
             />
           )}
 
@@ -536,9 +543,21 @@ export function UpdateProfile() {
               </MenuItem>
             ))}
           </TextField>
-          <NavLink to={`/profile/${username}`}>
+
+          <TextField
+            className="text-field"
+            sx={{ m: 1, width: "80%" }}
+            id="outlined-basic"
+            label="Description"
+            variant="outlined"
+            defaultValue={context.user?.description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+
+          {/* <NavLink to={`/profile/${username}`}> */}
             <button onClick={handleUpdate}>Update Profile</button>
-          </NavLink>
+          {/* </NavLink> */}
 
           <div className="privacy">
             <span>

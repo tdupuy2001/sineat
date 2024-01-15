@@ -202,8 +202,6 @@ def log_user(user : UserSchema):
             if found_user.ppbin:
                 image_data2 = base64.b64encode(found_user.ppbin)
                 image_data = image_data2.decode('utf-8')
-                # image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                # image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
             else:
                 image_data = None
             found_user.ppbin = image_data
@@ -223,8 +221,6 @@ def update_user(user : UserUpdate):
                 if user.ppbin:
                     image_data2 = re.sub('^data:image/.+;base64,', '', user.ppbin)
                     image_data = base64.b64decode(image_data2)
-                    # image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                    # image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
                 else:
                     image_data = None
                 order = update(User).where(User.username == user.old_username).values(

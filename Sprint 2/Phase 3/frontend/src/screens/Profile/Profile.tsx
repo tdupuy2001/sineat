@@ -29,6 +29,7 @@ export function Profile() {
         .getUser(usernameLink)
         .then((profileUser) => {
           setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
+          setDescription(profileUser.data.description)
           // console.log(profilePicture);
         })
         .catch((error) => {
@@ -98,6 +99,7 @@ export function Profile() {
   const [nb_abonne, setNbAbonne] = useState<number>();
   const [abonnement, setAbonnement] = useState<string[]>();
   const [abonne, setAbonne] = useState<string[]>();
+  const [description, setDescription] = useState<string | undefined>();
 
   useEffect(() => {
     if (usernameLink) {
@@ -175,6 +177,9 @@ export function Profile() {
                 {" "}
                 {nb_abonnement} Abonnement(s)
               </button>
+            </div>
+            <div className="profile-description">
+              <p>{description}</p>
             </div>
             <div className="buttons">
               {username == usernameLink && (
