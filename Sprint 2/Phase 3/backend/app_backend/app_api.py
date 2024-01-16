@@ -352,10 +352,12 @@ def get_community(username: str):
                 query_username=select(User.username).where(User.id_user == abonnement.Abonnement.id_user2)
                 username=session.execute(query_username).scalar()
                 liste_abonnement.append(username)
+            liste_abonnement.sort()
             for abonne in res_abonne:
                 query_username=select(User.username).where(User.id_user == abonne.Abonnement.id_user1)
                 username=session.execute(query_username).scalar()
                 liste_abonne.append(username)
+            liste_abonne.sort()
             nb_abonnement=session.query(query_abonnement.alias("subquery")).count()
             nb_abonne=session.query(query_abonne.alias("subquery")).count()
     return  {'nb_abonnement':nb_abonnement,'nb_abonne':nb_abonne,'liste_abonnement': liste_abonnement ,'liste_abonne': liste_abonne }

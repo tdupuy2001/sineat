@@ -110,7 +110,15 @@ export function Profile() {
         setAbonne(response.data.liste_abonne);
       });
     }
-  }, [usernameLink]);
+  }, [usernameLink,context.user]);
+
+  useEffect(() => {
+    if (context.user) {
+      setUsername(context.user?.username);
+      setIsLoggedIn(true);
+    }
+  }, [usernameLink, context.user]);
+
 
   const [isSub, setSub] = useState(false);
   useEffect(() => {
@@ -119,7 +127,7 @@ export function Profile() {
         setSub(response.data);
       });
     }
-  }, [usernameLink]);
+  }, [usernameLink,context.user]);
 
   const handleFollow = () => {
     if (usernameLink) {
@@ -155,6 +163,63 @@ export function Profile() {
   const closeAbonnement = () => {
     setAbonnementIsOpen(false);
   };
+
+
+const [list_blob_abonne, setListBlobAbonne] = useState<{blob: Blob; username: string }[]>([]);
+const [list_blob_abonnement, setListBlobAbonnement] = useState<{blob: Blob; username: string }[]>([]);
+useEffect(()=>{
+  if (abonne) {
+    setListBlobAbonne([])
+    for (const abonneUsername of abonne) {
+      userService
+      .getUser(abonneUsername)
+      .then((profileUser) => {
+        let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
+        let byteCharacters = atob(profilePicture.split(",")[1]);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        const newBlobWithUsername = {
+          blob: new Blob([byteArray], { type: "image/png" }),
+          username: abonneUsername,
+        };
+        setListBlobAbonne(prevState => [...prevState, newBlobWithUsername]);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+    }
+   }
+},[abonne]);
+  
+useEffect(()=>{
+  if (abonnement) {
+    setListBlobAbonnement([])
+    for (const abonnementUsername of abonnement) {
+      userService
+      .getUser(abonnementUsername)
+      .then((profileUser) => {
+        let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
+        let byteCharacters = atob(profilePicture.split(",")[1]);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        const newBlobWithUsername = {
+          blob: new Blob([byteArray], { type: "image/png" }),
+          username: abonnementUsername,
+        };
+        setListBlobAbonnement(prevState => [...prevState, newBlobWithUsername]);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+    }
+   }
+},[abonnement]);
 
   return (
     <div>
@@ -234,29 +299,32 @@ export function Profile() {
         style={{
           content: {
             background: "#FAF6F1",
+            padding: '0px',
           },
         }}
       >
         <div className="title_sticky">
+          <button className="close-button" onClick={closeAbonne}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
           <h2>Abonné(s)</h2>
         </div>
-        <ul>
-          {abonne &&
-            abonne.map((abonneUsername) => (
-              <li key={abonneUsername} id="list_username">
+        <div>
+          <ul>
+            {list_blob_abonne && list_blob_abonne.map(({blob, username }) => (
+              <li key={username} id="list_username">
                 <NavLink
-                  to={`/profile/${abonneUsername}`}
+                  to={`/profile/${username}`}
                   onClick={closeAbonne}
                   className="username_link"
                 >
-                  {abonneUsername}
+                  <img src={blob ? URL.createObjectURL(blob) : ""} className="username_img" />
+                  {username}
                 </NavLink>
               </li>
             ))}
-        </ul>
-        <button className="close-button" onClick={closeAbonne}>
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
+          </ul>
+        </div>
       </Modal>
       <Modal
         isOpen={abonnementIsOpen}
@@ -265,29 +333,33 @@ export function Profile() {
         style={{
           content: {
             background: "#FAF6F1",
+            padding: '0px',
           },
         }}
       >
         <div className="title_sticky">
+          <button className="close-button" onClick={closeAbonnement}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
           <h2>Abonnement(s)</h2>
         </div>
-        <ul>
-          {abonnement &&
-            abonnement.map((abonnementUsername) => (
-              <li key={abonnementUsername} id="list_username">
+        <div>
+          <ul>
+            {list_blob_abonnement && list_blob_abonnement.map(({blob, username }) => (
+              <li key={username} id="list_username">
+                
                 <NavLink
-                  to={`/profile/${abonnementUsername}`}
+                  to={`/profile/${username}`}
                   onClick={closeAbonnement}
                   className="username_link"
                 >
-                  {abonnementUsername}
+                  <img src={blob ? URL.createObjectURL(blob) : ""} className="username_img" />
+                  {username}
                 </NavLink>
               </li>
             ))}
-        </ul>
-        <button className="close-button" onClick={closeAbonnement}>
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
+          </ul>
+        </div>
       </Modal>
       <Footer />
     </div>

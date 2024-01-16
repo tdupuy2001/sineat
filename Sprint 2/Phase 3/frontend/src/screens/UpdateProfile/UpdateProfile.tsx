@@ -131,10 +131,6 @@ export function UpdateProfile() {
               binaryData = binaryData.replace(/^data:image\/[a-z]+;base64,/, "")
             }
             extension = selectedFile.name.split(".").pop();
-            console.log(context.user?.ppbin)
-
-            console.log(typeof binaryData === "string" ? binaryData : undefined)
-            console.log(typeof binaryData)
             const updatedUser: User = {
               ...context.user, // spread operator to include all properties of the current user
               // id_user: context.user.id_user, Ici c'est special car il y a forcement un id
