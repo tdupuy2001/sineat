@@ -261,19 +261,7 @@ export function News() {
                       <button className="button-ajout-com-close" onClick={() => setIsCommentFormOpen(false)}>Fermer</button>
                     </div>
                   </div>
-                  // <form onSubmit={handleSubmitComment}>
-                  //   <input type="text" placeholder="Title" value={newComment.titre_post} onChange={e => setNewComment({...newComment, titre_post: e.target.value})} required />
-                  //   <textarea placeholder="Text" value={newComment.text} onChange={e => setNewComment({...newComment, text: e.target.value})} required />
-                  //   <select value={newComment.type} onChange={e => setNewComment({...newComment, type: e.target.value})} required>
-                  //     <option value="">Select type</option>
-                  //     <option value="post">Post</option>
-                  //     <option value="recette">Recette</option>
-                  //     <option value="restaurant">Restaurant</option>
-                  //     <option value="santé">Santé</option>
-                  //   </select>
-                  //   <button type="submit">Ajouter</button>
-                  //   <button type="button" onClick={() => setIsCommentFormOpen(false)}>Fermer</button>
-                  // </form>
+
                 )}
               </div>
             </div>
