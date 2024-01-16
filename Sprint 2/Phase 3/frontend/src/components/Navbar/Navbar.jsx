@@ -36,18 +36,18 @@ export default function Navbar() {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
 
-      // setProfilePicture("data:image/png;base64," + context.user.ppbin);
+      setProfilePicture("data:image/png;base64," + context.user.ppbin);
 
 
-      userService
-        .getUser(username)
-        .then((profileUser) => {
-          setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
-          // console.log(profilePicture);
-        })
-        .catch((error) => {
-          console.error("An error occurred:", error);
-        });
+      // userService
+      //   .getUser(username)
+      //   .then((profileUser) => {
+      //     setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
+      //     // console.log(profilePicture);
+      //   })
+      //   .catch((error) => {
+      //     console.error("An error occurred:", error);
+      //   });
     }
   }, [context.user]);
 

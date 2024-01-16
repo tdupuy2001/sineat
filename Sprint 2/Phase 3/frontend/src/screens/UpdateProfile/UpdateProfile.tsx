@@ -511,7 +511,7 @@ export function UpdateProfile() {
           />
 
 
-          <TextField type="file" onChange={handleFileChange} label="Photo de profil" style={{ marginTop: '10px', display: 'block' }}/>
+        <TextField type="file" onChange={handleFileChange} label="Photo de profil" style={{ marginTop: '10px', display: 'block' }} style={{ marginTop: '10px', display: 'block' }}/>
           {previewUrl ? (
             <img src={previewUrl} alt="Preview" className="preview"/>
           ) : (
