@@ -110,7 +110,7 @@ export function Profile() {
         setAbonne(response.data.liste_abonne);
       });
     }
-  }, [usernameLink,context.user]);
+  }, [usernameLink]);
 
   useEffect(() => {
     if (context.user) {
@@ -192,7 +192,7 @@ useEffect(()=>{
       });
     }
    }
-},[abonne]);
+},[abonne,usernameLink]);
   
 useEffect(()=>{
   if (abonnement) {
@@ -219,7 +219,7 @@ useEffect(()=>{
       });
     }
    }
-},[abonnement]);
+},[abonnement,usernameLink]);
 
   return (
     <div>
