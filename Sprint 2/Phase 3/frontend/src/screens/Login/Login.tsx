@@ -67,7 +67,6 @@ export function Login() {
       userService.log_user({ username, date_de_naissance: undefined, email: _, password, langue: _, nom: _, prenom: _, genre: _, adresse: _, description: _, ppbin: _ }).then((response: any) => {
         if (response.data.message === 'success') {
           const user = response.data.user;
-          console.log(user)
           login(user); // This will update the context and navigate to "/"
         } else {
           setLoginMessage("Mauvais nom d'utilisateur ou mot de passe !");

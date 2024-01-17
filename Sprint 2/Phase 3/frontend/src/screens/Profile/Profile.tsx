@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
@@ -7,7 +7,6 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-// import img from "./assets/profile.png";
 import "./Profile.css";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,91 +15,59 @@ import { faTimes, faCog, faSignOut } from "@fortawesome/free-solid-svg-icons";
 export function Profile() {
   const userService = new UserService(config.API_URL);
   const context = useContext(MyBlogContext);
-  const [profilePicture, setProfilePicture] = useState<string>();
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user
+  const [list_blob_abonne, setListBlobAbonne] = useState<{blob: Blob; username: string }[]>([]);
+  const [list_blob_abonnement, setListBlobAbonnement] = useState<{blob: Blob; username: string }[]>([]);
 
-  useEffect(() => {
-    if (context.user) {
-      setUsername(context.user?.username);
-      setIsLoggedIn(true);
-    }
-    if (usernameLink) {
-      userService
-        .getUser(usernameLink)
-        .then((profileUser) => {
-          setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
-          setDescription(profileUser.data.description)
-          // console.log(profilePicture);
-        })
-        .catch((error) => {
-          console.error("An error occurred:", error);
-        });
-    }
-  }, [usernameLink, context.user]);
 
-  let blob = null;
-  if (profilePicture) {
-    let byteCharacters = atob(profilePicture.split(",")[1]);
-    let byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    let byteArray = new Uint8Array(byteNumbers);
-    blob = new Blob([byteArray], { type: "image/png" });
-  }
+  const username= localStorage.getItem("username") || "";
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [profileImage, setPP] = useState<File | null>(null);
-
-  const [username, setUsername] = useState<string>(() => {
-    return localStorage.getItem("username") || "";
-  });
-
-  const handleLogout = () => {
-    context.setUser(null);
-    setIsLoggedIn(false);
-    sessionStorage.removeItem("username");
-    localStorage.removeItem("username");
-
-  };
-
-  useEffect(() => {
-    if (context.user) {
-      setUsername(context.user.username);
-    } else {
-      setUsername("");
-    }
-  }, [context.user]);
-
-  // const urlToFile = async (url: string, filename: string, mimeType: any) => {
-  //   const res = await fetch(url);
-  //   const blob = await res.blob();
-  //   return new File([blob], filename, { type: mimeType });
-  // };
-
-  
-  // useEffect(() => {
-  //   if (context.user?.ppbin){
-  //     urlToFile(context.user.ppbin, `image.${context.user.ppform}`, `image/${context.user.ppform}`)
-  //       .then(image => {
-  //         // Do something with the image File object here
-  //         setPP(image)
-  //       })
-  //       .catch(error => {
-  //         console.error('Error converting URL to file:', error);
-  //       });
-  //   }
-  //   console.log(`username: '${username}'`);
-  //   console.log(`usernameLink: '${usernameLink}'`);
-  // }, [username, usernameLink]);
-
-  // gérer les abonnements/abonnés
   const [nb_abonnement, setNbAbonnement] = useState<number>();
   const [nb_abonne, setNbAbonne] = useState<number>();
   const [abonnement, setAbonnement] = useState<string[]>();
   const [abonne, setAbonne] = useState<string[]>();
   const [description, setDescription] = useState<string | undefined>();
 
+  const [isSub, setSub] = useState(false);
+
+  const [abonneIsOpen, setAbonneIsOpen] = useState(false);
+  const [abonnementIsOpen, setAbonnementIsOpen] = useState(false);
+
+  const[blobPhotoProfil, setBlobPhotoProfil] = useState<Blob>();
+
+
+  // Gestion de la photo de profil
+  useEffect(() => {
+    if (usernameLink) {
+      userService
+        .getUser(usernameLink)
+        .then((profileUser) => {
+          const pp = profileUser.data.ppbin
+          let propic = "data:image/png;base64," + pp
+          setDescription(profileUser.data.description)
+          if (propic) {
+            let byteCharacters = atob(propic.split(",")[1]);
+            let byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            let byteArray = new Uint8Array(byteNumbers);
+            setBlobPhotoProfil(new Blob([byteArray], { type: "image/png" })); // Mettre à jour l'état ici
+          }
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error); 
+        });
+        userService.communityUser(usernameLink).then((response) => {
+          setNbAbonnement(response.data.nb_abonnement);
+          setNbAbonne(response.data.nb_abonne);
+          setAbonnement(response.data.liste_abonnement);
+          setAbonne(response.data.liste_abonne);
+        });
+    }
+   },[usernameLink]);
+
+  // 
   useEffect(() => {
     if (usernameLink) {
       userService.communityUser(usernameLink).then((response) => {
@@ -113,21 +80,76 @@ export function Profile() {
   }, [usernameLink]);
 
   useEffect(() => {
-    if (context.user) {
-      setUsername(context.user?.username);
-      setIsLoggedIn(true);
-    }
-  }, [usernameLink, context.user]);
-
-
-  const [isSub, setSub] = useState(false);
-  useEffect(() => {
-    if (usernameLink) {
+    if (usernameLink ) { 
       userService.findFollow(username, usernameLink).then((response) => {
         setSub(response.data);
       });
     }
-  }, [usernameLink,context.user]);
+  }, [nb_abonne]);
+
+
+  useEffect(()=>{
+    if (abonne) {
+      let abonne_temporaire: {blob: Blob, username: string }[] = [];
+      for (const abonneUsername of abonne) {
+        userService
+        .getUser(abonneUsername)
+        .then((profileUser) => {
+          let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
+          let byteCharacters = atob(profilePicture.split(",")[1]);
+          let byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          let byteArray = new Uint8Array(byteNumbers);
+          const newBlobWithUsername = {
+            blob: new Blob([byteArray], { type: "image/png" }),
+            username: abonneUsername,
+          };
+          abonne_temporaire.push(newBlobWithUsername);
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
+      }
+      setListBlobAbonne(abonne_temporaire)
+     }
+  },[abonne]);
+    
+  useEffect(()=>{
+    if (abonnement) {
+      let abonnement_temporaire: {blob: Blob, username: string }[] = [];
+      for (const abonnementUsername of abonnement) {
+        userService
+        .getUser(abonnementUsername)
+        .then((profileUser) => {
+          let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
+          let byteCharacters = atob(profilePicture.split(",")[1]);
+          let byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          let byteArray = new Uint8Array(byteNumbers);
+          const newBlobWithUsername = {
+            blob: new Blob([byteArray], { type: "image/png" }),
+            username: abonnementUsername,
+          };
+          abonnement_temporaire.push(newBlobWithUsername);
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
+      }
+      setListBlobAbonnement(abonnement_temporaire)
+     }
+  },[abonnement]);
+
+  const handleLogout = () => {
+    context.setUser(null);
+    sessionStorage.removeItem("username");
+    localStorage.removeItem("username");
+
+  };
 
   const handleFollow = () => {
     if (usernameLink) {
@@ -144,9 +166,6 @@ export function Profile() {
       });
     }
   };
-
-  const [abonneIsOpen, setAbonneIsOpen] = useState(false);
-  const [abonnementIsOpen, setAbonnementIsOpen] = useState(false);
 
   const openAbonne = () => {
     setAbonneIsOpen(true);
@@ -165,62 +184,6 @@ export function Profile() {
   };
 
 
-const [list_blob_abonne, setListBlobAbonne] = useState<{blob: Blob; username: string }[]>([]);
-const [list_blob_abonnement, setListBlobAbonnement] = useState<{blob: Blob; username: string }[]>([]);
-useEffect(()=>{
-  if (abonne) {
-    setListBlobAbonne([])
-    for (const abonneUsername of abonne) {
-      userService
-      .getUser(abonneUsername)
-      .then((profileUser) => {
-        let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
-        let byteCharacters = atob(profilePicture.split(",")[1]);
-        let byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        let byteArray = new Uint8Array(byteNumbers);
-        const newBlobWithUsername = {
-          blob: new Blob([byteArray], { type: "image/png" }),
-          username: abonneUsername,
-        };
-        setListBlobAbonne(prevState => [...prevState, newBlobWithUsername]);
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
-    }
-   }
-},[abonne,usernameLink]);
-  
-useEffect(()=>{
-  if (abonnement) {
-    setListBlobAbonnement([])
-    for (const abonnementUsername of abonnement) {
-      userService
-      .getUser(abonnementUsername)
-      .then((profileUser) => {
-        let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
-        let byteCharacters = atob(profilePicture.split(",")[1]);
-        let byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        let byteArray = new Uint8Array(byteNumbers);
-        const newBlobWithUsername = {
-          blob: new Blob([byteArray], { type: "image/png" }),
-          username: abonnementUsername,
-        };
-        setListBlobAbonnement(prevState => [...prevState, newBlobWithUsername]);
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
-    }
-   }
-},[abonnement,usernameLink]);
-
   return (
     <div>
       <Navbar />
@@ -228,7 +191,7 @@ useEffect(()=>{
         <div className="profile-header">
           <img
             className="profile-picture"
-            src={blob ? URL.createObjectURL(blob) : ""}
+            src={blobPhotoProfil ? URL.createObjectURL(blobPhotoProfil) : ""}
             alt="Profile"
           />
           <div className="profile-info">

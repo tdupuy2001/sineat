@@ -4,71 +4,34 @@ import "./Navbar.css";
 import logo from "./logo_sineat.png";
 // import img from '../../screens/Login/assets/user.png'
 import { MyBlogContext } from "../../MyBlogContext";
-import { useLocation, useNavigate } from "react-router-dom";
-import { UserService } from "../../services/UserService";
-import { config } from "../../config";
 
 export default function Navbar() {
   const context = useContext(MyBlogContext);
-  // const { user } = useContext(MyBlogContext);
+  
   const [username, setUsername] = useState(sessionStorage?.getItem("username"));
-  const [nom, setNom] = useState(sessionStorage?.getItem("nom"));
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [profilePicture, setProfilePicture] = useState("");
-  const userService = new UserService(config.API_URL);
-
-  const handleList = () => {
-    setOpen(!open);
-  };
-
-  const handleLogout = () => {
-    setUsername("null");
-    setIsLoggedIn(false);
-    setOpen(false);
-    sessionStorage.removeItem("username");
-  };
-  let blob = null;
+  const [blobPhotoProfil, setBlobPhotoProfil] =useState(); //bizarrement lui ne peut pas être typé alors que celui de profil si
+  
 
   useEffect(() => {
     if (context.user) {
-      setUsername(context.user?.username);
+      setUsername(context.user.username);
       setIsLoggedIn(true);
+      const pp = context.user.ppbin
+      let propic = "data:image/png;base64," + pp
+      if (propic) {
+        let byteCharacters = atob(propic.split(",")[1]);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        setBlobPhotoProfil(new Blob([byteArray], { type: "image/png" })); // Mettre à jour l'état ici
+      }
+    };
 
-      setProfilePicture("data:image/png;base64," + context.user.ppbin);
+    }, [context.user]);
 
-
-      // userService
-      //   .getUser(username)
-      //   .then((profileUser) => {
-      //     setProfilePicture("data:image/png;base64," + profileUser.data.ppbin);
-      //     // console.log(profilePicture);
-      //   })
-      //   .catch((error) => {
-      //     console.error("An error occurred:", error);
-      //   });
-    }
-  }, [context.user]);
-
-  if (profilePicture) {
-    // console.log(profilePicture)
-    let byteCharacters = atob(profilePicture.split(",")[1]);
-    let byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    let byteArray = new Uint8Array(byteNumbers);
-    blob = new Blob([byteArray], { type: "image/png" });
-  }
-
-  
-
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    navigate("/login");
-  };
 
   return (
     <nav className="fixed-navbar">
@@ -109,11 +72,10 @@ export default function Navbar() {
       <div className="login-button">
         {isLoggedIn ? (
           <div className="user-info">
-            {<img src={blob ? URL.createObjectURL(blob) : ""} alt="Profile" />}
+            {<img src={blobPhotoProfil ? URL.createObjectURL(blobPhotoProfil) : ""} alt="Profile" />}
             <NavLink to={`/profile/${username}`} className="profile-link">
               {username}
             </NavLink>
-            <p className="profile">{nom}</p>
           </div>
         ) : (
           <NavLink to="/login">
