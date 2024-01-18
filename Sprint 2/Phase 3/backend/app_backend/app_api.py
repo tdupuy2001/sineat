@@ -61,12 +61,14 @@ class PostSchema(BaseModel):
     date: str
     type: str
     afficher: bool
+    titre_post: str
     """
     Les attributs facultatifs
     """
     text: str = ""
     id_note: int = None
     id_post_comm: int = None
+
 
 class UserUpdate(BaseModel):
     """
@@ -304,6 +306,7 @@ def add_post(post: PostSchema):
             date = post.date,
             type = post.type,
             afficher = post.afficher,
+            titre_post = post.titre_post,
             id_note = post.id_note,
             id_post_comm = post.id_post_comm,
         )
