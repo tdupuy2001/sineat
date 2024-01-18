@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from .db_mapping import DBAcces
 import bcrypt
 import logging
@@ -118,11 +119,14 @@ def check_user(password:str, username:str, session:Session):
     else:
         return False
 
+#changer ici pour qu'ils remarchent
 @app.get("/users")
 def get_users():
     with Session(db.engine) as session:
         users = session.query(User).all()
         return users
+    
+
 
 
 @app.get("/users/{username}")
@@ -360,10 +364,22 @@ def get_user_from_post(id_post: int):
         post = session.query(Post).filter(Post.id_post==id_post).first()
         if post is not None:
             user = session.query(User).filter(User.id_user==post.id_user).first()
-            return user
+            if user is not None:
+                if user.ppbin:
+                    image_data2 = base64.b64encode(user.ppbin)
+                    image_data = image_data2.decode('utf-8')
+                    image = Image.open(BytesIO(base64.b64decode(image_data2)))
+                    image.save(os.path.join('../frontend/src/screens/Profile/assets', 'profile.png'))
+                else:
+                    image_data = None
+                user.ppbin = image_data
+                return user
+            else:
+                return ['error: User not found']
         else:
             return ["error : Post not found"]
         
+
 """
 Api pour abonné/abonnement
 """    
@@ -479,12 +495,11 @@ def add_like(like: LikeSchema):
     return like
 
 
-#lui marche pas
 @app.delete("/likes/{id_post}/{id_user}")
 def delete_like(id_post: int, id_user: int):
     with Session(db.engine) as session:
         stm = select(LikedPost).where(
-            LikedPost.id_post == id_post and LikedPost.id_user == id_user
+            and_(LikedPost.id_post == id_post, LikedPost.id_user == id_user)
         )
         res = session.execute(stm)
         found_like = res.scalar()

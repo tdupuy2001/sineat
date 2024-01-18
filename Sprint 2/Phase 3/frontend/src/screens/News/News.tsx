@@ -18,6 +18,7 @@ import { Like } from '../../dto/Like';
 import { CreatePostButton } from '../../components/CreatePostButton/CreatePostButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { error } from 'console';
 
 
 export function News() {
@@ -37,6 +38,7 @@ export function News() {
     const [commentType, setCommentType] = useState<string>();
     const [commentText, setCommentText] = useState<string>();
     const navigate = useNavigate();
+    const [userLikes, setUserLikes] = useState<Record<number, boolean>>({});
 
     const sortOldestToNewest = () => {
       const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -72,21 +74,20 @@ export function News() {
         
         if (existingLike) {
           await likeService.deleteLike(id_post, user.id_user);
+          setUserLikes(prevState => ({...prevState, [id_post]:false}));
           // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post]-1}));
         } else {
           const newLike: Like = { id_post: id_post, id_user: user.id_user};
           await likeService.addLike(newLike);
+          setUserLikes(prevState => ({...prevState, [id_post]: true}))
           // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post] + 1}));
         }
         // const updatedLikesCount = { ...likesCount, [id_post]: likesCount[id_post] + (existingLike ? -1 : 1) };
         // setLikesCount(updatedLikesCount);
         // const updatedLikesForPost = await likeService.getPostLikes(id_post);
         // setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
-        console.log('Before updating likes count:', likesCount);
         const updatedLikesForPost = await likeService.getPostLikes(id_post);
-        console.log('Updated likes count:', updatedLikesForPost.data.length);
         setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
-        console.log('After updating likes count:', likesCount);
 
       }
       
@@ -115,12 +116,15 @@ export function News() {
     }
    
     useEffect(() => {
+      if (user) {
         const postService = new PostService(config.API_URL)
         const likeService = new LikeService(config.API_URL)
+
         postService.getPosts()
         .then(response => response.data)
         .then(data => {
           setPosts(data);
+
           const commentsPromises = data.map(post => postService.getPostComments(post.id_post));
           Promise.all(commentsPromises)
           .then(commentsData => {
@@ -128,13 +132,16 @@ export function News() {
             setComments(allComments.flat());
           })
           .catch(error => console.error(error));
+
           const userPromises = data.map(post => postService.getUserFromPost(post.id_post));
           Promise.all(userPromises)
           .then(userData => {
-            const allUsers = userData.map(user => user.data);
+            console.log('usersData:', userData);
+            const allUsers = userData.map(userC => userC.data);
             setUsers(allUsers);
+            console.log('Users:', allUsers);
           })
-          .catch(error => console.error(error));
+          .catch(error => console.error('Error fetching users:',error));
 
           const likesPromises = data.map(post => likeService.getPostLikes(post.id_post));
           Promise.all(likesPromises)
@@ -148,11 +155,26 @@ export function News() {
             setLikesCount(likesCount);
           })
           .catch(error => console.error(error));
+
+          Promise.all(likesPromises)
+          .then(likesData => {
+            const userLikes = likesData.reduce((acc, likesArray) => {
+              if (likesArray.data.length > 0) {
+                const id_post = likesArray.data[0]?.id_post || -1;
+                acc[id_post] = likesArray.data.some(like => like.id_user === user.id_user);
+              }
+              return acc;
+            }, {} as Record<number, boolean>);
+            setUserLikes(userLikes);
+          })
+          .catch(error => console.error(error));
+
         })
         .catch(error => console.error(error));
-    }, []);
+      }
+    }, [user]);
 
-
+    
     return (
     <div className='back-color'>
       <Navbar />
@@ -212,14 +234,14 @@ export function News() {
                 </div>
                 <div className='img-wrapper'>
                   <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={logo} alt="Logo" />
-                  <div onClick={()=> toggleLike(post.id_post)} >
+                  <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
                       icon={faHeart} 
-                      color={likesCount[post.id_post] > 0 ? 'red' : 'black'} 
+                      color={userLikes[post.id_post] ? 'red' : 'black'} 
                       
                     />
-                    <p className='likes-count'>&lt;3 {likesCount[post.id_post] || 0}</p>
+                          {likesCount[post.id_post] || 0}
                   </div>
                 </div>
                 <p className='post-text'>{post.text}</p>
@@ -231,6 +253,7 @@ export function News() {
       <Modal show={isModalOpen} handleClose={()=> {
         setIsModalOpen(false);
         setSelectedPost(null);
+        setIsCommentFormOpen(false);
       }}>
         {selectedPost && (
           <div className='post-avec-com'>
@@ -245,7 +268,15 @@ export function News() {
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
                   <img className='img-test' src={logo} alt="Logo" />
-                  <p className='likes-count'>&lt;3 {likesCount[selectedPost.id_post] || 0}</p>
+                  <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
+                    {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
+                    <FontAwesomeIcon 
+                      icon={faHeart} 
+                      color={userLikes[selectedPost.id_post] ? 'red' : 'black'} 
+                      
+                    />
+                          {likesCount[selectedPost.id_post] || 0}
+                  </div>
                 </div>
 
                 {/*changer le post-text car là on peut afficher toutes les lignes */}
@@ -270,15 +301,62 @@ export function News() {
                 <button className='ajout-com' onClick={()=> setIsCommentFormOpen(true)}> Ajouter un commentaire... </button>
                 {isCommentFormOpen && (
                   <div>
-                    <div>
+                    {/* <div>
                     <TextField required className='txtfield-com-title' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Titre" variant="outlined" onChange={e => setCommentTitle(e.target.value)}/>
                     <TextField required className='txtfield-com-type' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Type" variant='outlined' onChange={e => setCommentType(e.target.value)}/>
                     <TextField required className='txtfield-com-text' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Texte" variant='outlined' onChange={e => setCommentText(e.target.value)}/>                 
-                    </div>
-                    <div>
-                      <button className="submit" onClick={handleSubmitComment}>Ajouter</button>
-                      <button className="button-ajout-com-close" onClick={() => setIsCommentFormOpen(false)}>Fermer</button>
-                    </div>
+                    </div> */}
+                    <form className='addPlaceForm' onSubmit={handleSubmitComment}>
+                      <div>
+                      <label>
+                        <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
+                          Type:
+                          <select
+                          className="customSelect" 
+                          name="type"
+                          value={commentType}
+                          onChange={e => setCommentType(e.target.value)} >
+                          <option value="None">Choisir une valeur</option>
+                          <option value="texte">Post</option>
+                          <option value="recette">Recette</option>
+                          <option value="restaurant">Restaurant</option>
+                          <option value="santé">Santé</option>
+                          </select>
+                        </div>
+                      </label>
+                      <label>
+                        <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
+                          Titre:
+                          <input
+                          className="inputField"
+                          type="text"
+                          name="title"
+                          value={commentTitle}
+                          onChange={e => setCommentTitle(e.target.value)}
+                          placeholder="Titre"
+                          />
+                        </div>
+                      </label>
+                      <label>
+                        <div className={`form ${commentText === '' ? 'defaultValueStyle' : ''}`}>
+                          Description:
+                          <input
+                          className="inputField"
+                          type="text"
+                          name="description"
+                          value={commentText}
+                          onChange={e => setCommentText(e.target.value)}
+                          placeholder="Texte"
+                          />
+                        </div>
+                      </label>
+                      </div>
+                      <div className='buttons-comment-container'>
+                        <button type="submit" className="submit">Ajouter</button>
+                        <button className="button-ajout-com-close" onClick={() => setIsCommentFormOpen(false)}>Fermer</button>
+                      </div>
+
+                    </form>
                   </div>
 
                 )}
