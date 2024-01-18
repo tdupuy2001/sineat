@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { MyBlogContext } from '../../MyBlogContext';
@@ -10,13 +10,14 @@ import { Post } from '../../dto/Post';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import logo from './assets/logo_sineat.png';
 import Modal from '../../components/Modal/Modal';
-import { error } from 'console';
 import { User } from '../../dto/User';
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import nuage from './assets/nuage_rose.png';
 import { LikeService } from '../../services/LikeService';
 import { Like } from '../../dto/Like';
 import { CreatePostButton } from '../../components/CreatePostButton/CreatePostButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 
 export function News() {
@@ -31,7 +32,7 @@ export function News() {
     const [likesCount, setLikesCount] = useState<Record<number, number>>({});
     const {user} = useContext(MyBlogContext)
     const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
-    const [newComment, setNewComment] = useState<Partial<Post>>({});
+    // const [newComment, setNewComment] = useState<Partial<Post>>({});
     const [commentTitle, setCommentTitle] = useState<string>();
     const [commentType, setCommentType] = useState<string>();
     const [commentText, setCommentText] = useState<string>();
@@ -70,15 +71,26 @@ export function News() {
         const existingLike = likesForPost.data.find(like => like.id_user === user.id_user);
         
         if (existingLike) {
-          
           await likeService.deleteLike(id_post, user.id_user);
-          setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post]-1}));
+          // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post]-1}));
         } else {
           const newLike: Like = { id_post: id_post, id_user: user.id_user};
           await likeService.addLike(newLike);
-          setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post] + 1}));
+          // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post] + 1}));
         }
+        // const updatedLikesCount = { ...likesCount, [id_post]: likesCount[id_post] + (existingLike ? -1 : 1) };
+        // setLikesCount(updatedLikesCount);
+        // const updatedLikesForPost = await likeService.getPostLikes(id_post);
+        // setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
+        console.log('Before updating likes count:', likesCount);
+        const updatedLikesForPost = await likeService.getPostLikes(id_post);
+        console.log('Updated likes count:', updatedLikesForPost.data.length);
+        setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
+        console.log('After updating likes count:', likesCount);
+
       }
+      
+
     };
   
     const handleSubmitComment = async () => {
@@ -191,7 +203,7 @@ export function News() {
       </div>
       <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
         {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='post-news'>
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news'>
             <div className='post-border' >
                 <h2 className='post-title'>{post.titre_post}</h2>
                 <div className='post-info'>
@@ -199,8 +211,16 @@ export function News() {
                   <p className='post-user'>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img className='img-test' src={logo} alt="Logo" />
-                  <p className='likes-count' onClick={()=> toggleLike(post.id_post)}>&lt;3 {likesCount[post.id_post] || 0}</p>
+                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={logo} alt="Logo" />
+                  <div onClick={()=> toggleLike(post.id_post)} >
+                    {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
+                    <FontAwesomeIcon 
+                      icon={faHeart} 
+                      color={likesCount[post.id_post] > 0 ? 'red' : 'black'} 
+                      
+                    />
+                    <p className='likes-count'>&lt;3 {likesCount[post.id_post] || 0}</p>
+                  </div>
                 </div>
                 <p className='post-text'>{post.text}</p>
                 <p className='post-date'>{post.date.toString()} </p>
@@ -208,7 +228,6 @@ export function News() {
           </div>
         ))}
       </ResponsiveGridLayout>
-      {/*rajouter une + pour ajouter publication */}
       <Modal show={isModalOpen} handleClose={()=> {
         setIsModalOpen(false);
         setSelectedPost(null);

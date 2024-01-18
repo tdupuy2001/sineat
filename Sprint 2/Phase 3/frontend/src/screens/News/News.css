@@ -111,6 +111,15 @@ div[data-grid] {
     height: 90%;
 }
 
+.heart-icon {
+    color: black;
+    cursor: pointer;
+}
+
+.heart-icon.liked {
+    color: red;
+}
+
 .likes-count {
     position: absolute;
     bottom: 0;
