@@ -1,9 +1,12 @@
 from typing import Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException ,Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from sqlalchemy import func
+from typing import List
+import httpx
 from .db_mapping import DBAcces
 import bcrypt
 import logging
@@ -99,7 +102,7 @@ class LikeSchema(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -500,6 +503,141 @@ def delete_like(id_post: int, id_user: int):
             session.commit()
         else: 
             raise HTTPException(404, "Like not found")
+@app.get("/etablissements/by_regime")
+def get_etablissements_by_regime(regime_id: int):
+    with Session(db.engine) as session:
+        etablissements = session.query(Etablissement).join(
+            RegimeEtablissement, Etablissement.id_etablissement == RegimeEtablissement.id_etablissement
+        ).filter(
+            RegimeEtablissement.id_regime == regime_id
+        ).all()
+        return etablissements
+
+@app.get("/etablissement")
+def get_etablissement(nom: str = Query(None) ):
+    etab_lines = []
+    with Session(db.engine) as session:
+        query = session.query(Etablissement)
+        if nom:
+            query = query.filter(Etablissement.nom == nom)
+
+        etabs = query.all()
+
+    return etabs
+
+@app.get("/regimes")
+def get_all_regimes():
+    with Session(db.engine) as session:
+        regimes = session.query(Regime).all()
+        return regimes
+
+
+class EtablissementAverageGrade(BaseModel):
+    nom: str
+    average_grade: float
+
+@app.get("/note", response_model=EtablissementAverageGrade)
+def get_note_etablissement(nom: str = Query(...)):  # Using ellipsis to make the parameter required
+    with Session(db.engine) as session:
+        query = session.query(
+            Etablissement.nom,
+            func.avg(NoteConcerne.grade).label('average_grade')
+        ).join(Note, Etablissement.id_etablissement == Note.id_etablissement
+        ).join(NoteConcerne, Note.id_note == NoteConcerne.id_note
+        ).filter(Etablissement.nom == nom
+        ).group_by(Etablissement.nom)
+
+        etab_with_avg_grade = query.first()  # Get the first result
+
+        # If no result found, return nom with average grade 0
+        result = {"nom": nom, "average_grade": 0} if etab_with_avg_grade is None else \
+                 {"nom": etab_with_avg_grade.nom, "average_grade": etab_with_avg_grade.average_grade}
+
+    return result
+
+@app.get("/coord")
+async def get_coord(address: str):
+    url = "https://api-adresse.data.gouv.fr/search/"
+    params = {
+        "q": address,
+        "type": "housenumber",
+        "autocomplete": "0"
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params)
+        return response.json()
+        
+@app.get("/filter_Byradius")
+async def filter_addresses(
+    lat : float,
+    long : float,
+    radius: float,
+):
+    # Define a function to calculate the distance between two sets of coordinates (latitude and longitude)
+    def calculate_distance(lat1, lon1, lat2, lon2):
+        import math
+
+        # Radius of the Earth in kilometers
+        radius_earth = 6371
+
+        # Convert degrees to radians
+        lat1 = math.radians(lat1)
+        lon1 = math.radians(lon1)
+        lat2 = math.radians(lat2)
+        lon2 = math.radians(lon2)
+
+        # Haversine formula to calculate distance
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = (
+            math.sin(dlat / 2) ** 2
+            + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+        )
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        distance = radius_earth * c
+
+        return distance
+
+
+    if lat and long:
+
+            # Fetch all addresses from the database
+            matching_etabs = []
+            with Session(db.engine) as session:
+                etabs = session.query(Etablissement).all()
+                for etab in etabs:
+                    # Construct the address string
+                    etab_address = f"{etab.numero_rue} {etab.rue} {etab.code_postal} {etab.ville}"
+
+                    # Fetch coordinates of the etablissement address
+                    url = "https://api-adresse.data.gouv.fr/search/"
+                    params = {
+                        "q": etab_address,
+                        "type": "housenumber",
+                        "autocomplete": "1"
+                    }
+
+                    async with httpx.AsyncClient() as client:
+                        response = await client.get(url, params=params)
+                        data = response.json()
+
+                        if "features" in data and len(data["features"]) > 0:
+                            # Extract latitude and longitude of the address
+                            etab_lat = data["features"][0]["geometry"]["coordinates"][1]
+                            etab_lon = data["features"][0]["geometry"]["coordinates"][0]
+
+                            # Calculate the distance
+                            distance = calculate_distance(etab_lat, etab_lon, lat, long)
+
+                            # Check if the address is within the specified radius
+                            if distance <= radius:
+                                matching_etabs.append(etab)
+
+            return matching_etabs
+    else:
+            return {"message": "Address not found"}
+
 
 if __name__ == "__main__":
     print(add_user(
