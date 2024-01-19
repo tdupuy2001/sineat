@@ -40,6 +40,7 @@ export function News() {
     const [commentText, setCommentText] = useState<string>();
     const navigate = useNavigate();
     const [userLikes, setUserLikes] = useState<Record<number, boolean>>({});
+    const [postHistory, setPostHistory] = useState<number[]>([]);
 
     const sortOldestToNewest = () => {
       const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -115,6 +116,22 @@ export function News() {
         }
       }
     }
+
+    const openPost = (post:Post) => {
+      setPostHistory(prevHistory => [...prevHistory, post.id_post]);
+      setSelectedPost(post);
+      setIsModalOpen(true);
+    }
+
+    const handleBack = () => {
+      setPostHistory(prevHistory => {
+        const newHistory = prevHistory.slice(0, -1); // Remove the last element
+        const lastPostId = newHistory[newHistory.length - 1];
+        const lastPost = posts.find(post => post.id_post === lastPostId);
+        setSelectedPost(lastPost || null);
+        return newHistory;
+      });
+    };
    
     useEffect(() => {
       if (user) {
@@ -226,7 +243,7 @@ export function News() {
       </div>
       <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
         {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news'>
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' onClick={() => openPost(post)}>
             <div className='post-border' >
                 <h2 className='post-title'>{post.titre_post}</h2>
                 <div className='post-info'>
@@ -251,11 +268,17 @@ export function News() {
           </div>
         ))}
       </ResponsiveGridLayout>
-      <Modal show={isModalOpen} handleClose={()=> {
+      <Modal 
+      show={isModalOpen} 
+      handleClose={()=> {
         setIsModalOpen(false);
         setSelectedPost(null);
         setIsCommentFormOpen(false);
-      }}>
+        setPostHistory([]);
+      }}
+      canGoBack= {postHistory.length >1}
+      handleBack={handleBack}
+      >
         {selectedPost && (
           <div className='post-avec-com'>
             <div className='post-com'>
@@ -287,7 +310,7 @@ export function News() {
             </div>
             <div className='comments-container'>
               {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
-                <div className='post-com-com' onClick={() => {setSelectedPost(comment); setIsModalOpen(true);}}>
+                <div className='post-com-com' onClick={() => openPost(comment)}>
                   <div key={comment.id_post} >
                     {/* mettre un titre ici ? */}
                     <div className='post-info-com'>
@@ -363,7 +386,6 @@ export function News() {
                 )}
               </div>
             </div>
-
           </div>
         )}
       </Modal>

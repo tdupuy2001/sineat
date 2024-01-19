@@ -76,4 +76,18 @@
     color: black;
     }
 
-   
+    .button-retour-hist {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        padding: 10px 20px;
+        background-color: #f2f2f2; 
+        border: 1px solide #ccc;
+        margin-top: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .button-retour-hist:hover {
+        background-color: white;
+    }
