@@ -19,7 +19,8 @@ import ProfileRoute from '../util/ProfileRoute.tsx';
 import UnknownUser from '../screens/Error/unknown_user/UnknownUser.tsx';
 import {News} from '../screens/News/News';
 import AddPlace from '../screens/AddPlace/AddPlace.tsx';
-
+import AddPlaceOk from '../screens/AddPlaceOk/AddPlaceOk.tsx';
+import AddPlaceNone from '../screens/AddPlaceNone/AddPlaceNone.tsx';
 
 
 function App() {
@@ -54,7 +55,9 @@ function App() {
         <Route path="/unknown_user" element={<UnknownUser/>}></Route>
         <Route path="/*" element={<Error404/>}></Route>
         <Route path='/news' element={<News/>} />
-        <Route path='/add-place' element={<AddPlace/>} />
+        <Route path="/add-place" element={<ProtectedRoute><AddPlace/></ProtectedRoute>} />
+        <Route path="/add-place-ok" element={<ProtectedRoute><AddPlaceOk/></ProtectedRoute>} />
+        <Route path="/add-place-none" element={<ProtectedRoute><AddPlaceNone/></ProtectedRoute>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>

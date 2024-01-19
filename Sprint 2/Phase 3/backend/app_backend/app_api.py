@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -90,12 +90,13 @@ class Place(BaseModel):
     rue: str
     numero_rue: int
     nom: str
+    type: str
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, Etablissement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, Etablissement, EtablissementDeType, TypeEtablissement
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -439,24 +440,52 @@ def get_user_from_post(id_post: int):
         else:
             return ["error : Post not found"]
         
+def find_etablissement(rue:str,ville:str,code_postal:int,numero_rue:int, session:Session):
+    order = select(Etablissement).where(Etablissement.rue == rue,Etablissement.ville == ville,Etablissement.code_postal == code_postal,Etablissement.numero_rue == numero_rue)
+    result = session.execute(order)
+    found_etablissement = result.scalar()
+    return(found_etablissement)
+        
 @app.post("/places/")
 def create_place(place: Place):
     with Session(db.engine) as session:
-        new_place_data = Etablissement(
-            code_postal=place.code_postal,
-            ville=place.ville,
-            rue=place.rue,
-            numero_rue=place.numero_rue,
-            nom=place.nom,
-        )
+        place.rue=place.rue.lower()
+        place.ville=place.ville.lower()
+        found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+        if found_etablissement:
+            return ('Etablissement existe déjà')
+        else:
+            new_place_data = Etablissement(
+                code_postal=place.code_postal,
+                ville=place.ville,
+                rue=place.rue,
+                numero_rue=place.numero_rue,
+                nom=place.nom,
+            )
+            session.add(new_place_data)
+            session.commit()
+            session.refresh(new_place_data)
+            queries_type = select(TypeEtablissement.id_type_etablissement).where(TypeEtablissement.nom==place.type)
+            result = session.execute(queries_type)
+            id_type_etablissement = result.scalar()
+            found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+            id_etablissement=found_etablissement.id_etablissement
 
-        # new_place = Etablissement(**new_place_data)
-        session.add(new_place_data)
-        session.commit()
-        session.refresh(new_place_data)
+            new_place_data_type= EtablissementDeType(
+                id_etablissement= id_etablissement,
+                id_type_etablissement = id_type_etablissement
+            )
+            session.add(new_place_data_type)
+            session.commit()
+            session.refresh(new_place_data_type)
+            return ('Etablissement ajouté')
 
-        return new_place_data
-
+@app.get("/types-etablissements")
+def get_types_etablissements():
+    with Session(db.engine) as session:
+        query = select(TypeEtablissement.nom)
+        types_etablissements = session.execute(query).scalars().all()
+        return {"types_etablissements": types_etablissements}
 
 if __name__ == "__main__":
     print(add_user(

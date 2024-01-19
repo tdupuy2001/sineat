@@ -4,4 +4,5 @@ export interface Place {
     rue?:string;
     numero_rue?:number;
     nom?:string;
+    type?:string;
 }

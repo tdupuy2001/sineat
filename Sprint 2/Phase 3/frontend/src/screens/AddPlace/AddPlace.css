@@ -95,22 +95,20 @@
   }
 
 
+  .test_tab {
+    width: 80%;
+  }
 
-
-
-.form{
-    appearance: none;
-    align-items: left ;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #602A0F; /* Couleur de bordure personnalisée */
+  .form {
+    border: 2px solid #602A0F;
     border-radius: 12px;
-    background-color: #F2EADF; /* Couleur de fond personnalisée */
-    color: #602A0F; /* Couleur du texte personnalisée */
-    cursor: pointer;
-    margin-bottom: 10px; /* Ajoutez une marge entre chaque élément du formulaire */
+    background-color: #F2EADF;
+    color: #602A0F;
+    margin-bottom: 10px;
+    padding: 12px; /* Ajout de la marge intérieure */
+    font-size: 14px; /* Réduction de la taille de police */
+    text-align: left; /* Centre le texte en hauteur */
+    width: 100%;
   }
 
 .label{
@@ -172,17 +170,15 @@
   
   
   .inputField {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding: 10px;
-    font-size: 16px;
-    border: 0px;
-    border-radius: 12px;
-    background-color: #FAF6F1 ; /* Couleur de fond personnalisée */
-    color: #602A0F; /* Couleur du texte personnalisée */
+    border: 0;
+    border-radius: 8px;
+    background-color: #FAF6F1;
+    color: #602A0F;
+    padding: 8px; /* Ajustez la hauteur du champ selon vos besoins */
+    font-size: 10px; /* Réduction de la taille de police */
+    width: 100%;
   }
-  
+
   .submitButton {
     height: 50px;
     width: 50%;
