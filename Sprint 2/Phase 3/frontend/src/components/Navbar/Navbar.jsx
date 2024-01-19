@@ -36,34 +36,34 @@ export default function Navbar() {
   return (
     <nav className="fixed-navbar">
       <div className="logo">
-        <NavLink to="/" exact>
+        <NavLink to="/">
           <img src={logo} alt="Logo" />
         </NavLink>
       </div>
 
       <ul className="nav-links">
         <li>
-          <NavLink className="item" activeClassName="current" to="/" exact>
+          <NavLink className="item" activeclassname="current" to="/">
             Accueil
           </NavLink>
         </li>
         <li>
-          <NavLink className="item" activeClassName="current" to="/map">
+          <NavLink className="item" activeclassname="current" to="/map">
             La carte collaborative
           </NavLink>
         </li>
         <li>
-          <NavLink className="item" activeClassName="current" to="/news">
+          <NavLink className="item" activeclassname="current" to="/news">
             Fil d'actualité
           </NavLink>
         </li>
         <li>
-          <NavLink className="item" activeClassName="current" to="/about">
+          <NavLink className="item" activeclassname="current" to="/about">
             Qui sommes-nous ?
           </NavLink>
         </li>
         <li>
-          <NavLink className="item" activeClassName="current" to="/contact">
+          <NavLink className="item" activeclassname="current" to="/contact">
             Contact
           </NavLink>
         </li>

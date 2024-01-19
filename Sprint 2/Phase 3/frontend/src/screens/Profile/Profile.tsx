@@ -274,7 +274,7 @@ export function Profile() {
         </div>
         <div>
           <ul>
-            {list_blob_abonne && list_blob_abonne.map(({blob, username }) => (
+            {list_blob_abonne && list_blob_abonne.sort((a,b) => a.username.localeCompare(b.username)).map(({blob, username }) => (
               <li key={username} id="list_username">
                 <NavLink
                   to={`/profile/${username}`}
@@ -308,7 +308,7 @@ export function Profile() {
         </div>
         <div>
           <ul>
-            {list_blob_abonnement && list_blob_abonnement.map(({blob, username }) => (
+            {list_blob_abonnement && list_blob_abonnement.sort((a,b) => a.username.localeCompare(b.username)).map(({blob, username }) => (
               <li key={username} id="list_username">
                 
                 <NavLink
