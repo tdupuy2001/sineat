@@ -365,15 +365,7 @@ def get_user_from_post(id_post: int):
         if post is not None:
             user = session.query(User).filter(User.id_user==post.id_user).first()
             if user is not None:
-                if user.ppbin:
-                    image_data2 = base64.b64encode(user.ppbin)
-                    image_data = image_data2.decode('utf-8')
-                    image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                    image.save(os.path.join('../frontend/src/screens/Profile/assets', 'profile.png'))
-                else:
-                    image_data = None
-                user.ppbin = image_data
-                return user
+                return {"username":user.username, "id_user":user.id_user}
             else:
                 return ['error: User not found']
         else:

@@ -19,6 +19,7 @@ import { CreatePostButton } from '../../components/CreatePostButton/CreatePostBu
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { error } from 'console';
+import { UserInfo } from '../../dto/UserInfo';
 
 
 export function News() {
@@ -28,7 +29,7 @@ export function News() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [comments, setComments] = useState<Post[]>([]);
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<UserInfo[]>([]);
     const [filter, setFilter] = useState<string | null>(null);
     const [likesCount, setLikesCount] = useState<Record<number, number>>({});
     const {user} = useContext(MyBlogContext)
