@@ -245,6 +245,11 @@ export function Profile() {
           )}
         </div>
         <div className="posts-section">
+          {/* {posts.map((post, index) => (
+         <div key={index} className="post">
+           <h2>{post.title}</h2>
+           <p>{post.content}</p>
+           etc... */}
           <div className="post"></div>
           <div className="post"></div>
           <div className="post"></div>

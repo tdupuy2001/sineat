@@ -154,10 +154,10 @@ export function News() {
           const userPromises = data.map(post => postService.getUserFromPost(post.id_post));
           Promise.all(userPromises)
           .then(userData => {
-            console.log('usersData:', userData);
+            // console.log('usersData:', userData);
             const allUsers = userData.map(userC => userC.data);
             setUsers(allUsers);
-            console.log('Users:', allUsers);
+            // console.log('Users:', allUsers);
           })
           .catch(error => console.error('Error fetching users:',error));
 
@@ -251,7 +251,7 @@ export function News() {
                   <p className='post-user'>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={logo} alt="Logo" />
+                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={logo} alt="Logo" loading='lazy'/>
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
@@ -291,7 +291,7 @@ export function News() {
 
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
-                  <img className='img-test' src={logo} alt="Logo" />
+                  <img className='img-test' src={logo} alt="Logo" loading="lazy"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
