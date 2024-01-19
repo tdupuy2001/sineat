@@ -26,18 +26,6 @@ export function Register() {
   );
   const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
-  
-  //ici à changer pour le register
-
-  // const login = useCallback(
-  //   (user: User) => {
-  //     context.setUser(user);
-  //     setLoginMessage("");
-  //     setLoginMessageType("info");
-  //     navigate("/Login");
-  //   },
-  //   [context, navigate]
-  // );
 
   const genres = [
     {

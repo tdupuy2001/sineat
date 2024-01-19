@@ -23,15 +23,12 @@ export function UpdateProfile() {
   const [profilePicture, setProfilePicture] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [errorMessageType, setErrorMessageType] = useState<AlertColor>(
-    "info"
-  );
+  const [errorMessageType, setErrorMessageType] = useState<AlertColor>("info");
 
   const navigate = useNavigate();
 
   // TODO: Améliorer la beauté
   // FIXME: Le label de la photo de profil est absolument affreux
-
 
   const context = useContext(MyBlogContext);
   const userService = new UserService(config.API_URL);
@@ -41,9 +38,8 @@ export function UpdateProfile() {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
       setProfilePicture("data:image/png;base64," + context.user.ppbin);
-      setDescription(context.user.description)
-      setAdresse(context.user.adresse)
-      
+      setDescription(context.user.description);
+      setAdresse(context.user.adresse);
     }
   }, [context.user]);
 
@@ -86,7 +82,6 @@ export function UpdateProfile() {
         });
         setSelectedFile(newFile);
         setPreviewUrl(URL.createObjectURL(newFile));
-  
       } catch (error) {
         console.error(error);
       }
@@ -102,7 +97,6 @@ export function UpdateProfile() {
       setGenre(context.user.genre);
       setDateDeNaissance(context.user.date_de_naissance);
       localStorage.setItem("username", context.user.username);
-      console.log(context.user.ppbin)
     } else {
       setUsername("");
     }
@@ -127,8 +121,11 @@ export function UpdateProfile() {
             //   "Binary : ",
             //   binaryData
             // );
-            if (binaryData && typeof binaryData === "string"){
-              binaryData = binaryData.replace(/^data:image\/[a-z]+;base64,/, "")
+            if (binaryData && typeof binaryData === "string") {
+              binaryData = binaryData.replace(
+                /^data:image\/[a-z]+;base64,/,
+                ""
+              );
             }
             extension = selectedFile.name.split(".").pop();
             const updatedUser: User = {
@@ -176,7 +173,7 @@ export function UpdateProfile() {
             description,
             ppbin: context.user?.ppbin,
             old_username: usernameLink,
-            
+
             ppform: "png",
           };
           userService
@@ -191,11 +188,11 @@ export function UpdateProfile() {
               console.log(error);
             });
         }
-        navigate(`/profile/${username}`)
+        navigate(`/profile/${username}`);
       } else {
         // console.log("c'est pas good mais j'ai pas encore géré l'erreur");
-        setErrorMessage("Username already used")
-        setErrorMessageType("error")
+        setErrorMessage("Username already used");
+        setErrorMessageType("error");
       }
     });
   };
@@ -424,10 +421,10 @@ export function UpdateProfile() {
             src="https://cdn.animaapp.com/projects/652956d4313e8aaa8f26adb6/releases/6548c973bfd479f2efe3643d/img/sin-2-nobg-1.png"
           />
 
-          <div className="title-signin">Modifie ton Profil !</div>
-          {errorMessage && (<Alert severity={errorMessageType}>
-                {errorMessage}
-              </Alert>)} 
+          <div className="title-update">Modifie ton Profil !</div>
+          {errorMessage && (
+            <Alert severity={errorMessageType}>{errorMessage}</Alert>
+          )}
 
           {/* {loginMessage && (<Alert severity={loginMessageType}>
                 {loginMessage}
@@ -510,15 +507,20 @@ export function UpdateProfile() {
             onChange={(e) => setAdresse(e.target.value)}
           />
 
-
-        <TextField type="file" onChange={handleFileChange} label="Photo de profil" style={{ marginTop: '10px', display: 'block' }}/>
+          <TextField
+            type="file"
+            onChange={handleFileChange}
+            label="Photo de profil"
+            className="file-selection"
+            // style={{ marginTop: "10px", display: "block" }}
+          />
           {previewUrl ? (
-            <img src={previewUrl} alt="Preview" className="preview"/>
+            <img src={previewUrl} alt="Preview" className="img-preview" />
           ) : (
             <img
               src={blob ? URL.createObjectURL(blob) : ""} // Il y a forcement un blob mais on evite d'avoir un message d'erreur
               alt="Default"
-              className="preview"
+              className="img-preview"
             />
           )}
 
@@ -550,10 +552,11 @@ export function UpdateProfile() {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-
-          {/* <NavLink to={`/profile/${username}`}> */}
-            <button onClick={handleUpdate}>Update Profile</button>
-          {/* </NavLink> */}
+          <div className="btn-container">
+            <button className="btn-update" onClick={handleUpdate}>
+              Update Profile
+            </button>
+          </div>
 
           <div className="privacy">
             <span>
