@@ -18,7 +18,7 @@ import ProtectedRoute from '../util/ProtectedRoute.tsx';
 import ProfileRoute from '../util/ProfileRoute.tsx';
 import UnknownUser from '../screens/Error/unknown_user/UnknownUser.tsx';
 import {News} from '../screens/News/News';
-import AddPlace from '../screens/AddPlace/AddPlace.js';
+import AddPlace from '../screens/AddPlace/AddPlace.tsx';
 
 
 

@@ -34,7 +34,6 @@ app.add_middleware(
 )
 
 db = DBAcces("sineat_db", False)
-
 """
 Création des classes pouvant être utilisés avec FastApi
 """
@@ -83,14 +82,20 @@ class UserUpdate(BaseModel):
     old_username : str
     ppbin: Optional[str] = None
     ppform: Optional[str] = None
-    
 
+
+class Place(BaseModel):
+    code_postal: int
+    ville: str
+    rue: str
+    numero_rue: int
+    nom: str
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, Etablissement
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -433,8 +438,26 @@ def get_user_from_post(id_post: int):
             return user
         else:
             return ["error : Post not found"]
+        
+@app.post("/places/")
+def create_place(place: Place):
+    with Session(db.engine) as session:
+        new_place_data = Etablissement(
+            code_postal=place.code_postal,
+            ville=place.ville,
+            rue=place.rue,
+            numero_rue=place.numero_rue,
+            nom=place.nom,
+        )
 
-            
+        # new_place = Etablissement(**new_place_data)
+        session.add(new_place_data)
+        session.commit()
+        session.refresh(new_place_data)
+
+        return new_place_data
+
+
 if __name__ == "__main__":
     print(add_user(
         UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",

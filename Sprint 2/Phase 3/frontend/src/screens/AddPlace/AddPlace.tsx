@@ -1,47 +1,47 @@
 import React, { useState } from 'react';
+import { MenuItem, TextField } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import './AddPlace.css';
 import Navbar from '../../components/Navbar/Navbar';
-
+import {PlaceService} from '../../services/PlaceService';
+import  { config } from "../../config"
 import Img2 from './assets/contact1.jpg';
 import Img3 from './assets/contact2.jpg';
 import Img4 from './assets/contact3.jpg';
 import Img5 from './assets/contact4.jpg';
 import Img6 from './assets/contact5.jpg';
+import { Place } from '../../dto/Place';
 
 const AddPlace = () => {
-  const [placeInfo, setPlaceInfo] = useState({
-    name: '',
-    address: '',
-    establishmentType: 'None',
-    postalCode: '',
-    city: '',
-  });
-
+  const navigate = useNavigate();
+  
   const [activeTab, setActiveTab] = useState('tab1');
-
-  const handleChange = (e) => {
-    setPlaceInfo({
-      ...placeInfo,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Informations à envoyer:', placeInfo);
-    setPlaceInfo({
-      name: '',
-      address: '',
-      establishmentType: 'Restaurant',
-      postalCode: '',
-      city: '',
-    });
-  };
-
-  const handleTabChange = (tab) => {
+  
+  const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
+
+  const placeService = new PlaceService(config.API_URL)
+
+  const [nomEtablissement, setNomEtablissement]=useState<string>();
+  const [rueEtablissement, setRueEtablissement]=useState<string>();
+  const [villeEtablissement, setVilleEtablissement]=useState<string>();
+  const [codePostalEtablissement, setCodePostalEtablissement]=useState<number>();
+  const [numeroRueEtablissement, setNumeroRueEtablissement]=useState<number>();
+
+  const handleSubmit = () => {
+    if (nomEtablissement && rueEtablissement && villeEtablissement && codePostalEtablissement && numeroRueEtablissement) {
+      const place: Place = {
+        nom: nomEtablissement,
+        ville: villeEtablissement,
+        code_postal: codePostalEtablissement,
+        rue: rueEtablissement,
+        numero_rue: numeroRueEtablissement
+      }
+      placeService.addPlace(place)
+      navigate('/accueil')
+    }
+  }
 
   return (
     <div className='cont-main'>
@@ -116,68 +116,63 @@ const AddPlace = () => {
 
         {activeTab === 'tab1' && (
           <div>
-            <label>
-                <div className={`form ${placeInfo.name === '' ? 'defaultValueStyle' : ''}`}>
-                  Type de l'établissement:
-                  <select
-                    className="customSelect" 
-                    name="establishmentType"
-                    value={placeInfo.establishmentType}
-                    onChange={handleChange}
-                  >
-                    <option value="None">Choisir une valeur</option>
-                    <option value="Restaurant">Restaurant</option>
-                    <option value="Boulangerie">Boulangerie</option>
-                  </select>
-                </div>
-              </label>
               <label>
-                <div className={`form ${placeInfo.name === '' ? 'defaultValueStyle' : ''}`}>
+                <div className="form">
                   Nom de l'établissement:
-                  <input
+                  <TextField
                     className="inputField"
                     type="text"
-                    name="name"
-                    value={placeInfo.name}
-                    onChange={handleChange}
+                    name="nom"
+                    onChange={(e) => setNomEtablissement(e.target.value)}
                     placeholder="Nom de l'établissement"
                   />
                 </div>
               </label>
               <label>
-                <div className={`form ${placeInfo.postalCode === '' ? 'defaultValueStyle' : ''}`}>
-                  Code postal:
-                  <input
+                <div className="form">
+                  Ville de l'établissement:
+                  <TextField
                     className="inputField"
                     type="text"
-                    name="postalCode"
-                    value={placeInfo.postalCode}
-                    onChange={handleChange}
-                    placeholder="Code postal"
+                    name="ville"
+                    onChange={(e) => setVilleEtablissement(e.target.value)}
+                    placeholder="Ville de l'établissement"
                   />
                 </div>
               </label>
               <label>
                 <div className="form">
-                  Ville:
-                  <input
+                  Code postal de l'établissement:
+                  <TextField
                     className="inputField"
                     type="text"
-                    name="city"
-                    value={placeInfo.city}
-                    onChange={handleChange}
+                    name="rue"
+                    onChange={(e) => setCodePostalEtablissement(parseInt(e.target.value))}
+                    placeholder="Code postal de l'établissement"
                   />
                 </div>
               </label>
               <label>
                 <div className="form">
-                  Adresse:
-                  <input
+                  Rue de l'établissement:
+                  <TextField
                     className="inputField"
-                    type="text"
-                    name="address"
-                    value={placeInfo.address}
-                    onChange={handleChange}
+                    type="texte"
+                    name="rue"
+                    onChange={(e) => setRueEtablissement(e.target.value)}
+                    placeholder="Rue de l'établissement"
+                  />
+                </div>
+              </label>
+              <label>
+                <div className="form">
+                  Numéro de rue de l'établissement:
+                  <TextField
+                    className="inputField"
+                    type=""
+                    name="numero_rue"
+                    onChange={(e) => setNumeroRueEtablissement(parseInt(e.target.value))}
+                    placeholder= "Numéro de rue de l'établissement"
                   />
                 </div>
               </label>
@@ -186,23 +181,12 @@ const AddPlace = () => {
 
         {activeTab === 'tab2' && (
           <div className='onglet'>
-            {/* Contenu de l'onglet 2 ici */}
           </div>
         )}
 
         {activeTab === 'tab3' && (
-            <label>
-                <div className="form">
-                  Ton avis:
-                  <input
-                    className="inputField"
-                    type="text"
-                    name="address"
-                    value={placeInfo.address}
-                    onChange={handleChange}
-                  />
-                </div>
-              </label>
+          <div className='onglet'>
+          </div>
         )}
               <button type="submit" className="submitButton">
               <i className="fas fa-plus"></i>   Ajouter l'établissement 
@@ -214,4 +198,3 @@ const AddPlace = () => {
 };
 
 export default AddPlace;
-
