@@ -7,4 +7,5 @@ export interface Post {
     text?:string;
     id_note?:number;
     id_post_comm?:number;
+    titre_post:string;
 }
