@@ -14,7 +14,7 @@ import { Place } from '../../dto/Place';
 
 const AddPlace = () => {
   const navigate = useNavigate();
-  
+
   const [activeTab, setActiveTab] = useState('tab1');
   
   const handleTabChange = (tab: string) => {
@@ -39,7 +39,7 @@ const AddPlace = () => {
         numero_rue: numeroRueEtablissement
       }
       placeService.addPlace(place)
-      navigate('/accueil')
+      navigate('/map')
     }
   }
 
