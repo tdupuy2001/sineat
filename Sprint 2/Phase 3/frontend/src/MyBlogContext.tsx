@@ -1,5 +1,6 @@
 import React from "react"
 import { User } from "./dto/User"
+import { UserAdd } from "./dto/UserAdd"
 
 export interface MyBlogContextProps {
     user:User|null

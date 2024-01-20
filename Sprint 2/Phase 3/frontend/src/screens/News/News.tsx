@@ -11,7 +11,7 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 import logo from './assets/logo_sineat.png';
 import Modal from '../../components/Modal/Modal';
 import { User } from '../../dto/User';
-import { TextField } from '@mui/material';
+import { Alert, AlertColor, TextField } from '@mui/material';
 import nuage from './assets/nuage_rose.png';
 import { LikeService } from '../../services/LikeService';
 import { Like } from '../../dto/Like';
@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { error } from 'console';
 import { UserInfo } from '../../dto/UserInfo';
+import { PostAdd } from '../../dto/PostAdd';
 
 
 export function News() {
@@ -41,6 +42,8 @@ export function News() {
     const navigate = useNavigate();
     const [userLikes, setUserLikes] = useState<Record<number, boolean>>({});
     const [postHistory, setPostHistory] = useState<number[]>([]);
+    const [commentAlertMessage, setCommentAlertMessage] = useState('');
+    const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
 
     const sortOldestToNewest = () => {
       const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -98,11 +101,12 @@ export function News() {
   
     const handleSubmitComment = async () => {
       if (!commentText || !commentTitle || !commentType) {
-        // mettre les messages d'erreur avec alertes à rajouter
+        setCommentAlertMessage('Veuillez remplir tous les champs pour ajouter un commentaire.');
+        setCommentAlertSeverity('error');
       } else {
-        if (user) {
+        if (user && selectedPost) {
           const postService = new PostService(config.API_URL);
-          const newComment : Post = {
+          const newComment : PostAdd = {
             id_user: user.id_user,
             date: new Date(),
             type: commentType,
@@ -110,9 +114,20 @@ export function News() {
             text: commentText,
             id_post_comm: selectedPost?.id_post,
             titre_post: commentTitle,
+          };
+          try {
+            await postService.addPost(newComment)
+            // await postService.addComment(selectedPost, newComment);
+            setCommentTitle('');
+            setCommentType('');
+            setCommentText('');
+            setIsCommentFormOpen(false);
+            const updatedComments = await postService.getPostComments(selectedPost.id_post);
+            setComments(updatedComments.data);
+            setCommentAlertMessage('');
+          } catch (error) {
+            console.error('failed to submit comment:', error);
           }
-          postService.addPost(newComment)
-          navigate('/profile/'+user.username)
         }
       }
     }
@@ -123,6 +138,14 @@ export function News() {
       setIsModalOpen(true);
     }
 
+    const openCommentForm = () => {
+      setIsCommentFormOpen(false); 
+      setCommentAlertMessage('');
+      setCommentTitle('');
+      setCommentText('');
+      setCommentType('');
+    }
+
     const handleBack = () => {
       setPostHistory(prevHistory => {
         const newHistory = prevHistory.slice(0, -1); // Remove the last element
@@ -131,6 +154,11 @@ export function News() {
         setSelectedPost(lastPost || null);
         return newHistory;
       });
+    };
+
+    const navigateToUserProfile = (username: string, event: React.MouseEvent<HTMLParagraphElement, MouseEvent>) => {
+      event.stopPropagation();
+      navigate(`/profile/${username}`);
     };
    
     useEffect(() => {
@@ -243,15 +271,15 @@ export function News() {
       </div>
       <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
         {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' onClick={() => openPost(post)}>
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' >
             <div className='post-border' >
                 <h2 className='post-title'>{post.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{post.type}</p>
-                  <p className='post-user'>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
+                  <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === post.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={logo} alt="Logo" />
+                  <img onClick={() => openPost(post)} className='img-test' src={logo} alt="Logo" />
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
@@ -286,7 +314,7 @@ export function News() {
                 <h2 className='post-title'>{selectedPost.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{selectedPost.type}</p>
-                  <p className='post-user'>@{users.find(userC => userC.id_user === selectedPost.id_user)?.username}</p>
+                  <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === selectedPost.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === selectedPost.id_user)?.username}</p>
                 </div>
 
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
@@ -314,7 +342,7 @@ export function News() {
                   <div key={comment.id_post} >
                     {/* mettre un titre ici ? */}
                     <div className='post-info-com'>
-                      <p className='post-user'>@{users.find(userC => userC.id_user === comment.id_user)?.username}</p>
+                      <p className='post-user'onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === comment.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === comment.id_user)?.username}</p>
                       <p className='post-com-date'>{comment.date.toString()} </p>
                     </div>
                     <p className='post-text-com'>{comment.text}</p>
@@ -330,54 +358,62 @@ export function News() {
                     <TextField required className='txtfield-com-type' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Type" variant='outlined' onChange={e => setCommentType(e.target.value)}/>
                     <TextField required className='txtfield-com-text' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Texte" variant='outlined' onChange={e => setCommentText(e.target.value)}/>                 
                     </div> */}
-                    <form className='addPlaceForm' onSubmit={handleSubmitComment}>
+                    <form className='addPlaceForm' onSubmit={async (e) => {
+                      e.preventDefault();
+                      await handleSubmitComment();
+                      }}>
                       <div>
-                      <label>
-                        <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
-                          Type:
-                          <select
-                          className="customSelect" 
-                          name="type"
-                          value={commentType}
-                          onChange={e => setCommentType(e.target.value)} >
-                          <option value="None">Choisir une valeur</option>
-                          <option value="texte">Post</option>
-                          <option value="recette">Recette</option>
-                          <option value="restaurant">Restaurant</option>
-                          <option value="santé">Santé</option>
-                          </select>
-                        </div>
-                      </label>
-                      <label>
-                        <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
-                          Titre:
-                          <input
-                          className="inputField"
-                          type="text"
-                          name="title"
-                          value={commentTitle}
-                          onChange={e => setCommentTitle(e.target.value)}
-                          placeholder="Titre"
-                          />
-                        </div>
-                      </label>
-                      <label>
-                        <div className={`form ${commentText === '' ? 'defaultValueStyle' : ''}`}>
-                          Description:
-                          <input
-                          className="inputField"
-                          type="text"
-                          name="description"
-                          value={commentText}
-                          onChange={e => setCommentText(e.target.value)}
-                          placeholder="Texte"
-                          />
-                        </div>
-                      </label>
+                        {commentAlertMessage && (
+                          <Alert severity={commentAlertSeverity}>
+                            {commentAlertMessage}
+                          </Alert>
+                        )}
+                        <label>
+                          <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
+                            Type:
+                            <select
+                            className="customSelect" 
+                            name="type"
+                            value={commentType}
+                            onChange={e => setCommentType(e.target.value)} >
+                            <option value="None">Choisir une valeur</option>
+                            <option value="texte">Post</option>
+                            <option value="recette">Recette</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="santé">Santé</option>
+                            </select>
+                          </div>
+                        </label>
+                        <label>
+                          <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
+                            Titre:
+                            <input
+                            className="inputField"
+                            type="text"
+                            name="title"
+                            value={commentTitle}
+                            onChange={e => setCommentTitle(e.target.value)}
+                            placeholder="Titre"
+                            />
+                          </div>
+                        </label>
+                        <label>
+                          <div className={`form ${commentText === '' ? 'defaultValueStyle' : ''}`}>
+                            Description:
+                            <input
+                            className="inputField"
+                            type="text"
+                            name="description"
+                            value={commentText}
+                            onChange={e => setCommentText(e.target.value)}
+                            placeholder="Texte"
+                            />
+                          </div>
+                        </label>
                       </div>
                       <div className='buttons-comment-container'>
                         <button type="submit" className="submit">Ajouter</button>
-                        <button className="button-ajout-com-close" onClick={() => setIsCommentFormOpen(false)}>Fermer</button>
+                        <button className="button-ajout-com-close" onClick={() => openCommentForm()}>Fermer</button>
                       </div>
 
                     </form>

@@ -58,11 +58,13 @@
     font-family: Courier New, sans-serif;
     font-style: italic;
     color: grey;
+    text-transform: capitalize;
 }
 
 .post-user {
     font-size: 90%;
     color: rgb(67, 123, 145);
+    cursor: pointer;
 }
 
 .post-user:hover {

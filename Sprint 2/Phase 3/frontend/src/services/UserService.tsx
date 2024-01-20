@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 import { User } from '../dto/User';
+import { UserAdd } from '../dto/UserAdd';
 
 interface CommunityUserResponse {
     nb_abonnement: number;
@@ -16,7 +17,7 @@ export class UserService {
         this.axiosInstance = axios.create({baseURL: this.apiUrl})
     }
 
-    addUser(user:User) {
+    addUser(user:UserAdd) {
         console.log(user)
         return this.axiosInstance.post<User>('/register', user);
     }
@@ -29,7 +30,7 @@ export class UserService {
         return this.axiosInstance.get<User[]>('/users');
     }
 
-    updateUser(user:User) {
+    updateUser(user:UserAdd) {
         return this.axiosInstance.put<User>('/users', user)
     }
 
@@ -37,7 +38,7 @@ export class UserService {
         return this.axiosInstance.delete<void>('/users/'+username)
     }
 
-    log_user(user: User) {
+    log_user(user: UserAdd) {
         return this.axiosInstance.post<User>('/login_check', user);
     }
 

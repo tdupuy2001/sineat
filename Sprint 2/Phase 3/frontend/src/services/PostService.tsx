@@ -2,6 +2,7 @@ import axios, {AxiosInstance} from 'axios'
 import { Post } from '../dto/Post';
 import { User } from '../dto/User';
 import { UserInfo } from '../dto/UserInfo';
+import { PostAdd } from '../dto/PostAdd';
 
 export class PostService {
 
@@ -12,7 +13,7 @@ export class PostService {
         this.axiosInstance = axios.create({baseURL: this.apiUrl})
     }
 
-    addPost(post:Post) {
+    addPost(post:PostAdd) {
         return this.axiosInstance.post<Post>('/posts', post);
     }
 
@@ -38,5 +39,9 @@ export class PostService {
 
     getUserFromPost(id_post:number) {
         return this.axiosInstance.get<UserInfo>('/posts/'+id_post+'/user');
+    }
+
+    addComment(post1: Post, post2: PostAdd) {
+        return this.axiosInstance.post<Post>('/posts/comment',[post1,post2]);
     }
 }

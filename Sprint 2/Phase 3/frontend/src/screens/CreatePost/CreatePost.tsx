@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
-import { MenuItem, Select, TextField } from '@mui/material';
+import { Alert, AlertColor, MenuItem, Select, TextField } from '@mui/material';
 import './CreatePost.css'
 import { useNavigate } from 'react-router-dom';
 import { PostService } from '../../services/PostService';
@@ -15,6 +15,7 @@ import Img3 from './assets/contact2.jpg';
 import Img4 from './assets/contact3.jpg';
 import Img5 from './assets/contact4.jpg';
 import Img6 from './assets/contact5.jpg';
+import { PostAdd } from '../../dto/PostAdd';
 
 
 export function CreatePost() {
@@ -26,6 +27,8 @@ export function CreatePost() {
     const {user} = useContext(MyBlogContext)
     const [ingredients, setIngredients] = useState('');
     const [preparationTime, setPreparationTime] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState<AlertColor>('info');
 
     const [activeTab, setActiveTab] = useState('tab1');
 
@@ -38,20 +41,32 @@ export function CreatePost() {
         navigate("/news");
     };
 
-    const handleNewPost = async () => {
+    const handleNewPost = async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!postType || !postTitle || !postDesc) {
+        setAlertMessage('Veuillez remplir tous les champs obligatoires.');
+        setAlertSeverity('error');
+      } else {
         if (user) {
             const postService = new PostService(config.API_URL);
-            const newPost: Post = {
+            const newPost: PostAdd = {
                 id_user: user.id_user,
                 date: new Date(),
                 type: postType,
                 afficher: true,
                 text: postDesc,
                 titre_post: postTitle,
+            };
+            try {
+              await postService.addPost(newPost);
+              navigate('/profile/'+user.username)
+              setAlertMessage('');
+              setAlertSeverity('info');
+            } catch (error) {
+              console.error('Failed to create post:', error);
             }
-            postService.addPost(newPost);
-            navigate('/profile/'+user.username)
         }
+      }
     }
 
     return (
@@ -163,6 +178,11 @@ export function CreatePost() {
           </div>
           <form className="addPlaceForm" onSubmit={handleNewPost}>
             <h2 className="addPlaceTitle">Créer une publication</h2>
+            {alertMessage && (
+              <Alert severity={alertSeverity}>
+                {alertMessage}
+              </Alert>
+            )}
             <div className='tabs'>
             <button
               className={activeTab === 'tab1' ? 'active' : ''}

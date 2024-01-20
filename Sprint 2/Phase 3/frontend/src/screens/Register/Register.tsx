@@ -6,6 +6,7 @@ import { UserService } from "../../services/UserService";
 import { config } from "../../config";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../dto/User";
+import { UserAdd } from "../../dto/UserAdd";
 
 export function Register() {
   const context = useContext(MyBlogContext);
@@ -277,7 +278,7 @@ export function Register() {
             if (validatePasswords()) {
               if (username && password && email && langue) {
                 const userService = new UserService(config.API_URL);
-                const user: User = {
+                const user: UserAdd = {
                   username: username,
                   password: password,
                   // role: "",

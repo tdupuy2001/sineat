@@ -360,7 +360,29 @@ def get_post_comments(id_post: int):
         comments = session.query(Post).where(Post.id_post_comm==id_post).all()
         return comments
 
-#api pour récupérer le user d'un post, changer pour avec find_user_by_id
+@app.post("/posts/comment")
+def compare_and_add_comment(post1: PostSchema, post2: PostSchema):
+    with Session(db.engine) as session:
+        if post2.date>post1.date:
+            new_post = Post(
+            text = post2.text,
+            id_user = post2.id_user,
+            date = post2.date,
+            type = post2.type,
+            afficher = post2.afficher,
+            titre_post = post2.titre_post,
+            id_note = post2.id_note,
+            id_post_comm = post2.id_post_comm,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
+            return new_post
+        else:
+            return {'message':'Wrong date'}
+
+
+#api pour récupérer le user d'un post
 @app.get("/posts/{id_post}/user")
 def get_user_from_post(id_post: int):
     with Session(db.engine) as session:
@@ -503,6 +525,11 @@ def delete_like(id_post: int, id_user: int):
             session.commit()
         else: 
             raise HTTPException(404, "Like not found")
+        
+"""
+Api pour les établissements
+"""
+
 @app.get("/etablissements/by_regime")
 def get_etablissements_by_regime(regime_id: int):
     with Session(db.engine) as session:
