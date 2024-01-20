@@ -60,18 +60,18 @@ class PostSchema(BaseModel):
     """
     Les attributs obligatoires
     """
-    id_post: Optional[int] = None
     id_user: int
     date: str
     type: str
     afficher: bool
-    titre_post: str
+    titre_post: Optional[str] = None
     """
     Les attributs facultatifs
     """
-    text: str = ""
-    id_note: int = None
-    id_post_comm: int = None
+    id_post: Optional[int] = None
+    text: Optional[str] = None
+    id_note: Optional[int] = None
+    id_post_comm: Optional[int] = None
 
 
 class UserUpdate(BaseModel):
@@ -145,7 +145,24 @@ def get_user(username: str):
             else:
                 image_data = None
             user.ppbin = image_data
-        return user
+            
+            main_post_ids = find_main_posts_by_user(user.id_user)
+            # main_post_ids = [1,2]
+            
+            
+            return {
+                    "user": user,
+                    "main_post_ids": main_post_ids
+                }
+        else:
+            return {"user":user}
+    
+def find_main_posts_by_user(user_id: int):
+    with Session(db.engine) as session:
+        main_posts = session.query(Post).filter(
+            Post.id_user == user_id
+        ).all()
+        return [post.id_post for post in main_posts]
 
 
 
@@ -369,6 +386,8 @@ def get_user_from_post(id_post: int):
                 return ['error: User not found']
         else:
             return ["error : Post not found"]
+        
+
         
 
 """
@@ -633,16 +652,19 @@ async def filter_addresses(
             return matching_etabs
     else:
             return {"message": "Address not found"}
+        
 
 
-if __name__ == "__main__":
-    print(add_user(
-        UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
-        email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
-    ))
-    print(get_user("michel33"))
-    # prenom: str = ""
-    # genre: str = ""
-    # adresse: str = ""
-    # description: str = ""
+
+
+# if __name__ == "__main__":
+#     print(add_user(
+#         UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
+#         email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
+#     ))
+#     print(get_user("michel33"))
+#     # prenom: str = ""
+#     # genre: str = ""
+#     # adresse: str = ""
+#     # description: str = ""
  

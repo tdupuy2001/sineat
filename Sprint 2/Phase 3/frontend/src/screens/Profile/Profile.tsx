@@ -41,10 +41,11 @@ export function Profile() {
     if (usernameLink) {
       userService
         .getUser(usernameLink)
-        .then((profileUser) => {
-          const pp = profileUser.data.ppbin
+        .then((response) => {
+          const profileUser = response.data.user;
+          const pp = profileUser.ppbin
           let propic = "data:image/png;base64," + pp
-          setDescription(profileUser.data.description)
+          setDescription(profileUser.description)
           if (propic) {
             let byteCharacters = atob(propic.split(",")[1]);
             let byteNumbers = new Array(byteCharacters.length);
@@ -94,8 +95,9 @@ export function Profile() {
       for (const abonneUsername of abonne) {
         userService
         .getUser(abonneUsername)
-        .then((profileUser) => {
-          let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
+        .then((response) => {
+          const profileUser = response.data.user;
+          let profilePicture = "data:image/png;base64," + profileUser.ppbin
           let byteCharacters = atob(profilePicture.split(",")[1]);
           let byteNumbers = new Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
@@ -122,8 +124,9 @@ export function Profile() {
       for (const abonnementUsername of abonnement) {
         userService
         .getUser(abonnementUsername)
-        .then((profileUser) => {
-          let profilePicture = "data:image/png;base64," + profileUser.data.ppbin
+        .then((response) => {
+          const profileUser = response.data.user;
+          let profilePicture = "data:image/png;base64," + profileUser.ppbin
           let byteCharacters = atob(profilePicture.split(",")[1]);
           let byteNumbers = new Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {

@@ -258,7 +258,7 @@ export function Register() {
       if (username) {
         const userService = new UserService(config.API_URL);
         userService.getUser(username).then((u) => {
-          if (u.data) {
+          if (u.data.user) {
             setLoginMessage("Nom d'utilisateur déjà utilisé !")
             setLoginMessageType("error");
           } else {

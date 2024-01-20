@@ -103,8 +103,9 @@ export function UpdateProfile() {
   }, [context.user]);
 
   const handleUpdate = () => {
-    userService.getUser(username).then((e) => {
-      if (!e.data || e.data.username === context.user?.username) {
+    userService.getUser(username).then((response) => {
+      const e = response.data.user
+      if (!e || e.username === context.user?.username) {
         let binaryData;
         let extension;
 

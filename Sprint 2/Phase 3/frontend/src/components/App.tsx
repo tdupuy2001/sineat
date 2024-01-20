@@ -32,7 +32,7 @@ function App() {
       const userService = new UserService(config.API_URL);
       userService.getUser(username).then((u) => {
         if (u.data) {
-          setUser(u.data);
+          setUser(u.data.user);
         }
       });
     }
