@@ -139,9 +139,9 @@ export function News() {
         const likeService = new LikeService(config.API_URL)
 
         postService.getPosts()
-        .then(response => response.data)
+        .then(response => response.data)  
         .then(data => {
-          setPosts(data);
+          setPosts(data); 
 
           const commentsPromises = data.map(post => postService.getPostComments(post.id_post));
           Promise.all(commentsPromises)
