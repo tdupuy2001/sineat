@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
-import { MenuItem, Select, TextField } from '@mui/material';
+import {TextField } from '@mui/material';
 import './CreatePost.css'
 import { useNavigate } from 'react-router-dom';
 import { PostService } from '../../services/PostService';
 import { config } from '../../config';
 import { MyBlogContext } from '../../MyBlogContext';
 import { Post } from '../../dto/Post';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { readAndCompressImage } from "browser-image-resizer";
 
 import Img2 from './assets/contact1.jpg';
@@ -33,7 +31,7 @@ export function CreatePost() {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
-    const handleTabChange = (tab: React.SetStateAction<string>) => {
+    const handleTabChange = (tab: string) => {
         setActiveTab(tab);
       };
     
