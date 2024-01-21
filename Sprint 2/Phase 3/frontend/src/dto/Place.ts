@@ -5,4 +5,5 @@ export interface Place {
     numero_rue?:number;
     nom?:string;
     type?:string;
+    regime?:string;
 }

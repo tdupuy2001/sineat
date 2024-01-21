@@ -25,6 +25,19 @@ const AddPlace = () => {
     .catch(error => console.error('Erreur lors de la récupération des types d\'établissements:', error));
 }, []);
 
+const [regimesEtablissements, setRegimesEtablissements] = useState([]);
+
+useEffect(() => {
+fetch('http://localhost:9456/regimes-etablissements')
+  .then(response => response.json())
+  .then(data => {
+    console.log('Régimes d\'établissements récupérés :', data);
+    setRegimesEtablissements(data.regimes_etablissements);
+  })
+  .catch(error => console.error('Erreur lors de la récupération des types d\'établissements:', error));
+}, []);
+
+
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('tab1');
@@ -41,16 +54,19 @@ const AddPlace = () => {
   const [codePostalEtablissement, setCodePostalEtablissement]=useState<number>();
   const [numeroRueEtablissement, setNumeroRueEtablissement]=useState<number>();
   const [typeEtablissement, setTypeEtablissement]=useState<string>();
+  const [regimeEtablissement, setRegimeEtablissement] = useState<string | undefined>();
+
 
   const handleSubmit = () => {
-    if (nomEtablissement && rueEtablissement && villeEtablissement && codePostalEtablissement && numeroRueEtablissement && typeEtablissement) {
+    if (nomEtablissement && rueEtablissement && villeEtablissement && codePostalEtablissement && numeroRueEtablissement && typeEtablissement && regimeEtablissement) {
       const place: Place = {
         nom: nomEtablissement,
         ville: villeEtablissement,
         code_postal: codePostalEtablissement,
         rue: rueEtablissement,
         numero_rue: numeroRueEtablissement,
-        type: typeEtablissement
+        type: typeEtablissement,
+        regime: regimeEtablissement
       }
       placeService.addPlace(place)
       navigate('/add-place-ok')
@@ -224,6 +240,22 @@ const AddPlace = () => {
                   >
                     {typesEtablissements.map((type, index) => (
                       <MenuItem key={index} value={type}>{type}</MenuItem>
+                    ))}
+                  </TextField>
+                </div>
+              </label>
+              <label>
+                <div className="form">
+                  Régime de l'établissement:
+                  <TextField
+                    className="inputField"
+                    select
+                    name="regime"
+                    value={regimeEtablissement}
+                    onChange={(e) => setRegimeEtablissement(e.target.value)}
+                  >
+                    {regimesEtablissements.map((regime, index) => (
+                      <MenuItem key={index} value={regime}>{regime}</MenuItem>
                     ))}
                   </TextField>
                 </div>
