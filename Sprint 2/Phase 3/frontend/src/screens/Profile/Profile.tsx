@@ -2,7 +2,7 @@ import React, { useContext, useState, useCallback } from "react";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import { useParams } from "react-router-dom";

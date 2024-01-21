@@ -9,6 +9,7 @@ import { MyBlogContext } from '../../MyBlogContext';
 import { Post } from '../../dto/Post';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { readAndCompressImage } from "browser-image-resizer";
 
 import Img2 from './assets/contact1.jpg';
 import Img3 from './assets/contact2.jpg';
@@ -28,6 +29,9 @@ export function CreatePost() {
     const [preparationTime, setPreparationTime] = useState('');
 
     const [activeTab, setActiveTab] = useState('tab1');
+
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
     const handleTabChange = (tab: React.SetStateAction<string>) => {
         setActiveTab(tab);
@@ -53,6 +57,43 @@ export function CreatePost() {
             navigate('/profile/'+user.username)
         }
     }
+
+
+
+const handlePhoto = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  if (event.target.files && event.target.files.length > 0) {
+    const files = Array.from(event.target.files);
+    const config = {
+      maxWidth: 800,
+      maxHeight: 800,
+      autoRotate: true,
+      debug: true,
+    };
+
+    const filePromises = files.map(async (file) => {
+      try {
+        const compressedFile = await readAndCompressImage(file, config);
+        const newFile = new File([compressedFile], file.name, {
+          type: compressedFile.type,
+        });
+        return { file: newFile, url: URL.createObjectURL(newFile) };
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    });
+
+    // Attendez que toutes les promesses soient résolues
+    const processedFiles = await Promise.all(filePromises);
+
+    // Filtrez les résultats non nuls et mettez à jour les états
+    const validFiles = processedFiles.filter((result) => result !== null) as { file: File; url: string }[];
+    setSelectedFiles(validFiles.map((result) => result.file));
+    setPreviewUrls(validFiles.map((result) => result.url));
+  }
+};
 
     return (
         // <div>
@@ -188,7 +229,7 @@ export function CreatePost() {
             <div>
                 <label>
                     <div className={`form ${postType === '' ? 'defaultValueStyle' : ''}`}>
-                        Type de l'établissement:
+                        Type de publication:
                         <select
                         className="customSelect" 
                         name="type"
@@ -232,9 +273,14 @@ export function CreatePost() {
           )}
   
           {activeTab === 'tab2' && (
-            <div className='onglet'>
-              {/* Contenu de l'onglet 2 ici */}
-            </div>
+              <div className='onglet'>
+              <TextField
+                type="file"
+                inputProps={{ multiple: true }} // Ajoutez cette propriété pour permettre la sélection de plusieurs fichiers
+                onChange={handlePhoto}
+                className="file-selection"
+              />
+              </div>
           )}
   
           {activeTab === 'tab3' && (
