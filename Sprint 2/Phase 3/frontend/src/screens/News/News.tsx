@@ -116,8 +116,8 @@ export function News() {
             titre_post: commentTitle,
           };
           try {
-            await postService.addPost(newComment)
-            // await postService.addComment(selectedPost, newComment);
+            // await postService.addPost(newComment)
+            await postService.addComment(selectedPost, newComment);
             setCommentTitle('');
             setCommentType('');
             setCommentText('');

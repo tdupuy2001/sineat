@@ -42,6 +42,6 @@ export class PostService {
     }
 
     addComment(post1: Post, post2: PostAdd) {
-        return this.axiosInstance.post<Post>('/posts/comment',[post1,post2]);
+        return this.axiosInstance.post<Post>('/posts/comment',{post1,post2});
     }
 }
