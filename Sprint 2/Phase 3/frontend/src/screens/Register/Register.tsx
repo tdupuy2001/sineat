@@ -13,13 +13,7 @@ export function Register() {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const [prenom, setPrenom] = useState<string>();
-  const [nom, setNom] = useState<string>();
-  const [dateDeNaissance, setDateDeNaissance] = useState<string>();
-  const [genre, setGenre] = useState<string>();
   const [langue, setLangue] = useState<string>();
-  const [description, setDescription] = useState<string>("");
-  const [adresse, setAdresse] = useState<string>("");
 
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
     "info"

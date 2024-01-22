@@ -513,6 +513,9 @@ export function UpdateProfile() {
             onChange={handleFileChange}
             label="Photo de profil"
             className="file-selection"
+            inputProps={{
+              accept: "image/jpeg, image/jpg, image/png"
+            }}
             // style={{ marginTop: "10px", display: "block" }}
           />
           {previewUrl ? (

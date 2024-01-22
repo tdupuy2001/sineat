@@ -8,4 +8,6 @@ export interface Post {
     id_note?:number;
     id_post_comm?:number;
     id_post?:number;
+    picbin?:string;
+    picform?:string;
 }

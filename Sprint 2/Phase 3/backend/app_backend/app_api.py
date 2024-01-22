@@ -72,6 +72,8 @@ class PostSchema(BaseModel):
     text: Optional[str] = None
     id_note: Optional[int] = None
     id_post_comm: Optional[int] = None
+    picbin: Optional[str] = None
+    picform: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -102,7 +104,7 @@ class LikeSchema(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement,PhotoPost
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -320,19 +322,46 @@ def get_post(id_post: int):
 @app.post("/posts")
 def add_post(post: PostSchema):
     with Session(db.engine) as session:
-        new_post = Post(
-            text = post.text,
-            id_user = post.id_user,
-            date = post.date,
-            type = post.type,
-            afficher = post.afficher,
-            titre_post = post.titre_post,
-            id_note = post.id_note,
-            id_post_comm = post.id_post_comm,
-        )
-        session.add(new_post)
-        session.commit()
-        session.refresh(new_post)
+        if post.picbin:
+            image_data = base64.b64decode(post.picbin)
+            new_photo_post=PhotoPost(
+                picbin=image_data,
+                picform=post.picform,  
+            )
+            session.add(new_photo_post)
+            session.commit()
+            session.refresh(new_photo_post)
+            query_id_photo=select(PhotoPost.id_photo).where(PhotoPost.picbin==image_data, PhotoPost.picform==post.picform)
+            result = session.execute(query_id_photo)
+            id_photo = result.scalar()
+            new_post = Post(
+                text = post.text,
+                id_user = post.id_user,
+                date = post.date,
+                type = post.type,
+                afficher = post.afficher,
+                titre_post = post.titre_post,
+                id_note = post.id_note,
+                id_post_comm = post.id_post_comm,
+                id_photo = id_photo,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
+        else:
+            new_post = Post(
+                text = post.text,
+                id_user = post.id_user,
+                date = post.date,
+                type = post.type,
+                afficher = post.afficher,
+                titre_post = post.titre_post,
+                id_note = post.id_note,
+                id_post_comm = post.id_post_comm,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
         return new_post
 
 
@@ -518,6 +547,7 @@ def delete_like(id_post: int, id_user: int):
             session.commit()
         else: 
             raise HTTPException(404, "Like not found")
+        
 @app.get("/etablissements/by_regime")
 def get_etablissements_by_regime(regime_id: int):
     with Session(db.engine) as session:
