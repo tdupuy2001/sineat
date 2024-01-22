@@ -234,8 +234,9 @@ div[data-grid] {
     font-size: 18px;
     border-radius: 8px;
     transition: color 0.3s ease;
-    margin-left: 3%;
-    margin-right: 3%;
+    /* margin-left: 3%;
+    margin-right: 3%; */
+    margin: 0 !important;
     position: relative;
     z-index: 1;
     white-space: nowrap;
@@ -275,8 +276,9 @@ div[data-grid] {
 .button-wrapper {
     position: relative;
     display: inline-block;
-    margin-left: 3%;
-    margin-right: 3%;
+    /* margin-left: 3%;
+    margin-right: 3%; */
+    margin: 0 !important;
 }
    
 .button-underline {
@@ -465,4 +467,37 @@ div[data-grid] {
 .button-ajout-com-close:hover {
     color: #602A0F;
     font-weight: bold;
+}
+
+.pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;    
+}
+
+.pagination a {
+    outline: none;
+    text-decoration: none;
+    color: #8B4513;
+}
+
+.pagination li {
+    margin: 0 5px;
+    list-style-type: none;
+}
+
+.active-page a {
+    /* background-color: #f00; */
+    color: #602A0F;
+    font-weight: bold;
+}
+
+.pagination .disabled-page a {
+    pointer-events: auto;
+}
+
+.pagination .disabled-page a:hover {
+    /* color: #8B4513; */
+    color: #602A0F;
 }

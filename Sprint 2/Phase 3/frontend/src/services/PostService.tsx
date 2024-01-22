@@ -44,4 +44,13 @@ export class PostService {
     addComment(post1: Post, post2: PostAdd) {
         return this.axiosInstance.post<Post>('/posts/comment',{post1,post2});
     }
+
+    // test pour la pagination
+    getPostsPerPage(page: number,limit: number, type: string | null) {
+        let url = `/page?page=${page}&limit=${limit}`;
+        if (type) {
+            url += `&type=${type}`;
+        }
+        return this.axiosInstance.get(url);
+    }
 }

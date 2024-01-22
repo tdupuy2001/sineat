@@ -21,6 +21,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { error } from 'console';
 import { UserInfo } from '../../dto/UserInfo';
 import { PostAdd } from '../../dto/PostAdd';
+import Pagination from "react-js-pagination";
 
 
 export function News() {
@@ -44,6 +45,10 @@ export function News() {
     const [postHistory, setPostHistory] = useState<number[]>([]);
     const [commentAlertMessage, setCommentAlertMessage] = useState('');
     const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
+    // test pour la pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(12); 
+    const [totalItemsCount, setTotalItemsCount] = useState(0);
 
     const sortOldestToNewest = () => {
       const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -68,7 +73,11 @@ export function News() {
     };
 
     const filterSante = () => {
-      setFilter("santé")
+      setFilter("santé");
+    }
+
+    const resetFilter = () => {
+      setFilter(null);
     }
 
     const toggleLike = async (id_post: number) => {
@@ -160,16 +169,38 @@ export function News() {
       event.stopPropagation();
       navigate(`/profile/${username}`);
     };
+
+    // test pour la pagination
+    const handlePageChange = (pageNumber: number) => {
+      const postService = new PostService(config.API_URL);
+      setCurrentPage(pageNumber);
+      postService.getPostsPerPage(pageNumber, itemsPerPage, filter)
+      .then(response => {
+        setPosts(response.data.posts);
+        setTotalItemsCount(response.data.total_posts);
+      })
+      .catch(error => console.error(error));
+    }
    
     useEffect(() => {
       if (user) {
         const postService = new PostService(config.API_URL)
         const likeService = new LikeService(config.API_URL)
 
+        // test pour la pagination
+        postService.getPostsPerPage(currentPage, itemsPerPage, filter)
+        .then(response => {
+          // const sortedPosts = response.data.posts.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          // setPosts(sortedPosts);
+          setPosts(response.data.posts);
+          setTotalItemsCount(response.data.total_posts);
+        })
+        .catch(error => console.error(error));
+
         postService.getPosts()
         .then(response => response.data)
         .then(data => {
-          setPosts(data);
+          // setPosts(data);
 
           const commentsPromises = data.map(post => postService.getPostComments(post.id_post));
           Promise.all(commentsPromises)
@@ -218,7 +249,7 @@ export function News() {
         })
         .catch(error => console.error(error));
       }
-    }, [user]);
+    }, [user, currentPage, itemsPerPage, filter]);
 
     
     return (
@@ -240,6 +271,9 @@ export function News() {
       </div>
       <div className='button-container'>
         {/* <text className='filtres'>Filtres</text> */}
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={resetFilter}>Afficher tout</button>        </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortOldestToNewest}>Le plus ancien</button>        </div>
@@ -270,7 +304,7 @@ export function News() {
         </div>
       </div>
       <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
-        {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
+        {posts.filter(post => (!filter && ["texte", "recette", "restaurant", "santé"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
           <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' >
             <div className='post-border' >
                 <h2 className='post-title'>{post.titre_post}</h2>
@@ -425,6 +459,16 @@ export function News() {
           </div>
         )}
       </Modal>
+      {/* test pour la pagination */}
+      <Pagination
+        activePage={currentPage}
+        itemsCountPerPage={itemsPerPage}
+        totalItemsCount={totalItemsCount}
+        pageRangeDisplayed={5}
+        onChange={handlePageChange}
+        activeClass='active-page'
+        disabledClass='disabled-page'
+      />
       <Footer />
     </div>
   );

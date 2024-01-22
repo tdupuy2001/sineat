@@ -396,6 +396,21 @@ def get_user_from_post(id_post: int):
         else:
             return ["error : Post not found"]
         
+#test pour pagination
+@app.get("/page")
+def get_posts_per_page(page: int, limit: int, type: Optional[str] = None):
+    with Session(db.engine) as session:
+        query = session.query(Post)
+        if type:
+            query = query.filter(Post.type == type)
+        total_posts = query.count()
+        start = (page-1)*limit
+        end = start + limit
+        posts = query[start:end]
+        # offset = (page-1)*limit
+        # posts = session.query(Post).offset(offset).limit(limit).all()
+        return {"posts":posts, "total_posts": total_posts}
+        
 
 """
 Api pour abonné/abonnement
