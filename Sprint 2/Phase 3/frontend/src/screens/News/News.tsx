@@ -59,6 +59,8 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setSortOrder("asc");
+        setCurrentPage(1);
+        handlePageChange(1);
         setLoading(false);
       }, 1000);
     };
@@ -69,6 +71,8 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setSortOrder("desc");
+        setCurrentPage(1);
+        handlePageChange(1);
         setLoading(false);
       }, 1000);
     };
@@ -79,6 +83,8 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setFilter("texte");
+        setCurrentPage(1);
+        handlePageChange(1);
         setLoading(false);
       }, 500);
       
@@ -88,6 +94,8 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setFilter("recette");
+        setCurrentPage(1);
+        handlePageChange(1);
         setLoading(false);
       }, 500);
     };
@@ -96,6 +104,8 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setFilter("restaurant");
+        setCurrentPage(1);
+        handlePageChange(1);
         setLoading(false);
       }, 500);
     };
@@ -104,6 +114,8 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setFilter("santé");
+        setCurrentPage(1);
+        handlePageChange(1);
         setLoading(false);
       }, 500);
     }
@@ -112,7 +124,9 @@ export function News() {
       setLoading(true);
       setTimeout(() => {
         setFilter(null);
-        setSortOrder('');        
+        setSortOrder('');  
+        setCurrentPage(1);
+        handlePageChange(1);      
         setLoading(false);
       }, 500);
     }
@@ -182,6 +196,7 @@ export function News() {
       setPostHistory(prevHistory => [...prevHistory, post.id_post]);
       setSelectedPost(post);
       setIsModalOpen(true);
+      window.scrollTo(0,0);
     }
 
     const openCommentForm = () => {
@@ -314,6 +329,7 @@ export function News() {
     useEffect(() => {
       if (sortOrder !== "") {
         setLoading(true);
+        setCurrentPage(1);
         handlePageChange(currentPage);
       }
     }, [sortOrder])
