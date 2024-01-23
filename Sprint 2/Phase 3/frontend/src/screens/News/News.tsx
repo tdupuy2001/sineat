@@ -45,39 +45,76 @@ export function News() {
     const [postHistory, setPostHistory] = useState<number[]>([]);
     const [commentAlertMessage, setCommentAlertMessage] = useState('');
     const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
+    const [sortOrder, setSortOrder] = useState("");
+    const [loading, setLoading] = useState(true);
     // test pour la pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12); 
     const [totalItemsCount, setTotalItemsCount] = useState(0);
 
+    // pb avec les dates
     const sortOldestToNewest = () => {
-      const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      setPosts(sortedPosts);
+      // const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      // setPosts(sortedPosts);
+      setLoading(true);
+      setTimeout(() => {
+        setSortOrder("asc");
+        setLoading(false);
+      }, 1000);
     };
   
     const sortNewestToOldest = () => {
-      const sortedPosts = [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      setPosts(sortedPosts);
+      // const sortedPosts = [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      // setPosts(sortedPosts);
+      setLoading(true);
+      setTimeout(() => {
+        setSortOrder("desc");
+        setLoading(false);
+      }, 1000);
     };
+
+ 
   
     const filterPosts = () => {
-      setFilter("texte");
+      setLoading(true);
+      setTimeout(() => {
+        setFilter("texte");
+        setLoading(false);
+      }, 500);
+      
     };
   
     const filterRecipes = () => {
-      setFilter("recette");
+      setLoading(true);
+      setTimeout(() => {
+        setFilter("recette");
+        setLoading(false);
+      }, 500);
     };
   
     const filterRestaurant = () => {
-      setFilter("restaurant");
+      setLoading(true);
+      setTimeout(() => {
+        setFilter("restaurant");
+        setLoading(false);
+      }, 500);
     };
 
     const filterSante = () => {
-      setFilter("santé");
+      setLoading(true);
+      setTimeout(() => {
+        setFilter("santé");
+        setLoading(false);
+      }, 500);
     }
 
     const resetFilter = () => {
-      setFilter(null);
+      setLoading(true);
+      setTimeout(() => {
+        setFilter(null);
+        setSortOrder('');        
+        setLoading(false);
+      }, 500);
     }
 
     const toggleLike = async (id_post: number) => {
@@ -174,10 +211,11 @@ export function News() {
     const handlePageChange = (pageNumber: number) => {
       const postService = new PostService(config.API_URL);
       setCurrentPage(pageNumber);
-      postService.getPostsPerPage(pageNumber, itemsPerPage, filter)
+      postService.getPostsPerPage(pageNumber, itemsPerPage, sortOrder, filter )
       .then(response => {
         setPosts(response.data.posts);
         setTotalItemsCount(response.data.total_posts);
+        setLoading(false);
       })
       .catch(error => console.error(error));
     }
@@ -188,14 +226,24 @@ export function News() {
         const likeService = new LikeService(config.API_URL)
 
         // test pour la pagination
-        postService.getPostsPerPage(currentPage, itemsPerPage, filter)
+        postService.getPostsPerPage(currentPage, itemsPerPage, sortOrder, filter)
         .then(response => {
-          // const sortedPosts = response.data.posts.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          // setPosts(sortedPosts);
-          setPosts(response.data.posts);
+          // pb avec les dates
+          const sortedPosts = response.data.posts.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setPosts(sortedPosts);
+          // setPosts(response.data.posts);
           setTotalItemsCount(response.data.total_posts);
+          setTimeout(() => {
+            // setLoading(false);
+          }, 500);
+          
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+          console.error(error);
+          setTimeout(() => {
+            // setLoading(false);
+          }, 500);
+        });
 
         postService.getPosts()
         .then(response => response.data)
@@ -207,16 +255,22 @@ export function News() {
           .then(commentsData => {
             const allComments = commentsData.map(comment => comment.data);
             setComments(allComments.flat());
+            setTimeout(() => {
+              // setLoading(false);
+            }, 500);
           })
           .catch(error => console.error(error));
 
           const userPromises = data.map(post => postService.getUserFromPost(post.id_post));
           Promise.all(userPromises)
           .then(userData => {
-            console.log('usersData:', userData);
+            // console.log('usersData:', userData);
             const allUsers = userData.map(userC => userC.data);
             setUsers(allUsers);
-            console.log('Users:', allUsers);
+            setTimeout(() => {
+              // setLoading(false);
+            }, 500);
+            // console.log('Users:', allUsers);
           })
           .catch(error => console.error('Error fetching users:',error));
 
@@ -230,6 +284,9 @@ export function News() {
               return count;
             }, {} as Record<number, number>);
             setLikesCount(likesCount);
+            setTimeout(() => {
+              // setLoading(false);
+            }, 500);
           })
           .catch(error => console.error(error));
 
@@ -243,6 +300,9 @@ export function News() {
               return acc;
             }, {} as Record<number, boolean>);
             setUserLikes(userLikes);
+            setTimeout(() => {
+              setLoading(false);
+            }, 1000);
           })
           .catch(error => console.error(error));
 
@@ -251,10 +311,23 @@ export function News() {
       }
     }, [user, currentPage, itemsPerPage, filter]);
 
+    useEffect(() => {
+      if (sortOrder !== "") {
+        setLoading(true);
+        handlePageChange(currentPage);
+      }
+    }, [sortOrder])
+
     
     return (
     <div className='back-color'>
       <Navbar />
+      {loading ? (
+        <div className='load'>
+          <div>Loading<span className='loading-dots'><span>.</span><span>.</span><span>.</span></span></div>
+          </div>
+      ): (
+      <div>
       <CreatePostButton/>
       <div className='fil-dactu'>
         <ul className='bandeau'>
@@ -470,6 +543,8 @@ export function News() {
         disabledClass='disabled-page'
       />
       <Footer />
+      </div>
+      )}
     </div>
   );
 };

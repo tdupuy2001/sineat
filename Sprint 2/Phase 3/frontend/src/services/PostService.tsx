@@ -46,8 +46,8 @@ export class PostService {
     }
 
     // test pour la pagination
-    getPostsPerPage(page: number,limit: number, type: string | null) {
-        let url = `/page?page=${page}&limit=${limit}`;
+    getPostsPerPage(page: number,limit: number, sortOrder: string, type: string | null ) {
+        let url = `/page?page=${page}&limit=${limit}&sortOrder=${sortOrder}`;
         if (type) {
             url += `&type=${type}`;
         }

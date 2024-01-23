@@ -398,11 +398,15 @@ def get_user_from_post(id_post: int):
         
 #test pour pagination
 @app.get("/page")
-def get_posts_per_page(page: int, limit: int, type: Optional[str] = None):
+def get_posts_per_page(page: int, limit: int, sortOrder: str, type: Optional[str] = None):
     with Session(db.engine) as session:
         query = session.query(Post)
         if type:
             query = query.filter(Post.type == type)
+        if sortOrder == "desc":
+            query = query.order_by(Post.date.desc())
+        elif sortOrder == "asc":
+            query = query.order_by(Post.date.asc())
         total_posts = query.count()
         start = (page-1)*limit
         end = start + limit
