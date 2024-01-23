@@ -86,7 +86,7 @@ export function News() {
         setCurrentPage(1);
         handlePageChange(1);
         setLoading(false);
-      }, 500);
+      }, 2000);
       
     };
   
@@ -97,7 +97,7 @@ export function News() {
         setCurrentPage(1);
         handlePageChange(1);
         setLoading(false);
-      }, 500);
+      }, 2000);
     };
   
     const filterRestaurant = () => {
@@ -107,7 +107,7 @@ export function News() {
         setCurrentPage(1);
         handlePageChange(1);
         setLoading(false);
-      }, 500);
+      }, 2000);
     };
 
     const filterSante = () => {
@@ -117,7 +117,7 @@ export function News() {
         setCurrentPage(1);
         handlePageChange(1);
         setLoading(false);
-      }, 500);
+      }, 2000);
     }
 
     const resetFilter = () => {
