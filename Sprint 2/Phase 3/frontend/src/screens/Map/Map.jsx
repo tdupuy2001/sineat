@@ -13,7 +13,6 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import L from "leaflet";
 import Autocomplete from './Autocomplete';
-import LeafletRouting from './LeafletRouting';
 
 function Map() {
   const [etablissements, setEtablissements] = useState([]);
@@ -83,7 +82,6 @@ const handleAddressSelect = async (address) => {
       mapRef.current.flyTo([coords[1], coords[0]], mapRef.current.getZoom());
     }
 
-    // Fetching establishments within a 5 km radius
 
   }
 };

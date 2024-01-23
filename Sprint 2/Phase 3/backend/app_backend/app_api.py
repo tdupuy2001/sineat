@@ -459,6 +459,84 @@ def get_etablissement(nom: str = Query(None) ):
 
     return etabs
 
+class RatingSchema(BaseModel):
+    id_user: int
+    id_etablissement: int
+    rating1: float  # First rating value
+    rating2: float  # Second rating value
+
+@app.post("/addRatings")
+async def add_ratings(rating_data: RatingSchema):
+    with Session(db.engine) as session:
+        # Create and save the Note instance
+        new_note = Note(
+            id_etablissement=rating_data.id_etablissement,
+            id_user=rating_data.id_user
+        )
+        session.add(new_note)
+        session.commit()
+        session.refresh(new_note)
+
+        # Assuming you have a method to determine the type IDs for rating1 and rating2
+        id_type_note1 = 1  # You need to implement this
+        id_type_note2 = 2  # You need to implement this
+
+        # Create and save the NoteConcerne instances
+        new_note_concerne1 = NoteConcerne(
+            id_note=new_note.id_note,
+            id_type_note=id_type_note1,
+            grade=rating_data.rating1
+        )
+        new_note_concerne2 = NoteConcerne(
+            id_note=new_note.id_note,
+            id_type_note=id_type_note2,
+            grade=rating_data.rating2
+        )
+
+        session.add_all([new_note_concerne1, new_note_concerne2])
+        session.commit()
+
+        return {"message": "Ratings added successfully"}
+
+
+@app.get("/etablissement/notes")
+def get_etablissement_notes(nom: str = Query(None)):
+    with Session(db.engine) as session:
+        query = session.query(Etablissement)
+        if nom:
+            query = query.filter(Etablissement.nom == nom)
+
+        etabs = query.all()
+        etab_notes = []
+
+        for etab in etabs:
+            notes_query = session.query(
+                TypeNote.nom.label("note_type"),
+                func.avg(NoteConcerne.grade).label("average_grade")
+            ).join(NoteConcerne, TypeNote.id_type_note == NoteConcerne.id_type_note
+            ).join(Note, NoteConcerne.id_note == Note.id_note
+            ).filter(Note.id_etablissement == etab.id_etablissement
+            ).group_by(TypeNote.nom)
+
+            notes = notes_query.all()
+
+            # Calculate global average if there are note types
+            global_average = sum([note.average_grade for note in notes]) / len(notes) if notes else None
+
+            notes_data = [{
+                "note_type": note.note_type,
+                "average_grade": float(note.average_grade)
+            } for note in notes]
+
+            etab_notes.append({
+                "etablissement_name": etab.nom,
+                "notes": notes_data,
+                "global_average": global_average
+            })
+
+        return etab_notes
+
+
 @app.get("/regimes")
 def get_all_regimes():
     with Session(db.engine) as session:
