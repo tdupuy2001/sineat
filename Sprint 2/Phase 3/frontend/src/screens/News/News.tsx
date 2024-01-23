@@ -163,10 +163,16 @@ export function News() {
     // }
     // });
 
-    const handleNoPhoto = (post:Post)=>{
-      
-
-
+    const handleNoPhoto = (type:string)=>{
+      if (type==="recette"){
+        return recette
+      }else if (type==="santé"){
+        return sante
+      }else if (type==="restaurant"){
+        return restaurant
+      }else{
+        return texte
+      }
     }
   
     useEffect(() => {
@@ -299,7 +305,7 @@ export function News() {
                   <p className='post-user'>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : ""} alt="Logo" loading='lazy'/>
+                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : handleNoPhoto(post.type)} alt="Logo" loading='lazy'/>
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
@@ -339,7 +345,7 @@ export function News() {
 
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
-                  <img className='img-test' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : ""} alt="Logo" loading="lazy"/>
+                  <img className='img-test' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo" loading="lazy"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 

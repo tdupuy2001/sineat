@@ -140,7 +140,6 @@ export function CreatePost() {
             <TextField
               select
               label="Type de publication"
-              className="inputField"
               value={postType}
               onChange={e => setPostType(e.target.value)}
               variant="outlined"
@@ -155,7 +154,6 @@ export function CreatePost() {
 
             <TextField
               label="Nom de la publication"
-              className="inputField"
               value={postTitle}
               onChange={e => setPostTitle(e.target.value)}
               placeholder="Nom de la publication"
@@ -165,7 +163,6 @@ export function CreatePost() {
 
             <TextField
               label="Description"
-              className="inputField"
               value={postDesc}
               onChange={e => setPostDesc(e.target.value)}
               placeholder="Description"
