@@ -1,5 +1,6 @@
 /* Profile.css */
 .profile-container {
+  min-height: 100vh;
   padding: 50px;
   text-align: center;
   background-color: #c5a485;

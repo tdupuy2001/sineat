@@ -9,11 +9,6 @@ import { MyBlogContext } from '../../MyBlogContext';
 import { Post } from '../../dto/Post';
 import { readAndCompressImage } from "browser-image-resizer";
 
-import Img2 from './assets/contact1.jpg';
-import Img3 from './assets/contact2.jpg';
-import Img4 from './assets/contact3.jpg';
-import Img5 from './assets/contact4.jpg';
-import Img6 from './assets/contact5.jpg';
 
 
 export function CreatePost() {
@@ -61,26 +56,29 @@ export function CreatePost() {
                 );
               }
               extension = selectedFile.name.split(".").pop();
-              }
+
               const newPost: Post = {
                 id_user: user.id_user,
-                date: new Date(),
                 type: postType,
-                afficher: true,
                 text: postDesc,
+                afficher:true,
                 titre_post: postTitle,
-                picbin: binaryData,
+                picbin: typeof binaryData === "string" ? binaryData : undefined,
                 picform: extension,
               }
               postService.addPost(newPost);
               navigate('/profile/'+user.username)
+            };
+
+            reader.onerror = function (error) {
+              console.log("Error: ", error);
+            };
             } else {
               const newPost: Post = {
                 id_user: user.id_user,
-                date: new Date(),
                 type: postType,
-                afficher: true,
                 text: postDesc,
+                afficher:true,
                 titre_post: postTitle,
               }
               postService.addPost(newPost);
@@ -180,7 +178,7 @@ export function CreatePost() {
           )}
   
           {activeTab === 'tab2' && (
-          <div className='formPost'>
+          <div className='filePost'>
             <TextField
               type="file"
               inputProps={{
@@ -190,7 +188,7 @@ export function CreatePost() {
               className="file-selection"
             />
             {previewUrl ? (
-              <img src={previewUrl} alt="Preview" className="img-preview" />
+              <img src={previewUrl} alt="Preview" className="img-preview-post" />
             ) : ''}
           </div>
           )}

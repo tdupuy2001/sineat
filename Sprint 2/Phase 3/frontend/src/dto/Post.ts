@@ -1,8 +1,8 @@
 export interface Post {
     id_user:number;
-    date:Date;
     type:string;
-    afficher:boolean;   
+    afficher:boolean;
+    date: Date;  
     titre_post?:string;
     text?:string;
     id_note?:number;
@@ -10,4 +10,5 @@ export interface Post {
     id_post?:number;
     picbin?:string;
     picform?:string;
+    blob?:Blob;
 }

@@ -126,7 +126,7 @@ create table post (
   id_post serial primary key,
   id_user int not null,
   text text,
-  date date not null,
+  date date not null default current_date,
   type text not null,
   afficher boolean not null default true,
   titre_post text,

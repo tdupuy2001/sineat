@@ -1,4 +1,5 @@
 .add_post_main {
+  min-height: 100vh;
   padding-top: 110px;
   background-color: #faf6f1;
 }
@@ -52,10 +53,7 @@
 }
 
 .formPost {
-  appearance: none;
-  align-items: left;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  align-items: center;
   padding: 10px;
   font-size: 16px;
   border: 2px solid #602a0f; /* Couleur de bordure personnalisée */
@@ -63,15 +61,38 @@
   color: #602a0f; /* Couleur du texte personnalisée */
   cursor: pointer;
   margin-bottom: 10px; /* Ajoutez une marge entre chaque élément du formulaire */
+  
 }
+
+.filePost {
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #602a0f; 
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 10px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.file-selection{
+  justify-content: center;
+
+}
+.img-preview-post{
+  width: 200px;
+  height: 200px;
+  object-fit:cover;
+  padding:20px;
+}
+
 .fixed-container {
-  bottom: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #faf6f1;
   margin-top: 1em;
 }
 .SubmitButton {
