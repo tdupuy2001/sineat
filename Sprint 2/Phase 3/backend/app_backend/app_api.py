@@ -1,8 +1,12 @@
 from typing import Optional
-from fastapi import APIRouter, FastAPI, HTTPException, Depends
+from fastapi import APIRouter, FastAPI, HTTPException ,Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
+from sqlalchemy import func
+from typing import List
+import httpx
 from .db_mapping import DBAcces
 import bcrypt
 import logging
@@ -60,12 +64,14 @@ class PostSchema(BaseModel):
     date: str
     type: str
     afficher: bool
+    titre_post: str
     """
     Les attributs facultatifs
     """
     text: str = ""
     id_note: int = None
     id_post_comm: int = None
+
 
 class UserUpdate(BaseModel):
     """
@@ -82,7 +88,13 @@ class UserUpdate(BaseModel):
     old_username : str
     ppbin: Optional[str] = None
     ppform: Optional[str] = None
-
+    
+class LikeSchema(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    id_post : int
+    id_user : int
 
 class Place(BaseModel):
     code_postal: int
@@ -96,7 +108,7 @@ class Place(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, Etablissement, EtablissementDeType, TypeEtablissement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -116,11 +128,14 @@ def check_user(password:str, username:str, session:Session):
     else:
         return False
 
+#changer ici pour qu'ils remarchent
 @app.get("/users")
 def get_users():
     with Session(db.engine) as session:
         users = session.query(User).all()
         return users
+    
+
 
 
 @app.get("/users/{username}")
@@ -304,6 +319,7 @@ def add_post(post: PostSchema):
             date = post.date,
             type = post.type,
             afficher = post.afficher,
+            titre_post = post.titre_post,
             id_note = post.id_note,
             id_post_comm = post.id_post_comm,
         )
@@ -343,9 +359,31 @@ def delete_post(id_post: int):
         else:
             raise HTTPException(404, "Post not found")
         
+#api pour récupérer les commentaires d'un post
+@app.get("/posts/{id_post}/comments")
+def get_post_comments(id_post: int):
+    with Session(db.engine) as session:
+        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
+        return comments
 
-#api pour abonné/abonnement
+#api pour récupérer le user d'un post, changer pour avec find_user_by_id
+@app.get("/posts/{id_post}/user")
+def get_user_from_post(id_post: int):
+    with Session(db.engine) as session:
+        post = session.query(Post).filter(Post.id_post==id_post).first()
+        if post is not None:
+            user = session.query(User).filter(User.id_user==post.id_user).first()
+            if user is not None:
+                return {"username":user.username, "id_user":user.id_user}
+            else:
+                return ['error: User not found']
+        else:
+            return ["error : Post not found"]
         
+
+"""
+Api pour abonné/abonnement
+"""    
 @app.get("/community/{username}")
 def get_community(username: str):
     liste_abonnement=[]
@@ -420,25 +458,192 @@ def handle_follow(username1: str,username2:str):
             except:
                 return 'User not found'
 
-            
-    
-#api pour récupérer les commentaires d'un post
-@app.get("/posts/{id_post}/comments")
-def get_post_comments(id_post: int):
-    with Session(db.engine) as session:
-        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
-        return comments
+"""
+Api pour les likes
+"""  
 
-#api pour récupérer le user d'un post, changer pour avec find_user_by_id
-@app.get("/posts/{id_post}/user")
-def get_user_from_post(id_post: int):
+@app.get("/likes")
+def get_likes():
     with Session(db.engine) as session:
-        post = session.query(Post).filter(Post.id_post==id_post).first()
-        if post is not None:
-            user = session.query(User).filter(User.id_user==post.id_user).first()
-            return user
-        else:
-            return ["error : Post not found"]
+        stars = session.query(LikedPost).all()
+        return stars
+
+@app.get("/likes/{id_post}")
+def get_likes_for_post(id_post:int):
+    with Session(db.engine) as session:
+        likes = session.query(LikedPost).filter(LikedPost.id_post == id_post).all()
+        return likes
+
+
+@app.post("/likes")
+def add_like(like: LikeSchema):
+    with Session(db.engine) as session:
+        stars = get_likes()
+        found_like = next(
+            (
+                s
+                for s in stars
+                if s.id_post == like.id_post and s.id_user == like.id_user
+            ),
+            None,
+        )
+        if found_like is None:
+            new_like = LikedPost(
+                id_post=like.id_post, id_user=like.id_user
+            )
+            session.add(new_like)
+            session.commit()
+    return like
+
+
+@app.delete("/likes/{id_post}/{id_user}")
+def delete_like(id_post: int, id_user: int):
+    with Session(db.engine) as session:
+        stm = select(LikedPost).where(
+            and_(LikedPost.id_post == id_post, LikedPost.id_user == id_user)
+        )
+        res = session.execute(stm)
+        found_like = res.scalar()
+        if found_like is not None:
+            session.delete(found_like)
+            session.commit()
+        else: 
+            raise HTTPException(404, "Like not found")
+@app.get("/etablissements/by_regime")
+def get_etablissements_by_regime(regime_id: int):
+    with Session(db.engine) as session:
+        etablissements = session.query(Etablissement).join(
+            RegimeEtablissement, Etablissement.id_etablissement == RegimeEtablissement.id_etablissement
+        ).filter(
+            RegimeEtablissement.id_regime == regime_id
+        ).all()
+        return etablissements
+
+@app.get("/etablissement")
+def get_etablissement(nom: str = Query(None) ):
+    etab_lines = []
+    with Session(db.engine) as session:
+        query = session.query(Etablissement)
+        if nom:
+            query = query.filter(Etablissement.nom == nom)
+
+        etabs = query.all()
+
+    return etabs
+
+@app.get("/regimes")
+def get_all_regimes():
+    with Session(db.engine) as session:
+        regimes = session.query(Regime).all()
+        return regimes
+
+
+class EtablissementAverageGrade(BaseModel):
+    nom: str
+    average_grade: float
+
+@app.get("/note", response_model=EtablissementAverageGrade)
+def get_note_etablissement(nom: str = Query(...)):  # Using ellipsis to make the parameter required
+    with Session(db.engine) as session:
+        query = session.query(
+            Etablissement.nom,
+            func.avg(NoteConcerne.grade).label('average_grade')
+        ).join(Note, Etablissement.id_etablissement == Note.id_etablissement
+        ).join(NoteConcerne, Note.id_note == NoteConcerne.id_note
+        ).filter(Etablissement.nom == nom
+        ).group_by(Etablissement.nom)
+
+        etab_with_avg_grade = query.first()  # Get the first result
+
+        # If no result found, return nom with average grade 0
+        result = {"nom": nom, "average_grade": 0} if etab_with_avg_grade is None else \
+                 {"nom": etab_with_avg_grade.nom, "average_grade": etab_with_avg_grade.average_grade}
+
+    return result
+
+@app.get("/coord")
+async def get_coord(address: str):
+    url = "https://api-adresse.data.gouv.fr/search/"
+    params = {
+        "q": address,
+        "type": "housenumber",
+        "autocomplete": "0"
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params)
+        return response.json()
+        
+@app.get("/filter_Byradius")
+async def filter_addresses(
+    lat : float,
+    long : float,
+    radius: float,
+):
+    # Define a function to calculate the distance between two sets of coordinates (latitude and longitude)
+    def calculate_distance(lat1, lon1, lat2, lon2):
+        import math
+
+        # Radius of the Earth in kilometers
+        radius_earth = 6371
+
+        # Convert degrees to radians
+        lat1 = math.radians(lat1)
+        lon1 = math.radians(lon1)
+        lat2 = math.radians(lat2)
+        lon2 = math.radians(lon2)
+
+        # Haversine formula to calculate distance
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = (
+            math.sin(dlat / 2) ** 2
+            + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+        )
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        distance = radius_earth * c
+
+        return distance
+
+
+    if lat and long:
+
+            # Fetch all addresses from the database
+            matching_etabs = []
+            with Session(db.engine) as session:
+                etabs = session.query(Etablissement).all()
+                for etab in etabs:
+                    # Construct the address string
+                    etab_address = f"{etab.numero_rue} {etab.rue} {etab.code_postal} {etab.ville}"
+
+                    # Fetch coordinates of the etablissement address
+                    url = "https://api-adresse.data.gouv.fr/search/"
+                    params = {
+                        "q": etab_address,
+                        "type": "housenumber",
+                        "autocomplete": "1"
+                    }
+
+                    async with httpx.AsyncClient() as client:
+                        response = await client.get(url, params=params)
+                        data = response.json()
+
+                        if "features" in data and len(data["features"]) > 0:
+                            # Extract latitude and longitude of the address
+                            etab_lat = data["features"][0]["geometry"]["coordinates"][1]
+                            etab_lon = data["features"][0]["geometry"]["coordinates"][0]
+
+                            # Calculate the distance
+                            distance = calculate_distance(etab_lat, etab_lon, lat, long)
+
+                            # Check if the address is within the specified radius
+                            if distance <= radius:
+                                matching_etabs.append(etab)
+
+            return matching_etabs
+    else:
+            return {"message": "Address not found"}
+
         
 def find_etablissement(rue:str,ville:str,code_postal:int,numero_rue:int, session:Session):
     order = select(Etablissement).where(Etablissement.rue == rue,Etablissement.ville == ville,Etablissement.code_postal == code_postal,Etablissement.numero_rue == numero_rue)
