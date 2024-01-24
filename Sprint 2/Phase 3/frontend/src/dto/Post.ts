@@ -7,7 +7,7 @@ export interface Post {
     text?:string;
     id_note?:number;
     id_post_comm?:number;
-    id_post?:number;
+    id_post:number;
     picbin?:string;
     picform?:string;
     blob?:Blob;

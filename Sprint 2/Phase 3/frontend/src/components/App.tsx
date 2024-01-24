@@ -57,7 +57,7 @@ function App() {
         <Route path="/*" element={<Error404/>}></Route>
         <Route path='/news' element={<ProtectedRoute><News/></ProtectedRoute>} />
         <Route path='/createpost' element={<ProtectedRoute><CreatePost/></ProtectedRoute>} />
-        <Route path='/news' element={<News/>} />
+        <Route path='/news' element={<ProtectedRoute><News/></ProtectedRoute>} />
         <Route path="/add-place" element={<ProtectedRoute><AddPlace/></ProtectedRoute>} />
         <Route path="/add-place-ok" element={<ProtectedRoute><AddPlaceOk/></ProtectedRoute>} />
       </Routes>

@@ -136,7 +136,7 @@ export function News() {
 
     const toggleLike = async (id_post: number) => {
       const likeService = new LikeService(config.API_URL)
-      if (user) {
+      if (user && user.id_user) {
         const likesForPost = await likeService.getPostLikes(id_post);
         const existingLike = likesForPost.data.find(like => like.id_user === user.id_user);
         
@@ -167,7 +167,7 @@ export function News() {
         setCommentAlertMessage('Veuillez remplir tous les champs pour ajouter un commentaire.');
         setCommentAlertSeverity('error');
       } else {
-        if (user && selectedPost) {
+        if (user && user.id_user && selectedPost) {
           const postService = new PostService(config.API_URL);
           const newComment : PostAdd = {
             id_user: user.id_user,
@@ -446,7 +446,7 @@ export function News() {
           {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
       </div>
-      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
+      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={350}>
         {posts.filter(post => (!filter && ["texte", "recette", "restaurant", "santé"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
           <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' >
             <div className='post-border' >
