@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI, HTTPException ,Query
+from fastapi import APIRouter, FastAPI, HTTPException ,Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -38,7 +38,6 @@ app.add_middleware(
 )
 
 db = DBAcces("sineat_db", False)
-
 """
 Création des classes pouvant être utilisés avec FastApi
 """
@@ -97,12 +96,20 @@ class LikeSchema(BaseModel):
     id_post : int
     id_user : int
 
+class Place(BaseModel):
+    code_postal: int
+    ville: str
+    rue: str
+    numero_rue: int
+    nom: str
+    type: str
+    regime: str
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement, RegimeEtablissement, Regime
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -571,6 +578,84 @@ def get_etablissement(nom: str = Query(None) ):
 
     return etabs
 
+class RatingSchema(BaseModel):
+    id_user: int
+    id_etablissement: int
+    rating1: float  # First rating value
+    rating2: float  # Second rating value
+
+@app.post("/addRatings")
+async def add_ratings(rating_data: RatingSchema):
+    with Session(db.engine) as session:
+        # Create and save the Note instance
+        new_note = Note(
+            id_etablissement=rating_data.id_etablissement,
+            id_user=rating_data.id_user
+        )
+        session.add(new_note)
+        session.commit()
+        session.refresh(new_note)
+
+        # Assuming you have a method to determine the type IDs for rating1 and rating2
+        id_type_note1 = 1  # You need to implement this
+        id_type_note2 = 2  # You need to implement this
+
+        # Create and save the NoteConcerne instances
+        new_note_concerne1 = NoteConcerne(
+            id_note=new_note.id_note,
+            id_type_note=id_type_note1,
+            grade=rating_data.rating1
+        )
+        new_note_concerne2 = NoteConcerne(
+            id_note=new_note.id_note,
+            id_type_note=id_type_note2,
+            grade=rating_data.rating2
+        )
+
+        session.add_all([new_note_concerne1, new_note_concerne2])
+        session.commit()
+
+        return {"message": "Ratings added successfully"}
+
+
+@app.get("/etablissement/notes")
+def get_etablissement_notes(nom: str = Query(None)):
+    with Session(db.engine) as session:
+        query = session.query(Etablissement)
+        if nom:
+            query = query.filter(Etablissement.nom == nom)
+
+        etabs = query.all()
+        etab_notes = []
+
+        for etab in etabs:
+            notes_query = session.query(
+                TypeNote.nom.label("note_type"),
+                func.avg(NoteConcerne.grade).label("average_grade")
+            ).join(NoteConcerne, TypeNote.id_type_note == NoteConcerne.id_type_note
+            ).join(Note, NoteConcerne.id_note == Note.id_note
+            ).filter(Note.id_etablissement == etab.id_etablissement
+            ).group_by(TypeNote.nom)
+
+            notes = notes_query.all()
+
+            # Calculate global average if there are note types
+            global_average = sum([note.average_grade for note in notes]) / len(notes) if notes else None
+
+            notes_data = [{
+                "note_type": note.note_type,
+                "average_grade": float(note.average_grade)
+            } for note in notes]
+
+            etab_notes.append({
+                "etablissement_name": etab.nom,
+                "notes": notes_data,
+                "global_average": global_average
+            })
+
+        return etab_notes
+
+
 @app.get("/regimes")
 def get_all_regimes():
     with Session(db.engine) as session:
@@ -683,6 +768,77 @@ async def filter_addresses(
             return matching_etabs
     else:
             return {"message": "Address not found"}
+
+        
+def find_etablissement(rue:str,ville:str,code_postal:int,numero_rue:int, session:Session):
+    order = select(Etablissement).where(Etablissement.rue == rue,Etablissement.ville == ville,Etablissement.code_postal == code_postal,Etablissement.numero_rue == numero_rue)
+    result = session.execute(order)
+    found_etablissement = result.scalar()
+    return(found_etablissement)
+        
+@app.post("/places/")
+def create_place(place: Place):
+    with Session(db.engine) as session:
+        place.rue=place.rue.lower()
+        place.ville=place.ville.lower()
+        found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+        if found_etablissement:
+            return ('Etablissement existe déjà')
+        else:
+            new_place_data = Etablissement(
+                code_postal=place.code_postal,
+                ville=place.ville,
+                rue=place.rue,
+                numero_rue=place.numero_rue,
+                nom=place.nom,
+            )
+            session.add(new_place_data)
+            session.commit()
+            session.refresh(new_place_data)
+
+            queries_type = select(TypeEtablissement.id_type_etablissement).where(TypeEtablissement.nom==place.type)
+            result = session.execute(queries_type)
+            id_type_etablissement = result.scalar()
+            found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+            id_etablissement=found_etablissement.id_etablissement
+
+            new_place_data_type= EtablissementDeType(
+                id_etablissement= id_etablissement,
+                id_type_etablissement = id_type_etablissement
+            )
+
+            session.add(new_place_data_type)
+            session.commit()
+            session.refresh(new_place_data_type)
+
+            queries_regime = select(Regime.id_regime).where(Regime.nom==place.regime)
+            result = session.execute(queries_regime)
+            id_regime = result.scalar()
+            found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+            id_etablissement=found_etablissement.id_etablissement
+
+            new_place_data_regime= RegimeEtablissement(
+                id_etablissement= id_etablissement,
+                id_regime = id_regime
+            )
+            session.add(new_place_data_regime)
+            session.commit()
+            session.refresh(new_place_data_regime)
+            return ('Etablissement ajouté')
+
+@app.get("/types-etablissements")
+def get_types_etablissements():
+    with Session(db.engine) as session:
+        query = select(TypeEtablissement.nom)
+        types_etablissements = session.execute(query).scalars().all()
+        return {"types_etablissements": types_etablissements}
+    
+@app.get("/regimes-etablissements")
+def get_regimes_etablissements():
+    with Session(db.engine) as session:
+        query = select(Regime.nom)
+        regimes_etablissements = session.execute(query).scalars().all()
+        return {"regimes_etablissements": regimes_etablissements}
 
 
 if __name__ == "__main__":

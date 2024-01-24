@@ -18,6 +18,8 @@ import ProtectedRoute from '../util/ProtectedRoute.tsx';
 import ProfileRoute from '../util/ProfileRoute.tsx';
 import UnknownUser from '../screens/Error/unknown_user/UnknownUser.tsx';
 import {News} from '../screens/News/News';
+import AddPlace from '../screens/AddPlace/AddPlace.tsx';
+import AddPlaceOk from '../screens/AddPlaceOk/AddPlaceOk.tsx';
 import CreatePost from '../screens/CreatePost/CreatePost.tsx';
 
 
@@ -55,6 +57,9 @@ function App() {
         <Route path="/*" element={<Error404/>}></Route>
         <Route path='/news' element={<ProtectedRoute><News/></ProtectedRoute>} />
         <Route path='/createpost' element={<ProtectedRoute><CreatePost/></ProtectedRoute>} />
+        <Route path='/news' element={<News/>} />
+        <Route path="/add-place" element={<ProtectedRoute><AddPlace/></ProtectedRoute>} />
+        <Route path="/add-place-ok" element={<ProtectedRoute><AddPlaceOk/></ProtectedRoute>} />
       </Routes>
     </div>
     </MyBlogContext.Provider>
