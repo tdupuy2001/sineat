@@ -49,7 +49,7 @@ export function News() {
     const [commentAlertMessage, setCommentAlertMessage] = useState('');
     const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
     const [sortOrder, setSortOrder] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     // test pour la pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12); 
@@ -57,81 +57,43 @@ export function News() {
 
     // pb avec les dates
     const sortOldestToNewest = () => {
-      // const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      // setPosts(sortedPosts);
-      setLoading(true);
-      setTimeout(() => {
-        setSortOrder("asc");
-        setCurrentPage(1);
-        handlePageChange(1);
-        setLoading(false);
-      }, 1000);
+      setFilter(null)
+      setSortOrder("asc");
+      setCurrentPage(1);
+
     };
   
     const sortNewestToOldest = () => {
-      // const sortedPosts = [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      // setPosts(sortedPosts);
-      setLoading(true);
-      setTimeout(() => {
-        setSortOrder("desc");
-        setCurrentPage(1);
-        handlePageChange(1);
-        setLoading(false);
-      }, 1000);
+      setFilter(null)
+      setSortOrder("desc");
+      setCurrentPage(1);
     };
 
  
   
     const filterPosts = () => {
-      setLoading(true);
-      setTimeout(() => {
-        setFilter("texte");
-        setCurrentPage(1);
-        handlePageChange(1);
-        setLoading(false);
-      }, 2000);
+      setFilter("texte")
+      setSortOrder("");
+      setCurrentPage(1);
       
     };
   
     const filterRecipes = () => {
-      setLoading(true);
-      setTimeout(() => {
-        setFilter("recette");
-        setCurrentPage(1);
-        handlePageChange(1);
-        setLoading(false);
-      }, 2000);
+      setFilter("recette")
+      setSortOrder("");
+      setCurrentPage(1);
     };
   
     const filterRestaurant = () => {
-      setLoading(true);
-      setTimeout(() => {
-        setFilter("restaurant");
-        setCurrentPage(1);
-        handlePageChange(1);
-        setLoading(false);
-      }, 2000);
+      setFilter("restaurant")
+      setSortOrder("");
+      setCurrentPage(1);
     };
 
     const filterSante = () => {
-      setLoading(true);
-      setTimeout(() => {
-        setFilter("santé");
-        setCurrentPage(1);
-        handlePageChange(1);
-        setLoading(false);
-      }, 2000);
-    }
-
-    const resetFilter = () => {
-      setLoading(true);
-      setTimeout(() => {
-        setFilter(null);
-        setSortOrder('');  
-        setCurrentPage(1);
-        handlePageChange(1);      
-        setLoading(false);
-      }, 500);
+      setFilter("santé")
+      setSortOrder("");
+      setCurrentPage(1);
     }
 
     const toggleLike = async (id_post: number) => {
@@ -172,6 +134,7 @@ export function News() {
           const newComment : PostAdd = {
             id_user: user.id_user,
             type: "texte",
+            date: new Date(),
             afficher: true,
             text: commentText,
             id_post_comm: selectedPost?.id_post,
@@ -219,33 +182,6 @@ export function News() {
       });
     };
    
-    // useEffect(()=>{
-    //   let postWithBlob_temp: { post:Post ; blob: Blob }[] = [];
-    //   for (const abonnementUsername of abonnement) {
-    //     userService
-    //       .getUser(abonnementUsername)
-    //       .then((response) => {
-    //         const profileUser = response.data.user;
-    //         let profilePicture = "data:image/png;base64," + profileUser.ppbin;
-    //         let byteCharacters = atob(profilePicture.split(",")[1]);
-    //         let byteNumbers = new Array(byteCharacters.length);
-    //         for (let i = 0; i < byteCharacters.length; i++) {
-    //           byteNumbers[i] = byteCharacters.charCodeAt(i);
-    //         }
-    //         let byteArray = new Uint8Array(byteNumbers);
-    //         const newBlobWithUsername = {
-    //           blob: new Blob([byteArray], { type: "image/png" }),
-    //           username: abonnementUsername,
-    //         };
-    //         abonnement_temporaire.push(newBlobWithUsername);
-    //       })
-    //       .catch((error) => {
-    //         console.error("An error occurred:", error);
-    //       });
-    //   }
-    //   setListBlobAbonnement(abonnement_temporaire);
-    // }
-    // });
 
     const handleNoPhoto = (type:string)=>{
       if (type==="recette"){
@@ -268,13 +204,6 @@ export function News() {
     const handlePageChange = (pageNumber: number) => {
       const postService = new PostService(config.API_URL);
       setCurrentPage(pageNumber);
-      postService.getPostsPerPage(pageNumber, itemsPerPage, sortOrder, filter )
-      .then(response => {
-        setPosts(response.data.posts);
-        setTotalItemsCount(response.data.total_posts);
-        setLoading(false);
-      })
-      .catch(error => console.error(error));
     }
   
     useEffect(() => {
@@ -285,28 +214,11 @@ export function News() {
         // test pour la pagination
         postService.getPostsPerPage(currentPage, itemsPerPage, sortOrder, filter)
         .then(response => {
+          const data =response.data.posts
           // pb avec les dates
-          const sortedPosts = response.data.posts.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          setPosts(sortedPosts);
-          // setPosts(response.data.posts);
+          const sortedPosts = data.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setTotalItemsCount(response.data.total_posts);
-          setTimeout(() => {
-            // setLoading(false);
-          }, 500);
-          
-        })
-        .catch(error => {
-          console.error(error);
-          setTimeout(() => {
-            // setLoading(false);
-          }, 500);
-        });
-
-        postService.getPosts()
-        .then(response => response.data)  
-        .then(data => {
-          // setPosts(data); 
-          data.forEach(post=>{
+          sortedPosts.forEach((post:Post)=>{
             if (post.picbin){
               let postPicture = "data:image/png;base64," + post.picbin;
               let byteCharacters = atob(postPicture.split(",")[1]);
@@ -317,45 +229,46 @@ export function News() {
               let byteArray = new Uint8Array(byteNumbers);
               let blob = new Blob([byteArray], { type: "image/png" });
               post.blob=blob
+          
               };  
           })
-          const commentsPromises = data.map(post => postService.getPostComments(post.id_post));
+          const commentsPromises = data.map((post:Post) => postService.getPostComments(post.id_post));
           Promise.all(commentsPromises)
           .then(commentsData => {
             const allComments = commentsData.map(comment => comment.data);
             setComments(allComments.flat());
-            setTimeout(() => {
-              // setLoading(false);
-            }, 500);
+            // setTimeout(() => {
+            //   // setLoading(false);
+            // }, 500);
           })
           .catch(error => console.error(error));
 
-          const userPromises = data.map(post => postService.getUserFromPost(post.id_post));
+          const userPromises = data.map((post:Post) => postService.getUserFromPost(post.id_post));
           Promise.all(userPromises)
           .then(userData => {
             // console.log('usersData:', userData);
             const allUsers = userData.map(userC => userC.data);
             setUsers(allUsers);
-            setTimeout(() => {
-              // setLoading(false);
-            }, 500);
+            // setTimeout(() => {
+            //   // setLoading(false);
+            // }, 500);
             // // console.log('Users:', allUsers);
           })
           .catch(error => console.error('Error fetching users:',error));
 
-          const likesPromises = data.map(post => likeService.getPostLikes(post.id_post));
+          const likesPromises = data.map((post:Post) => likeService.getPostLikes(post.id_post));
           Promise.all(likesPromises)
           .then(likesData => {
             const likesCount = likesData.reduce((count, likesArray) => {
-              likesArray.data.forEach(like => {
+              likesArray.data.forEach((like:Like) => {
                 count[like.id_post] = likesArray.data.length;
               });
               return count;
             }, {} as Record<number, number>);
             setLikesCount(likesCount);
-            setTimeout(() => {
-              // setLoading(false);
-            }, 500);
+            // setTimeout(() => {
+            //   // setLoading(false);
+            // }, 500);
           })
           .catch(error => console.error(error));
 
@@ -364,29 +277,39 @@ export function News() {
             const userLikes = likesData.reduce((acc, likesArray) => {
               if (likesArray.data.length > 0) {
                 const id_post = likesArray.data[0]?.id_post || -1;
-                acc[id_post] = likesArray.data.some(like => like.id_user === user.id_user);
+                acc[id_post] = likesArray.data.some((like:Like) => like.id_user === user.id_user);
               }
               return acc;
             }, {} as Record<number, boolean>);
             setUserLikes(userLikes);
-            setTimeout(() => {
-              setLoading(false);
-            }, 1000);
+            // setTimeout(() => {
+            //   setLoading(false);
+            // }, 1000);
           })
-          .catch(error => console.error(error));
-
+          // setTimeout(() => {
+          //   // setLoading(false);
+          // }, 500);
+          setPosts(sortedPosts);
+          console.log(sortedPosts)
+          
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+          console.error(error);
+          // setTimeout(() => {
+          //   // setLoading(false);
+          // }, 500);
+        });
       }
-    }, [user, currentPage, itemsPerPage, filter]);
+    }, [user, currentPage, itemsPerPage, sortOrder,filter]);
 
-    useEffect(() => {
-      if (sortOrder !== "") {
-        setLoading(true);
-        setCurrentPage(1);
-        handlePageChange(currentPage);
-      }
-    }, [sortOrder])
+
+    // useEffect(() => {
+    //   if (sortOrder !== "") {
+    //     setLoading(false);
+    //     setCurrentPage(1);
+    //     handlePageChange(currentPage);
+    //   }
+    // }, [sortOrder])
 
     
     return (
@@ -416,18 +339,16 @@ export function News() {
         {/* <text className='filtres'>Filtres</text> */}
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={resetFilter}>Afficher tout</button>        </div>
-        <div className="button-wrapper">
-          <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortOldestToNewest}>Le plus ancien</button>        </div>
-        <div className="button-wrapper">
-          <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortNewestToOldest}>Le plus récent</button>
           {/* <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Post</button>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortOldestToNewest}>Le plus ancien</button>        </div>
+        
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Texte</button>
           {/* <button className= 'button-filtres' onClick={filterPosts}>Posts</button> */}
         </div>
         <div className="button-wrapper">

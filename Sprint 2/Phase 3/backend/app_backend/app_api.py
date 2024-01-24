@@ -64,6 +64,7 @@ class PostSchema(BaseModel):
     """
     Les attributs facultatifs
     """
+    date: Optional[str] = None
     titre_post: Optional[str] = None
     id_post: Optional[int] = None
     text: Optional[str] = None
@@ -425,7 +426,6 @@ def compare_and_add_comment(post1: PostSchema, post2: PostSchema):
             new_post = Post(
             text = post2.text,
             id_user = post2.id_user,
-            date = post2.date,
             type = post2.type,
             afficher = post2.afficher,
             titre_post = post2.titre_post,
@@ -460,18 +460,27 @@ def get_posts_per_page(page: int, limit: int, sortOrder: str, type: Optional[str
     with Session(db.engine) as session:
         query = session.query(Post)
         if type:
-            query = query.filter(Post.type == type)
-        if sortOrder == "desc":
-            query = query.order_by(Post.date.desc())
-        elif sortOrder == "asc":
-            query = query.order_by(Post.date.asc())
+            query = query.filter(Post.type == type).order_by(Post.date.desc())
+        else:
+            if sortOrder == "asc":
+                query = query.order_by(Post.date.asc())
+            else:
+                query = query.order_by(Post.date.desc())
         total_posts = query.count()
         start = (page-1)*limit
         end = start + limit
         posts = query[start:end]
-        # offset = (page-1)*limit
-        # posts = session.query(Post).offset(offset).limit(limit).all()
-        return {"posts":posts, "total_posts": total_posts}
+        posts_dict=[]
+        for post in posts:
+            post_dict=post.__dict__
+            if post.id_photo:
+                query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+                picbin=session.execute(query).scalar()
+                picbin = base64.b64encode(picbin).decode('utf-8')
+                post_dict['picbin']=picbin
+            posts_dict.append(post_dict)
+
+        return {"posts":posts_dict, "total_posts": total_posts}
         
 
         
