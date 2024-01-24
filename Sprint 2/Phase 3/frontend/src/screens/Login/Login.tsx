@@ -51,6 +51,7 @@ export function Login() {
       context.setUser(user);
       if (user){
         sessionStorage.setItem("username", user.username);
+        sessionStorage.setItem("userid", user.id_user.toString());
         localStorage.setItem('username', user.username);
         setLoginMessage("");
         setLoginMessageType("info");
