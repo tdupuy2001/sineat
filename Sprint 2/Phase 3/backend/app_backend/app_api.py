@@ -460,12 +460,12 @@ def get_posts_per_page(page: int, limit: int, sortOrder: str, type: Optional[str
     with Session(db.engine) as session:
         query = session.query(Post)
         if type:
-            query = query.filter(Post.type == type).order_by(Post.date.desc())
+            query = query.filter(Post.type == type,Post.id_post_comm.is_(None)).order_by(Post.date.desc())
         else:
             if sortOrder == "asc":
-                query = query.order_by(Post.date.asc())
+                query = query.order_by(Post.date.asc()).filter(Post.id_post_comm.is_(None))
             else:
-                query = query.order_by(Post.date.desc())
+                query = query.order_by(Post.date.desc()).filter(Post.id_post_comm.is_(None))
         total_posts = query.count()
         start = (page-1)*limit
         end = start + limit

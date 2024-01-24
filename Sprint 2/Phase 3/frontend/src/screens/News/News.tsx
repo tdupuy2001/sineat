@@ -49,7 +49,7 @@ export function News() {
     const [commentAlertMessage, setCommentAlertMessage] = useState('');
     const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
     const [sortOrder, setSortOrder] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     // test pour la pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12); 
@@ -59,14 +59,14 @@ export function News() {
     const sortOldestToNewest = () => {
       setFilter(null)
       setSortOrder("asc");
-      setCurrentPage(1);
+      handlePageChange(1);
 
     };
   
     const sortNewestToOldest = () => {
       setFilter(null)
       setSortOrder("desc");
-      setCurrentPage(1);
+      handlePageChange(1);
     };
 
  
@@ -74,26 +74,26 @@ export function News() {
     const filterPosts = () => {
       setFilter("texte")
       setSortOrder("");
-      setCurrentPage(1);
+      handlePageChange(1);
       
     };
   
     const filterRecipes = () => {
       setFilter("recette")
       setSortOrder("");
-      setCurrentPage(1);
+      handlePageChange(1);
     };
   
     const filterRestaurant = () => {
       setFilter("restaurant")
       setSortOrder("");
-      setCurrentPage(1);
+      handlePageChange(1);
     };
 
     const filterSante = () => {
       setFilter("santé")
       setSortOrder("");
-      setCurrentPage(1);
+      handlePageChange(1);
     }
 
     const toggleLike = async (id_post: number) => {
@@ -204,6 +204,7 @@ export function News() {
     const handlePageChange = (pageNumber: number) => {
       const postService = new PostService(config.API_URL);
       setCurrentPage(pageNumber);
+      setLoading(true)
     }
   
     useEffect(() => {
@@ -237,22 +238,14 @@ export function News() {
           .then(commentsData => {
             const allComments = commentsData.map(comment => comment.data);
             setComments(allComments.flat());
-            // setTimeout(() => {
-            //   // setLoading(false);
-            // }, 500);
           })
           .catch(error => console.error(error));
 
           const userPromises = data.map((post:Post) => postService.getUserFromPost(post.id_post));
           Promise.all(userPromises)
           .then(userData => {
-            // console.log('usersData:', userData);
             const allUsers = userData.map(userC => userC.data);
             setUsers(allUsers);
-            // setTimeout(() => {
-            //   // setLoading(false);
-            // }, 500);
-            // // console.log('Users:', allUsers);
           })
           .catch(error => console.error('Error fetching users:',error));
 
@@ -266,9 +259,6 @@ export function News() {
               return count;
             }, {} as Record<number, number>);
             setLikesCount(likesCount);
-            // setTimeout(() => {
-            //   // setLoading(false);
-            // }, 500);
           })
           .catch(error => console.error(error));
 
@@ -282,24 +272,20 @@ export function News() {
               return acc;
             }, {} as Record<number, boolean>);
             setUserLikes(userLikes);
-            // setTimeout(() => {
-            //   setLoading(false);
-            // }, 1000);
+
           })
-          // setTimeout(() => {
-          //   // setLoading(false);
-          // }, 500);
+
           setPosts(sortedPosts);
-          console.log(sortedPosts)
           
         })
         .catch(error => {
           console.error(error);
-          // setTimeout(() => {
-          //   // setLoading(false);
-          // }, 500);
+
         });
       }
+      setTimeout(() => {
+            setLoading(false);
+          }, 1500);
     }, [user, currentPage, itemsPerPage, sortOrder,filter]);
 
 
@@ -377,7 +363,7 @@ export function News() {
                   <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === post.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img onClick={() => openPost(post)} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : handleNoPhoto(post.type)} alt="Logo" loading='lazy'/>
+                  <img onClick={() => openPost(post)} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : handleNoPhoto(post.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
@@ -417,7 +403,7 @@ export function News() {
 
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
-                  <img className='img-test' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo" loading="lazy"/>
+                  <img className='img-test' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
