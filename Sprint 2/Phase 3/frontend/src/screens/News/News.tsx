@@ -353,7 +353,7 @@ export function News() {
           {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
       </div>
-      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={350}>
+      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={430}>
         {posts.filter(post => (!filter && ["texte", "recette", "restaurant", "santé"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
           <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' >
             <div className='post-border' >
@@ -403,7 +403,7 @@ export function News() {
 
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
-                  <img className='img-test' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo"/>
+                  <img className='img-selected' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
@@ -416,7 +416,7 @@ export function News() {
                 </div>
 
                 {/*changer le post-text car là on peut afficher toutes les lignes */}
-                <p className='post-text'>{selectedPost.text}</p>
+                <p className='post-text-selected'>{selectedPost.text}</p>
                 <p className='post-date'>{selectedPost.date.toString()} </p>
               </div>
             </div>
@@ -472,7 +472,7 @@ export function News() {
                           <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
                             Titre:
                             <input
-                            className="inputField"
+                            className="inputField-comment"
                             type="text"
                             name="title"
                             value={commentTitle}
@@ -485,7 +485,7 @@ export function News() {
                           <div className={`form ${commentText === '' ? 'defaultValueStyle' : ''}`}>
                             Description:
                             <input
-                            className="inputField"
+                            className="inputField-comment"
                             type="text"
                             name="description"
                             value={commentText}
