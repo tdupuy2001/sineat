@@ -8,7 +8,10 @@ import { config } from "../../config";
 import { PostService } from '../../services/PostService';
 import { Post } from '../../dto/Post';
 import { Responsive, WidthProvider } from 'react-grid-layout';
-import logo from './assets/logo_sineat.png';
+import recette from './assets/recette.png';
+import texte from './assets/texte.png';
+import restaurant from './assets/restaurant.png';
+import sante from './assets/sante.png';
 import Modal from '../../components/Modal/Modal';
 import { User } from '../../dto/User';
 import { Alert, AlertColor, TextField } from '@mui/material';
@@ -168,7 +171,6 @@ export function News() {
           const postService = new PostService(config.API_URL);
           const newComment : PostAdd = {
             id_user: user.id_user,
-            date: new Date(),
             type: "texte",
             afficher: true,
             text: commentText,
@@ -216,6 +218,46 @@ export function News() {
         return newHistory;
       });
     };
+   
+    // useEffect(()=>{
+    //   let postWithBlob_temp: { post:Post ; blob: Blob }[] = [];
+    //   for (const abonnementUsername of abonnement) {
+    //     userService
+    //       .getUser(abonnementUsername)
+    //       .then((response) => {
+    //         const profileUser = response.data.user;
+    //         let profilePicture = "data:image/png;base64," + profileUser.ppbin;
+    //         let byteCharacters = atob(profilePicture.split(",")[1]);
+    //         let byteNumbers = new Array(byteCharacters.length);
+    //         for (let i = 0; i < byteCharacters.length; i++) {
+    //           byteNumbers[i] = byteCharacters.charCodeAt(i);
+    //         }
+    //         let byteArray = new Uint8Array(byteNumbers);
+    //         const newBlobWithUsername = {
+    //           blob: new Blob([byteArray], { type: "image/png" }),
+    //           username: abonnementUsername,
+    //         };
+    //         abonnement_temporaire.push(newBlobWithUsername);
+    //       })
+    //       .catch((error) => {
+    //         console.error("An error occurred:", error);
+    //       });
+    //   }
+    //   setListBlobAbonnement(abonnement_temporaire);
+    // }
+    // });
+
+    const handleNoPhoto = (type:string)=>{
+      if (type==="recette"){
+        return recette
+      }else if (type==="santé"){
+        return sante
+      }else if (type==="restaurant"){
+        return restaurant
+      }else{
+        return texte
+      }
+    }
 
     const navigateToUserProfile = (username: string, event: React.MouseEvent<HTMLParagraphElement, MouseEvent>) => {
       event.stopPropagation();
@@ -234,7 +276,7 @@ export function News() {
       })
       .catch(error => console.error(error));
     }
-   
+  
     useEffect(() => {
       if (user) {
         const postService = new PostService(config.API_URL)
@@ -261,10 +303,22 @@ export function News() {
         });
 
         postService.getPosts()
-        .then(response => response.data)
+        .then(response => response.data)  
         .then(data => {
-          // setPosts(data);
-
+          // setPosts(data); 
+          data.forEach(post=>{
+            if (post.picbin){
+              let postPicture = "data:image/png;base64," + post.picbin;
+              let byteCharacters = atob(postPicture.split(",")[1]);
+              let byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              let byteArray = new Uint8Array(byteNumbers);
+              let blob = new Blob([byteArray], { type: "image/png" });
+              post.blob=blob
+              };  
+          })
           const commentsPromises = data.map(post => postService.getPostComments(post.id_post));
           Promise.all(commentsPromises)
           .then(commentsData => {
@@ -285,7 +339,7 @@ export function News() {
             setTimeout(() => {
               // setLoading(false);
             }, 500);
-            // console.log('Users:', allUsers);
+            // // console.log('Users:', allUsers);
           })
           .catch(error => console.error('Error fetching users:',error));
 
@@ -402,7 +456,7 @@ export function News() {
                   <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === post.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img onClick={() => openPost(post)} className='img-test' src={logo} alt="Logo" />
+                  <img onClick={() => openPost(post)} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : handleNoPhoto(post.type)} alt="Logo" loading='lazy'/>
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
@@ -442,7 +496,7 @@ export function News() {
 
                 {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
-                  <img className='img-test' src={logo} alt="Logo" />
+                  <img className='img-test' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo" loading="lazy"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
                     {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 

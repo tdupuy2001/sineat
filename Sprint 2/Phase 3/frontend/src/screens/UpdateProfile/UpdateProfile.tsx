@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { MenuItem, TextField } from "@mui/material";
+import { Alert, AlertColor, MenuItem, TextField } from "@mui/material";
 import { MyBlogContext } from "../../MyBlogContext";
 import { UserService } from "../../services/UserService";
 import { config } from "../../config";
@@ -7,12 +7,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { User } from "../../dto/User";
-import img from "../Profile/assets/profile.png"
-import { readAndCompressImage } from 'browser-image-resizer';
-
+// import img from "../Profile/assets/profile.png"
+import "./UpdateProfile.css";
+import { readAndCompressImage } from "browser-image-resizer";
 
 export function UpdateProfile() {
-
   const [prenom, setPrenom] = useState<string | undefined>();
   const [nom, setNom] = useState<string | undefined>();
   const [dateDeNaissance, setDateDeNaissance] = useState<string | undefined>();
@@ -21,8 +20,15 @@ export function UpdateProfile() {
   const [description, setDescription] = useState<string | undefined>();
   const [adresse, setAdresse] = useState<string | undefined>();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageType, setErrorMessageType] = useState<AlertColor>("info");
 
   const navigate = useNavigate();
+
+  // TODO: Améliorer la beauté
+  // FIXME: Le label de la photo de profil est absolument affreux
 
   const context = useContext(MyBlogContext);
   const userService = new UserService(config.API_URL);
@@ -31,48 +37,56 @@ export function UpdateProfile() {
     if (context.user) {
       setUsername(context.user?.username);
       setIsLoggedIn(true);
+      setProfilePicture("data:image/png;base64," + context.user.ppbin);
+      setDescription(context.user.description);
+      setAdresse(context.user.adresse);
     }
   }, [context.user]);
+
+  let blob = null;
+  if (profilePicture) {
+    let byteCharacters = atob(profilePicture.split(",")[1]);
+    // let byteCharacters = atob(context.user.ppbin);
+    let byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    let byteArray = new Uint8Array(byteNumbers);
+    blob = new Blob([byteArray], { type: "image/jpeg" });
+  }
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [username, setUsername] = useState<string>(() => {
     return localStorage.getItem("username") || "";
   });
+  const [ppbin, setPpbin] = useState<string>();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const config = {
-        quality: 0.8,
         maxWidth: 800,
         maxHeight: 800,
         autoRotate: true,
         debug: true,
       };
-      const configPreview = {
-        quality: 0.8,
-        maxWidth: 100,
-        maxHeight: 100,
-        autoRotate: true,
-        debug: true,
-      };
       try {
         const compressedFile = await readAndCompressImage(file, config);
-        const previewFile = await readAndCompressImage(file, configPreview);
-        const newFile = new File([compressedFile], file.name, { type: compressedFile.type });
-        const newPreviewFile = new File([previewFile], file.name, { type: previewFile.type });
+        const newFile = new File([compressedFile], file.name, {
+          type: compressedFile.type,
+        });
         setSelectedFile(newFile);
-        setPreviewUrl(URL.createObjectURL(newPreviewFile));
+        setPreviewUrl(URL.createObjectURL(newFile));
       } catch (error) {
         console.error(error);
       }
     }
   };
-
-
 
   useEffect(() => {
     if (context.user) {
@@ -88,11 +102,10 @@ export function UpdateProfile() {
     }
   }, [context.user]);
 
-  
-
   const handleUpdate = () => {
-    userService.getUser(username).then((e) => {
-      if (!e.data || e.data.username === username) {
+    userService.getUser(username).then((response) => {
+      const e = response.data.user
+      if (!e || e.username === context.user?.username) {
         let binaryData;
         let extension;
 
@@ -102,10 +115,23 @@ export function UpdateProfile() {
           reader.readAsDataURL(selectedFile);
           reader.onload = () => {
             binaryData = reader.result;
-            console.log('selected file : ', selectedFile, 'Binary : ', binaryData)
-            extension = selectedFile.name.split('.').pop();
+            // setPpbin(binaryData)
+            // console.log(
+            //   "selected file : ",
+            //   selectedFile,
+            //   "Binary : ",
+            //   binaryData
+            // );
+            if (binaryData && typeof binaryData === "string") {
+              binaryData = binaryData.replace(
+                /^data:image\/[a-z]+;base64,/,
+                ""
+              );
+            }
+            extension = selectedFile.name.split(".").pop();
             const updatedUser: User = {
               ...context.user, // spread operator to include all properties of the current user
+              // id_user: context.user.id_user, Ici c'est special car il y a forcement un id
               username,
               langue,
               nom,
@@ -115,61 +141,62 @@ export function UpdateProfile() {
               adresse,
               description,
               old_username: usernameLink,
-              ppbin: typeof binaryData === 'string' ? binaryData : undefined,
+              ppbin: typeof binaryData === "string" ? binaryData : undefined,
+              // ppbin,
               ppform: extension,
             };
             userService
-          .updateUser(updatedUser)
-          .then((response) => {
-            // handle success
-            console.log(response.data);
-            context.setUser(updatedUser); // Update the context with the updated user
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-          });
+              .updateUser(updatedUser)
+              .then((response) => {
+                // handle success
+                // console.log(response.data);
+                context.setUser(updatedUser); // Update the context with the updated user
+              })
+              .catch((error) => {
+                // handle error
+                console.log(error);
+              });
           };
-          
+
           reader.onerror = function (error) {
-            console.log('Error: ', error);
+            console.log("Error: ", error);
           };
-          
         } else {
-        const updatedUser: User = {
-          ...context.user, // spread operator to include all properties of the current user
-          username,
-          langue,
-          nom,
-          prenom,
-          date_de_naissance: dateDeNaissance,
-          genre,
-          adresse,
-          description,
-          old_username: usernameLink,
-          ppbin: binaryData,
-          ppform: extension,
-        };
-        userService
-        .updateUser(updatedUser)
-        .then((response) => {
-          // handle success
-          console.log(response.data);
-          context.setUser(updatedUser); // Update the context with the updated user
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        });
-      };
-        
+          const updatedUser: User = {
+            ...context.user, // spread operator to include all properties of the current user
+            username,
+            langue,
+            nom,
+            prenom,
+            date_de_naissance: dateDeNaissance,
+            genre,
+            adresse,
+            description,
+            ppbin: context.user?.ppbin,
+            old_username: usernameLink,
+
+            ppform: "png",
+          };
+          userService
+            .updateUser(updatedUser)
+            .then((response) => {
+              // handle success
+              // console.log(response.data);
+              context.setUser(updatedUser); // Update the context with the updated user
+            })
+            .catch((error) => {
+              // handle error
+              console.log(error);
+            });
+        }
+        navigate(`/profile/${username}`);
       } else {
-        console.log("c'est pas good mais j'ai pas encore géré l'erreur");
+        // console.log("c'est pas good mais j'ai pas encore géré l'erreur");
+        setErrorMessage("Username already used");
+        setErrorMessageType("error");
       }
     });
   };
-
-  
 
   const { usernameLink } = useParams(); // Permet de prendre la page profil du bon user
 
@@ -386,7 +413,6 @@ export function UpdateProfile() {
   ];
 
   return (
-    // <div><Navbar />
     <div className="main-update-profile">
       <div className="SignIn">
         <div className="cont-signIn">
@@ -396,7 +422,10 @@ export function UpdateProfile() {
             src="https://cdn.animaapp.com/projects/652956d4313e8aaa8f26adb6/releases/6548c973bfd479f2efe3643d/img/sin-2-nobg-1.png"
           />
 
-          <div className="title-signin">Modifie ton Profil !</div>
+          <div className="title-update">Modifie ton Profil !</div>
+          {errorMessage && (
+            <Alert severity={errorMessageType}>{errorMessage}</Alert>
+          )}
 
           {/* {loginMessage && (<Alert severity={loginMessageType}>
                 {loginMessage}
@@ -470,10 +499,34 @@ export function UpdateProfile() {
           </TextField>
 
           <TextField
-          type="file"
-          onChange={handleFileChange}
-        />
-        {previewUrl ? <img src={previewUrl} alt="Preview" /> : <img src={img} style={{width: '100px', height: '100px', objectFit: 'cover'}} alt="Default" />}
+            className="text-field"
+            sx={{ m: 1, width: "80%" }}
+            id="outlined-basic"
+            label="Adresse"
+            variant="outlined"
+            defaultValue={context.user?.adresse}
+            onChange={(e) => setAdresse(e.target.value)}
+          />
+
+          <TextField
+            type="file"
+            onChange={handleFileChange}
+            label="Photo de profil"
+            className="file-selection"
+            inputProps={{
+              accept: "image/jpeg, image/jpg, image/png"
+            }}
+            // style={{ marginTop: "10px", display: "block" }}
+          />
+          {previewUrl ? (
+            <img src={previewUrl} alt="Preview" className="img-preview" />
+          ) : (
+            <img
+              src={blob ? URL.createObjectURL(blob) : ""} // Il y a forcement un blob mais on evite d'avoir un message d'erreur
+              alt="Default"
+              className="img-preview"
+            />
+          )}
 
           <TextField
             required
@@ -492,9 +545,22 @@ export function UpdateProfile() {
               </MenuItem>
             ))}
           </TextField>
-          <NavLink to={`/profile/${username}`}>
-            <button onClick={handleUpdate}>Update Profile</button>
-          </NavLink>
+
+          <TextField
+            className="text-field"
+            sx={{ m: 1, width: "80%" }}
+            id="outlined-basic"
+            label="Description"
+            variant="outlined"
+            defaultValue={context.user?.description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+          <div className="btn-container">
+            <button className="btn-update" onClick={handleUpdate}>
+              Update Profile
+            </button>
+          </div>
 
           <div className="privacy">
             <span>

@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 import { User } from '../dto/User';
+import { UserProfile } from '../dto/UserProfile';
 import { UserAdd } from '../dto/UserAdd';
 
 interface CommunityUserResponse {
@@ -23,7 +24,7 @@ export class UserService {
     }
 
     getUser(username:string) {
-        return this.axiosInstance.get<User>('/users/'+username);
+        return this.axiosInstance.get<UserProfile>('/users/'+username);
     }
 
     getUsers() {

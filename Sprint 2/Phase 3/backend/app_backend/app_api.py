@@ -15,7 +15,6 @@ import os
 from io import BytesIO
 from PIL import Image
 import re
-# import cStringIO
 
 logging.basicConfig(
     filename='app.log',  # Nom du fichier de logs
@@ -59,18 +58,19 @@ class PostSchema(BaseModel):
     """
     Les attributs obligatoires
     """
-    id_post: Optional[int] = None
     id_user: int
-    date: str
     type: str
     afficher: bool
-    titre_post: str
     """
     Les attributs facultatifs
     """
-    text: str = ""
-    id_note: int = None
-    id_post_comm: int = None
+    titre_post: Optional[str] = None
+    id_post: Optional[int] = None
+    text: Optional[str] = None
+    id_note: Optional[int] = None
+    id_post_comm: Optional[int] = None
+    picbin: Optional[str] = None
+    picform: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -109,7 +109,7 @@ class Place(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement, RegimeEtablissement, Regime
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime, EtablissementDeType, TypeEtablissement, RegimeEtablissement,PhotoPost
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -147,12 +147,27 @@ def get_user(username: str):
             if user.ppbin:
                 image_data2 = base64.b64encode(user.ppbin)
                 image_data = image_data2.decode('utf-8')
-                image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                image.save(os.path.join('../frontend/src/screens/Profile/assets', 'profile.png'))
             else:
                 image_data = None
             user.ppbin = image_data
-        return user
+            
+            main_post_ids = find_main_posts_by_user(user.id_user)
+            # main_post_ids = [1,2]
+            
+            
+            return {
+                    "user": user,
+                    "main_post_ids": main_post_ids
+                }
+        else:
+            return {"user":user}
+    
+def find_main_posts_by_user(user_id: int):
+    with Session(db.engine) as session:
+        main_posts = session.query(Post).filter(
+            Post.id_user == user_id
+        ).all()
+        return [post.id_post for post in main_posts]
 
 
 
@@ -224,8 +239,6 @@ def log_user(user : UserSchema):
             if found_user.ppbin:
                 image_data2 = base64.b64encode(found_user.ppbin)
                 image_data = image_data2.decode('utf-8')
-                image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
             else:
                 image_data = None
             found_user.ppbin = image_data
@@ -245,8 +258,6 @@ def update_user(user : UserUpdate):
                 if user.ppbin:
                     image_data2 = re.sub('^data:image/.+;base64,', '', user.ppbin)
                     image_data = base64.b64decode(image_data2)
-                    image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                    image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
                 else:
                     image_data = None
                 order = update(User).where(User.username == user.old_username).values(
@@ -294,8 +305,18 @@ def find_post(id_post: int, session:Session):
 @app.get("/posts")
 def get_posts():
     with Session(db.engine) as session:
+        posts_dict=[]
         posts = session.query(Post).all()
-        return posts
+        for post in posts:
+            post_dict=post.__dict__
+            if post.id_photo:
+                query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+                picbin=session.execute(query).scalar()
+                picbin = base64.b64encode(picbin).decode('utf-8')
+                post_dict['picbin']=picbin
+            posts_dict.append(post_dict)
+        return posts_dict
+            
 
 
 @app.get("/posts/{id_post}")
@@ -303,30 +324,60 @@ def get_post(id_post: int):
     error = False
     with Session(db.engine) as session:
         post = find_post(id_post=id_post, session=session)
+        post_dict=post.__dict__
         if post == None:
             error = True
         if error:
             return {'message': 'Post not found'}
         else:
-            return post
+            if post.id_photo:
+                query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+                result=session.execute(query)
+                picbin=result.scalar()
+                picbin = base64.b64encode(picbin).decode('utf-8')
+                post_dict['picbin']=picbin
+            return post_dict
 
 
 @app.post("/posts")
 def add_post(post: PostSchema):
     with Session(db.engine) as session:
-        new_post = Post(
-            text = post.text,
-            id_user = post.id_user,
-            date = post.date,
-            type = post.type,
-            afficher = post.afficher,
-            titre_post = post.titre_post,
-            id_note = post.id_note,
-            id_post_comm = post.id_post_comm,
-        )
-        session.add(new_post)
-        session.commit()
-        session.refresh(new_post)
+        if post.picbin:
+            image_data = base64.b64decode(post.picbin)
+            new_photo_post=PhotoPost(
+                picbin=image_data,
+                picform=post.picform,  
+            )
+            session.add(new_photo_post)
+            session.commit()
+            session.refresh(new_photo_post)
+            id_photo=new_photo_post.id_photo
+            new_post = Post(
+                text = post.text,
+                id_user = post.id_user,
+                afficher=post.afficher,
+                type = post.type,
+                titre_post = post.titre_post,
+                id_note = post.id_note,
+                id_post_comm = post.id_post_comm,
+                id_photo = id_photo,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
+        else:
+            new_post = Post(
+                text = post.text,
+                id_user = post.id_user,
+                afficher=post.afficher,
+                type = post.type,
+                titre_post = post.titre_post,
+                id_note = post.id_note,
+                id_post_comm = post.id_post_comm,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
         return new_post
 
 
@@ -421,6 +472,10 @@ def get_posts_per_page(page: int, limit: int, sortOrder: str, type: Optional[str
         # offset = (page-1)*limit
         # posts = session.query(Post).offset(offset).limit(limit).all()
         return {"posts":posts, "total_posts": total_posts}
+        
+
+        
+
         
 
 """
@@ -556,6 +611,7 @@ def delete_like(id_post: int, id_user: int):
 Api pour les établissements
 """
 
+        
 @app.get("/etablissements/by_regime")
 def get_etablissements_by_regime(regime_id: int):
     with Session(db.engine) as session:
@@ -841,14 +897,17 @@ def get_regimes_etablissements():
         return {"regimes_etablissements": regimes_etablissements}
 
 
-if __name__ == "__main__":
-    print(add_user(
-        UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
-        email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
-    ))
-    print(get_user("michel33"))
-    # prenom: str = ""
-    # genre: str = ""
-    # adresse: str = ""
-    # description: str = ""
+
+
+
+# if __name__ == "__main__":
+#     print(add_user(
+#         UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
+#         email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
+#     ))
+#     print(get_user("michel33"))
+#     # prenom: str = ""
+#     # genre: str = ""
+#     # adresse: str = ""
+#     # description: str = ""
  

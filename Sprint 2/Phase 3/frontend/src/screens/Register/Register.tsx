@@ -14,31 +14,13 @@ export function Register() {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const [prenom, setPrenom] = useState<string>();
-  const [nom, setNom] = useState<string>();
-  const [dateDeNaissance, setDateDeNaissance] = useState<string>();
-  const [genre, setGenre] = useState<string>();
   const [langue, setLangue] = useState<string>();
-  const [description, setDescription] = useState<string>("");
-  const [adresse, setAdresse] = useState<string>("");
 
   const [loginMessageType, setLoginMessageType] = useState<AlertColor>(
     "info"
   );
   const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
-  
-  //ici à changer pour le register
-
-  // const login = useCallback(
-  //   (user: User) => {
-  //     context.setUser(user);
-  //     setLoginMessage("");
-  //     setLoginMessageType("info");
-  //     navigate("/Login");
-  //   },
-  //   [context, navigate]
-  // );
 
   const genres = [
     {
@@ -271,7 +253,7 @@ export function Register() {
       if (username) {
         const userService = new UserService(config.API_URL);
         userService.getUser(username).then((u) => {
-          if (u.data) {
+          if (u.data.user) {
             setLoginMessage("Nom d'utilisateur déjà utilisé !")
             setLoginMessageType("error");
           } else {
