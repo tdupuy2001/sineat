@@ -91,7 +91,7 @@ const Main: React.FC = () => {
               <NavLink to="/map">
                 <button>Découvrez notre carte intéractive</button>
               </NavLink>
-              <NavLink to="/address">
+              <NavLink to="/add-place">
                 <button>Partager une adresse</button>
               </NavLink>
             </div>
