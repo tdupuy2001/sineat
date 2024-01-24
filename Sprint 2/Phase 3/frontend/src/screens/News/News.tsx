@@ -160,7 +160,7 @@ export function News() {
     };
   
     const handleSubmitComment = async () => {
-      if (!commentText || !commentTitle || !commentType) {
+      if (!commentText || !commentTitle) {
         setCommentAlertMessage('Veuillez remplir tous les champs pour ajouter un commentaire.');
         setCommentAlertSeverity('error');
       } else {
@@ -169,7 +169,7 @@ export function News() {
           const newComment : PostAdd = {
             id_user: user.id_user,
             date: new Date(),
-            type: commentType,
+            type: "texte",
             afficher: true,
             text: commentText,
             id_post_comm: selectedPost?.id_post,
@@ -492,7 +492,7 @@ export function News() {
                           </Alert>
                         )}
                         <label>
-                          <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
+                          {/* <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
                             Type:
                             <select
                             className="customSelect" 
@@ -505,7 +505,7 @@ export function News() {
                             <option value="restaurant">Restaurant</option>
                             <option value="santé">Santé</option>
                             </select>
-                          </div>
+                          </div> */}
                         </label>
                         <label>
                           <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
