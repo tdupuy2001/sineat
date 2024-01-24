@@ -1,8 +1,9 @@
 from typing import Optional
-from fastapi import FastAPI, HTTPException ,Query
+from fastapi import APIRouter, FastAPI, HTTPException ,Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from sqlalchemy import func
 from typing import List
 import httpx
@@ -37,7 +38,6 @@ app.add_middleware(
 )
 
 db = DBAcces("sineat_db", False)
-
 """
 Création des classes pouvant être utilisés avec FastApi
 """
@@ -64,12 +64,14 @@ class PostSchema(BaseModel):
     date: str
     type: str
     afficher: bool
+    titre_post: str
     """
     Les attributs facultatifs
     """
     text: str = ""
     id_note: int = None
     id_post_comm: int = None
+
 
 class UserUpdate(BaseModel):
     """
@@ -87,13 +89,27 @@ class UserUpdate(BaseModel):
     ppbin: Optional[str] = None
     ppform: Optional[str] = None
     
+class LikeSchema(BaseModel):
+    """
+    Les attributs obligatoires
+    """
+    id_post : int
+    id_user : int
 
+class Place(BaseModel):
+    code_postal: int
+    ville: str
+    rue: str
+    numero_rue: int
+    nom: str
+    type: str
+    regime: str
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement, RegimeEtablissement, Regime
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -113,11 +129,14 @@ def check_user(password:str, username:str, session:Session):
     else:
         return False
 
+#changer ici pour qu'ils remarchent
 @app.get("/users")
 def get_users():
     with Session(db.engine) as session:
         users = session.query(User).all()
         return users
+    
+
 
 
 @app.get("/users/{username}")
@@ -301,6 +320,7 @@ def add_post(post: PostSchema):
             date = post.date,
             type = post.type,
             afficher = post.afficher,
+            titre_post = post.titre_post,
             id_note = post.id_note,
             id_post_comm = post.id_post_comm,
         )
@@ -340,9 +360,31 @@ def delete_post(id_post: int):
         else:
             raise HTTPException(404, "Post not found")
         
+#api pour récupérer les commentaires d'un post
+@app.get("/posts/{id_post}/comments")
+def get_post_comments(id_post: int):
+    with Session(db.engine) as session:
+        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
+        return comments
 
-#api pour abonné/abonnement
+#api pour récupérer le user d'un post, changer pour avec find_user_by_id
+@app.get("/posts/{id_post}/user")
+def get_user_from_post(id_post: int):
+    with Session(db.engine) as session:
+        post = session.query(Post).filter(Post.id_post==id_post).first()
+        if post is not None:
+            user = session.query(User).filter(User.id_user==post.id_user).first()
+            if user is not None:
+                return {"username":user.username, "id_user":user.id_user}
+            else:
+                return ['error: User not found']
+        else:
+            return ["error : Post not found"]
         
+
+"""
+Api pour abonné/abonnement
+"""    
 @app.get("/community/{username}")
 def get_community(username: str):
     liste_abonnement=[]
@@ -417,26 +459,57 @@ def handle_follow(username1: str,username2:str):
             except:
                 return 'User not found'
 
-            
-    
-#api pour récupérer les commentaires d'un post
-@app.get("/posts/{id_post}/comments")
-def get_post_comments(id_post: int):
-    with Session(db.engine) as session:
-        comments = session.query(Post).where(Post.id_post_comm==id_post).all()
-        return comments
+"""
+Api pour les likes
+"""  
 
-#api pour récupérer le user d'un post, changer pour avec find_user_by_id
-@app.get("/posts/{id_post}/user")
-def get_user_from_post(id_post: int):
+@app.get("/likes")
+def get_likes():
     with Session(db.engine) as session:
-        post = session.query(Post).filter(Post.id_post==id_post).first()
-        if post is not None:
-            user = session.query(User).filter(User.id_user==post.id_user).first()
-            return user
-        else:
-            return ["error : Post not found"]
+        stars = session.query(LikedPost).all()
+        return stars
 
+@app.get("/likes/{id_post}")
+def get_likes_for_post(id_post:int):
+    with Session(db.engine) as session:
+        likes = session.query(LikedPost).filter(LikedPost.id_post == id_post).all()
+        return likes
+
+
+@app.post("/likes")
+def add_like(like: LikeSchema):
+    with Session(db.engine) as session:
+        stars = get_likes()
+        found_like = next(
+            (
+                s
+                for s in stars
+                if s.id_post == like.id_post and s.id_user == like.id_user
+            ),
+            None,
+        )
+        if found_like is None:
+            new_like = LikedPost(
+                id_post=like.id_post, id_user=like.id_user
+            )
+            session.add(new_like)
+            session.commit()
+    return like
+
+
+@app.delete("/likes/{id_post}/{id_user}")
+def delete_like(id_post: int, id_user: int):
+    with Session(db.engine) as session:
+        stm = select(LikedPost).where(
+            and_(LikedPost.id_post == id_post, LikedPost.id_user == id_user)
+        )
+        res = session.execute(stm)
+        found_like = res.scalar()
+        if found_like is not None:
+            session.delete(found_like)
+            session.commit()
+        else: 
+            raise HTTPException(404, "Like not found")
 @app.get("/etablissements/by_regime")
 def get_etablissements_by_regime(regime_id: int):
     with Session(db.engine) as session:
@@ -650,7 +723,78 @@ async def filter_addresses(
     else:
             return {"message": "Address not found"}
 
-            
+        
+def find_etablissement(rue:str,ville:str,code_postal:int,numero_rue:int, session:Session):
+    order = select(Etablissement).where(Etablissement.rue == rue,Etablissement.ville == ville,Etablissement.code_postal == code_postal,Etablissement.numero_rue == numero_rue)
+    result = session.execute(order)
+    found_etablissement = result.scalar()
+    return(found_etablissement)
+        
+@app.post("/places/")
+def create_place(place: Place):
+    with Session(db.engine) as session:
+        place.rue=place.rue.lower()
+        place.ville=place.ville.lower()
+        found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+        if found_etablissement:
+            return ('Etablissement existe déjà')
+        else:
+            new_place_data = Etablissement(
+                code_postal=place.code_postal,
+                ville=place.ville,
+                rue=place.rue,
+                numero_rue=place.numero_rue,
+                nom=place.nom,
+            )
+            session.add(new_place_data)
+            session.commit()
+            session.refresh(new_place_data)
+
+            queries_type = select(TypeEtablissement.id_type_etablissement).where(TypeEtablissement.nom==place.type)
+            result = session.execute(queries_type)
+            id_type_etablissement = result.scalar()
+            found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+            id_etablissement=found_etablissement.id_etablissement
+
+            new_place_data_type= EtablissementDeType(
+                id_etablissement= id_etablissement,
+                id_type_etablissement = id_type_etablissement
+            )
+
+            session.add(new_place_data_type)
+            session.commit()
+            session.refresh(new_place_data_type)
+
+            queries_regime = select(Regime.id_regime).where(Regime.nom==place.regime)
+            result = session.execute(queries_regime)
+            id_regime = result.scalar()
+            found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+            id_etablissement=found_etablissement.id_etablissement
+
+            new_place_data_regime= RegimeEtablissement(
+                id_etablissement= id_etablissement,
+                id_regime = id_regime
+            )
+            session.add(new_place_data_regime)
+            session.commit()
+            session.refresh(new_place_data_regime)
+            return ('Etablissement ajouté')
+
+@app.get("/types-etablissements")
+def get_types_etablissements():
+    with Session(db.engine) as session:
+        query = select(TypeEtablissement.nom)
+        types_etablissements = session.execute(query).scalars().all()
+        return {"types_etablissements": types_etablissements}
+    
+@app.get("/regimes-etablissements")
+def get_regimes_etablissements():
+    with Session(db.engine) as session:
+        query = select(Regime.nom)
+        regimes_etablissements = session.execute(query).scalars().all()
+        return {"regimes_etablissements": regimes_etablissements}
+
+
 if __name__ == "__main__":
     print(add_user(
         UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
