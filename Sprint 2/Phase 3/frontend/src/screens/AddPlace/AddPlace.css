@@ -1,0 +1,212 @@
+.cont-main {
+    width: 100%;
+    height: 100%;
+    background-color: #FAF6F1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 40px;
+}
+
+.content-AddPlace {
+    width: 100%;
+    height: 100%;
+    flex: 2;
+    background: #FAF6F1;
+    display: flex;
+    flex-wrap: wrap; /* Permettre aux éléments de passer à la ligne si nécessaire */
+    justify-content: center;
+    align-items: left;
+    margin-top: 40px;
+    padding-top: 20px; /* Ajoutez une valeur équivalente à la hauteur de la barre de navigation */
+
+}
+
+.image-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  .addPlaceForm {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    
+  }
+  .addPlaceTitle {
+    width: 100%;
+    height: 100%;
+    flex: 0.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: Courier New, sans-serif;
+    color: #602A0F;
+    font-size: 40px;
+  }
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .tabs button {
+    background-color: #FAF6F1;
+    border: none;
+    color: #602A0F;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+  }
+  
+  .tabs button.active {
+    color: #8B4513;
+  }
+  
+  .tabs button.active::before {
+    content: '';
+    position: absolute;
+    top: 0; /* Set to 0 to place the underline above */
+    left: 0;
+    width: 100%;
+    height: 2px; /* Adjust the height of the underline */
+    background-color: #8B4513; /* Color of the underline */
+  }
+
+  .customSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 10px;
+    font-size: 16px;
+    border: 0px;
+    border-radius: 12px;
+    background-color: #FAF6F1 ;
+    color: #602A0F;
+    cursor: pointer;
+  }
+  
+  .customSelect option {
+    background-color: #F2EADF;
+    color: #602A0F; 
+  }
+
+
+  .test_tab {
+    width: 80%;
+  }
+
+  .form {
+    border: 2px solid #602A0F;
+    border-radius: 12px;
+    background-color: #F2EADF;
+    color: #602A0F;
+    margin-bottom: 10px;
+    padding: 12px; /* Ajout de la marge intérieure */
+    font-size: 14px; /* Réduction de la taille de police */
+    text-align: left; /* Centre le texte en hauteur */
+    width: 100%;
+  }
+
+.label{
+    width: 100%;
+    height: 100%;
+    flex: 0.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+
+
+.cont-main {
+    position: relative;
+  }
+  
+  .content-AddPlace {
+    position: relative;
+    z-index: 1;
+  }
+
+
+  
+  
+  .selectField {
+    flex-grow: 1;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .selectField option {
+    background-color: #ffffff;
+  }
+  
+.addPlaceContainer {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    flex-direction: column;
+    background-color: #F2EADF;
+    align-items: center;
+  }
+  
+  .addPlaceForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%; /* Ajustez la largeur selon vos préférences */
+    border: #602A0F solid 1px;
+    margin: 20px 0;
+    border-radius: 17px;
+    background-color: #FAF6F1 ; 
+    padding: 20px;
+  }
+  
+  
+  .inputField {
+    border: 0;
+    border-radius: 8px;
+    background-color: #FAF6F1;
+    color: #602A0F;
+    padding: 8px; /* Ajustez la hauteur du champ selon vos besoins */
+    font-size: 10px; /* Réduction de la taille de police */
+    width: 100%;
+  }
+
+  .submitButton {
+    height: 50px;
+    width: 50%;
+    border-radius: 20px;
+    background-color: #602A0F;
+    color: #FAF6F1;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .submitButton:hover {
+    background-color: #FAF6F1;
+    color: black;
+    border: #602A0F solid 1px;
+  }
+  
+  .addPlaceTitle {
+    width: 100%;
+    height: 100%;
+    flex: 0.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: Courier New, sans-serif;
+    color: #602A0F;
+    font-size: 40px;
+  }
+  
+  
+  

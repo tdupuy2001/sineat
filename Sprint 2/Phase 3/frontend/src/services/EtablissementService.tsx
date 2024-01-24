@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios'
+import axios, {AxiosInstance , AxiosResponse} from 'axios'
 import { Etablissement } from '../dto/Etablissement';
 
 export class EtablissementService {
@@ -20,7 +20,7 @@ export class EtablissementService {
     }
 
     getEtablissementNote(nom:string) {
-        return this.axiosInstance.get('note?nom='+nom );
+        return this.axiosInstance.get('etablissement/notes?nom='+nom );
     }
 
     getEtablissementCoord(address: string) {
@@ -28,9 +28,20 @@ export class EtablissementService {
     }
 
 
-getEtablissementsByRegime(regime : string) {
+    getEtablissementsByRegime(regime : string) {
     return this.axiosInstance.get(`/etablissements/by_regime?regime_id=${regime}`);
-}
+    }
+
+    addRating(ratingData: RatingPayload): Promise<AxiosResponse<any>> {
+    return this.axiosInstance.post('/addRatings', ratingData);
+    }
     
 
+}
+
+interface RatingPayload {
+    id_user: number;
+    id_etablissement: number;
+    rating1: number;
+    rating2: number;
 }

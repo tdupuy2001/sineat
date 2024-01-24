@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import L from "leaflet";
 import Autocomplete from './Autocomplete';
-import LeafletRouting from './LeafletRouting';
+import { PostAddOutlined } from '@mui/icons-material';
 
 function Map() {
   const [etablissements, setEtablissements] = useState([]);
@@ -22,8 +22,47 @@ function Map() {
   const [selectedRegime, setSelectedRegime] = useState('');
   const [mapCenter, setMapCenter] = useState([43.92517082408836, 2.147408244346074]);
   const mapRef = useRef();
+  const PARIS_COORDINATES = [48.8566, 2.3522]
+
+
+  const handleCardClick = (coordinates) => {
+    if (mapRef.current) {
+      mapRef.current.flyTo(coordinates, 15); // 15 is the zoom level
+    }
+  };
 
   useEffect(() => {
+    const attemptGeolocation = () => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // User allowed location access
+            if (mapRef.current) {
+              mapRef.current.flyTo([position.coords.latitude, position.coords.longitude], 13); // 15 is the zoom level
+            }
+          },
+          () => {
+            // User denied location access or an error occurred
+            if (mapRef.current) {
+              mapRef.current.flyTo(PARIS_COORDINATES, 13); // 15 is the zoom level
+            }
+          }
+        );
+      } else {
+        // Geolocation is not supported by this browser
+        if (mapRef.current) {
+          mapRef.current.flyTo(PARIS_COORDINATES, 13); // 15 is the zoom level
+        }
+      }
+    };
+  
+    attemptGeolocation();
+  
+    // ... rest of your useEffect logic
+  }, []);
+
+  useEffect(() => {
+
     const service = new EtablissementService(config.API_URL);
     service.getEtablissements().then((response) => {
       if (response.data) {
@@ -32,6 +71,7 @@ function Map() {
     }).catch(error => {
       console.error("Failed to fetch etablissements:", error);
     });
+    
 
     fetch(`${config.API_URL}/regimes`)
       .then(response => response.json())
@@ -83,7 +123,6 @@ const handleAddressSelect = async (address) => {
       mapRef.current.flyTo([coords[1], coords[0]], mapRef.current.getZoom());
     }
 
-    // Fetching establishments within a 5 km radius
 
   }
 };
@@ -138,7 +177,7 @@ const fetchEtablissements = () => {
           </div>
           <div className='list-cardrestau'>
             {etablissementsNote.map(etablissement => (
-              <RestauCard key={etablissement.id} data={etablissement} />
+              <RestauCard key={etablissement.id} data={etablissement} onClick={handleCardClick} />
             ))}
           </div>
         </div>
