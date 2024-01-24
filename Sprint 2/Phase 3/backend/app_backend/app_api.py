@@ -103,12 +103,13 @@ class Place(BaseModel):
     numero_rue: int
     nom: str
     type: str
+    regime: str
 
 """
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement, RegimeEtablissement, Regime
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -670,6 +671,7 @@ def create_place(place: Place):
             session.add(new_place_data)
             session.commit()
             session.refresh(new_place_data)
+
             queries_type = select(TypeEtablissement.id_type_etablissement).where(TypeEtablissement.nom==place.type)
             result = session.execute(queries_type)
             id_type_etablissement = result.scalar()
@@ -680,9 +682,24 @@ def create_place(place: Place):
                 id_etablissement= id_etablissement,
                 id_type_etablissement = id_type_etablissement
             )
+
             session.add(new_place_data_type)
             session.commit()
             session.refresh(new_place_data_type)
+
+            queries_regime = select(Regime.id_regime).where(Regime.nom==place.regime)
+            result = session.execute(queries_regime)
+            id_regime = result.scalar()
+            found_etablissement=find_etablissement(place.rue,place.ville,place.code_postal,place.numero_rue,session)
+            id_etablissement=found_etablissement.id_etablissement
+
+            new_place_data_regime= RegimeEtablissement(
+                id_etablissement= id_etablissement,
+                id_regime = id_regime
+            )
+            session.add(new_place_data_regime)
+            session.commit()
+            session.refresh(new_place_data_regime)
             return ('Etablissement ajouté')
 
 @app.get("/types-etablissements")
@@ -691,6 +708,14 @@ def get_types_etablissements():
         query = select(TypeEtablissement.nom)
         types_etablissements = session.execute(query).scalars().all()
         return {"types_etablissements": types_etablissements}
+    
+@app.get("/regimes-etablissements")
+def get_regimes_etablissements():
+    with Session(db.engine) as session:
+        query = select(Regime.nom)
+        regimes_etablissements = session.execute(query).scalars().all()
+        return {"regimes_etablissements": regimes_etablissements}
+
 
 if __name__ == "__main__":
     print(add_user(
