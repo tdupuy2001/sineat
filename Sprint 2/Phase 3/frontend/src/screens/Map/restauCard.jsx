@@ -25,7 +25,7 @@ import { EtablissementService } from '../../services/EtablissementService';
 import { config } from '../../config';
 
 
-export default function RestauCard({data}) {
+export default function RestauCard({data,onClick}) {
 
   const [showDetails, setShowDetails] = useState(false);
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
@@ -57,9 +57,13 @@ export default function RestauCard({data}) {
   };
 
   const toggleDetails = () => {
+    if (data.coord) {
+      const coordinates = [data.coord.geometry.coordinates[1], data.coord.geometry.coordinates[0]-0.005];
+      onClick(coordinates);
+    }
     setShowDetails(!showDetails);
   };
-  
+
   const submitRating = async () => {
 
     const etablissementService = new EtablissementService(config.API_URL);
@@ -83,6 +87,11 @@ export default function RestauCard({data}) {
 
     handleRatingDialogClose();
 }
+
+useEffect(() => {
+
+}, [ratingDialogOpen])
+
 
 
   return (
@@ -113,7 +122,7 @@ export default function RestauCard({data}) {
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
         <Typography variant="subtitle1" color="text.primary" component="div">
             {data.description}
-            </Typography>
+        </Typography>
         <Typography variant="subtitle1" color="text.secondary" component="div">
         {`${data.numero_rue} ${data.rue}, ${data.code_postal} ${data.ville}`}
           </Typography>
@@ -181,10 +190,10 @@ export default function RestauCard({data}) {
       )}
             {/* Rating Dialog */}
             <Dialog open={ratingDialogOpen} onClose={handleRatingDialogClose}>
-        <DialogTitle>Rate {data.nom}</DialogTitle>
+        <DialogTitle>Notez {data.nom}</DialogTitle>
         <DialogContent>
           {/* Sans Gluten Rating */}
-          <Typography component="legend">Sans Gluten Rating</Typography>
+          <Typography component="legend">Note Sans Gluten</Typography>
           <Rating
             name="sans-gluten-rating"
             value={sansGlutenRating}
@@ -193,7 +202,7 @@ export default function RestauCard({data}) {
             }}
           />
           {/* Ambiance Rating */}
-          <Typography component="legend">Ambiance Rating</Typography>
+          <Typography component="legend">Note Ambiance</Typography>
           <Rating
             name="ambiance-rating"
             value={ambianceRating}
