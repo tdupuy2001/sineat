@@ -42,6 +42,9 @@ Création des classes pouvant être utilisés avec FastApi
 """
 from pydantic import BaseModel
 
+
+class PostIdsRequest(BaseModel):
+    ids_posts: list[int]
 class UserSchema(BaseModel):
     """
     Les attributs obligatoires
@@ -253,7 +256,7 @@ def update_user(user : UserUpdate):
         if found_user == None:
             error = True
         else:
-            #TODO checker si les champs obligatoires ne sont pas vide
+            #TODO: checker si les champs obligatoires ne sont pas vide
             other_username = find_user(user.username,session)
             if other_username == None or user.username == user.old_username:
                 if user.ppbin:
@@ -320,24 +323,49 @@ def get_posts():
             
 
 
-@app.get("/posts/{id_post}")
-def get_post(id_post: int):
+# @app.get("/posts/{id_post}")
+# def get_post(id_post: int):
+#     error = False
+#     with Session(db.engine) as session:
+#         post = find_post(id_post=id_post, session=session)
+#         post_dict=post.__dict__
+#         if post == None:
+#             error = True
+#         if error:
+#             return {'message': 'Post not found'}
+#         else:
+#             if post.id_photo:
+#                 query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+#                 result=session.execute(query)
+#                 picbin=result.scalar()
+#                 picbin = base64.b64encode(picbin).decode('utf-8')
+#                 post_dict['picbin']=picbin
+#             return post_dict
+
+@app.post("/postsById")
+def get_post(list_ids_post: PostIdsRequest):
     error = False
+    posts = []
+
     with Session(db.engine) as session:
-        post = find_post(id_post=id_post, session=session)
-        post_dict=post.__dict__
-        if post == None:
-            error = True
-        if error:
-            return {'message': 'Post not found'}
-        else:
+        for id_post in list_ids_post.ids_posts:
+            post = find_post(id_post=id_post, session=session)
+            if post is None:
+                error = True
+                break  # If one post is not found, break out of the loop
+            post_dict = post.__dict__
             if post.id_photo:
-                query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
-                result=session.execute(query)
-                picbin=result.scalar()
+                query = select(PhotoPost.picbin).where(
+                    PhotoPost.id_photo == post.id_photo)
+                result = session.execute(query)
+                picbin = result.scalar()
                 picbin = base64.b64encode(picbin).decode('utf-8')
-                post_dict['picbin']=picbin
-            return post_dict
+                post_dict['picbin'] = picbin
+            posts.append(post_dict)
+
+    if error:
+        return {'message': 'One or more posts not found'}
+    return posts
 
 
 @app.post("/posts")

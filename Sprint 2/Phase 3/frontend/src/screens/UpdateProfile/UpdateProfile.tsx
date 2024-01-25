@@ -1,15 +1,13 @@
-import { useContext, useState } from "react";
 import { Alert, AlertColor, MenuItem, TextField } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { MyBlogContext } from "../../MyBlogContext";
-import { UserService } from "../../services/UserService";
 import { config } from "../../config";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import { User } from "../../dto/User";
+import { UserService } from "../../services/UserService";
 // import img from "../Profile/assets/profile.png"
-import "./UpdateProfile.css";
 import { readAndCompressImage } from "browser-image-resizer";
+import "./UpdateProfile.css";
 
 export function UpdateProfile() {
   const [prenom, setPrenom] = useState<string | undefined>();
@@ -104,7 +102,7 @@ export function UpdateProfile() {
 
   const handleUpdate = () => {
     userService.getUser(username).then((response) => {
-      const e = response.data.user
+      const e = response.data.user;
       if (!e || e.username === context.user?.username) {
         let binaryData;
         let extension;
@@ -511,10 +509,10 @@ export function UpdateProfile() {
           <TextField
             type="file"
             onChange={handleFileChange}
-            label="Photo de profil"
+            // label="Photo de profil"
             className="file-selection"
             inputProps={{
-              accept: "image/jpeg, image/jpg, image/png"
+              accept: "image/jpeg, image/jpg, image/png",
             }}
             // style={{ marginTop: "10px", display: "block" }}
           />
