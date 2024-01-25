@@ -39,7 +39,6 @@ export function News() {
     const [likesCount, setLikesCount] = useState<Record<number, number>>({});
     const {user} = useContext(MyBlogContext)
     const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
-    // const [newComment, setNewComment] = useState<Partial<Post>>({});
     const [commentTitle, setCommentTitle] = useState<string>();
     const [commentType, setCommentType] = useState<string>();
     const [commentText, setCommentText] = useState<string>();
@@ -50,12 +49,10 @@ export function News() {
     const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
     const [sortOrder, setSortOrder] = useState("");
     const [loading, setLoading] = useState(true);
-    // test pour la pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12); 
     const [totalItemsCount, setTotalItemsCount] = useState(0);
 
-    // pb avec les dates
     const sortOldestToNewest = () => {
       setFilter(null)
       setSortOrder("asc");
@@ -105,17 +102,11 @@ export function News() {
         if (existingLike) {
           await likeService.deleteLike(id_post, user.id_user);
           setUserLikes(prevState => ({...prevState, [id_post]:false}));
-          // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post]-1}));
         } else {
           const newLike: Like = { id_post: id_post, id_user: user.id_user};
           await likeService.addLike(newLike);
           setUserLikes(prevState => ({...prevState, [id_post]: true}))
-          // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post] + 1}));
         }
-        // const updatedLikesCount = { ...likesCount, [id_post]: likesCount[id_post] + (existingLike ? -1 : 1) };
-        // setLikesCount(updatedLikesCount);
-        // const updatedLikesForPost = await likeService.getPostLikes(id_post);
-        // setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
         const updatedLikesForPost = await likeService.getPostLikes(id_post);
         setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
 
@@ -141,7 +132,6 @@ export function News() {
             titre_post: commentTitle,
           };
           try {
-            // await postService.addPost(newComment)
             await postService.addComment(selectedPost, newComment);
             setCommentTitle('');
             setCommentType('');
@@ -174,7 +164,7 @@ export function News() {
 
     const handleBack = () => {
       setPostHistory(prevHistory => {
-        const newHistory = prevHistory.slice(0, -1); // Remove the last element
+        const newHistory = prevHistory.slice(0, -1); 
         const lastPostId = newHistory[newHistory.length - 1];
         const lastPost = posts.find(post => post.id_post === lastPostId);
         setSelectedPost(lastPost || null);
@@ -200,7 +190,6 @@ export function News() {
       navigate(`/profile/${username}`);
     };
 
-    // test pour la pagination
     const handlePageChange = (pageNumber: number) => {
       const postService = new PostService(config.API_URL);
       setCurrentPage(pageNumber);
@@ -212,11 +201,9 @@ export function News() {
         const postService = new PostService(config.API_URL)
         const likeService = new LikeService(config.API_URL)
 
-        // test pour la pagination
         postService.getPostsPerPage(currentPage, itemsPerPage, sortOrder, filter)
         .then(response => {
           const data =response.data.posts
-          // pb avec les dates
           const sortedPosts = data.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setTotalItemsCount(response.data.total_posts);
           sortedPosts.forEach((post:Post)=>{
@@ -288,15 +275,6 @@ export function News() {
           }, 1500);
     }, [user, currentPage, itemsPerPage, sortOrder,filter]);
 
-
-    // useEffect(() => {
-    //   if (sortOrder !== "") {
-    //     setLoading(false);
-    //     setCurrentPage(1);
-    //     handlePageChange(currentPage);
-    //   }
-    // }, [sortOrder])
-
     
     return (
     <div className='back-color'>
@@ -322,11 +300,9 @@ export function News() {
         </ul>
       </div>
       <div className='button-container'>
-        {/* <text className='filtres'>Filtres</text> */}
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortNewestToOldest}>Le plus récent</button>
-          {/* <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
@@ -335,29 +311,25 @@ export function News() {
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Texte</button>
-          {/* <button className= 'button-filtres' onClick={filterPosts}>Posts</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRecipes}>Recette</button>
-          {/* <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRestaurant}>Restaurant</button>
-          {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterSante}>Santé</button>
-          {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
       </div>
-      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={430}>
+      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={500}>
         {posts.filter(post => (!filter && ["texte", "recette", "restaurant", "santé"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
           <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' >
             <div className='post-border' >
-                <h2 className='post-title'>{post.titre_post}</h2>
+                <h2 className='post-title-news'>{post.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{post.type}</p>
                   <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === post.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
@@ -365,7 +337,6 @@ export function News() {
                 <div className='img-wrapper'>
                   <img onClick={() => openPost(post)} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : handleNoPhoto(post.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
-                    {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
                       icon={faHeart} 
                       color={userLikes[post.id_post] ? 'red' : 'black'} 
@@ -401,11 +372,9 @@ export function News() {
                   <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === selectedPost.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === selectedPost.id_user)?.username}</p>
                 </div>
 
-                {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
                   <img className='img-selected' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
-                    {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
                       icon={faHeart} 
                       color={userLikes[selectedPost.id_post] ? 'red' : 'black'} 
@@ -415,7 +384,6 @@ export function News() {
                   </div>
                 </div>
 
-                {/*changer le post-text car là on peut afficher toutes les lignes */}
                 <p className='post-text-selected'>{selectedPost.text}</p>
                 <p className='post-date'>{selectedPost.date.toString()} </p>
               </div>
@@ -424,7 +392,6 @@ export function News() {
               {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
                 <div className='post-com-com' onClick={() => openPost(comment)}>
                   <div key={comment.id_post} >
-                    {/* mettre un titre ici ? */}
                     <div className='post-info-com'>
                       <p className='post-user'onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === comment.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === comment.id_user)?.username}</p>
                       <p className='post-com-date'>{comment.date.toString()} </p>
@@ -437,11 +404,6 @@ export function News() {
                 <button className='ajout-com' onClick={()=> setIsCommentFormOpen(true)}> Ajouter un commentaire... </button>
                 {isCommentFormOpen && (
                   <div>
-                    {/* <div>
-                    <TextField required className='txtfield-com-title' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Titre" variant="outlined" onChange={e => setCommentTitle(e.target.value)}/>
-                    <TextField required className='txtfield-com-type' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Type" variant='outlined' onChange={e => setCommentType(e.target.value)}/>
-                    <TextField required className='txtfield-com-text' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Texte" variant='outlined' onChange={e => setCommentText(e.target.value)}/>                 
-                    </div> */}
                     <form className='addPlaceForm' onSubmit={async (e) => {
                       e.preventDefault();
                       await handleSubmitComment();
@@ -452,22 +414,7 @@ export function News() {
                             {commentAlertMessage}
                           </Alert>
                         )}
-                        <label>
-                          {/* <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
-                            Type:
-                            <select
-                            className="customSelect" 
-                            name="type"
-                            value={commentType}
-                            onChange={e => setCommentType(e.target.value)} >
-                            <option value="None">Choisir une valeur</option>
-                            <option value="texte">Post</option>
-                            <option value="recette">Recette</option>
-                            <option value="restaurant">Restaurant</option>
-                            <option value="santé">Santé</option>
-                            </select>
-                          </div> */}
-                        </label>
+                        
                         <label>
                           <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
                             Titre:
@@ -509,7 +456,6 @@ export function News() {
           </div>
         )}
       </Modal>
-      {/* test pour la pagination */}
       <Pagination
         activePage={currentPage}
         itemsCountPerPage={itemsPerPage}

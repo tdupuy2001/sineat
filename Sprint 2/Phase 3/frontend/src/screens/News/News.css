@@ -1,6 +1,5 @@
 .fil-dactu {
     padding: 4%;
-    /* border: 1px solid black; */
     margin-top: 110px;
     display: flex;
     flex-direction: column;
@@ -69,10 +68,9 @@
     justify-content: space-between;
  }
 
-.post-title {
+.post-title-news {
     font-size: 24px;
     margin-bottom: 2%;
-    /* font-family: Courier New, sans-serif; */
     color: #602A0F;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -101,7 +99,6 @@
 
 .post-text {
     font-size: 18px;
-    /* margin-bottom: 1%; */
     margin: 0 !important;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -112,15 +109,10 @@
 
 .post-text-selected {
     font-size: 18px;
-    /* margin-bottom: 1%; */
     margin: 0 !important;
     overflow: visible;
     white-space: normal;
     word-wrap: break-word;
-    /* text-overflow: ellipsis; */
-    /* display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; */
 }
 
 .post-date {
@@ -151,7 +143,7 @@ div[data-grid] {
 
 .img-test {
     width: 370px;
-    height: 250px;
+    height: 340px;
 }
 
 .img-selected {
@@ -173,8 +165,6 @@ div[data-grid] {
     bottom: 0;
     left: 0;
     cursor: pointer;
-    /* color: white; */
-    /* background-color: rgba(0,0,0,0.5); */
 }
 
 .post-news {
@@ -182,13 +172,6 @@ div[data-grid] {
 }
 
 .post:hover{
-    /* height: 175%;
-    width: 30vw;
-    border-radius: 20px ;
-    border: #602A0F solid 1px;
-    background-color:  white; 
-    color: black;
-    font-size: 20px; */
     cursor: pointer;
 }
 
@@ -201,17 +184,6 @@ div[data-grid] {
 
 .post-com{
     padding-top: 100px; 
-    /*
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border: 1px solid black;
-    margin-top: 10%;
-    margin: 10%;
-    margin-top: 10%;
-    margin-left: 35%;
-    margin-right: 35%;
-    border-radius: 5%; */
     width: 50%;
 }
 
@@ -225,10 +197,8 @@ div[data-grid] {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* border: 1px solid black; */
     margin-left: 1%;
     margin-right: 1%;
-    /* border-radius: 10%; */
     margin-top: 1%;
     cursor: pointer;
     border-bottom: 1px solid grey;
@@ -249,28 +219,15 @@ div[data-grid] {
 .post-info-com {
     display: flex;
     margin-bottom: 5px;
-    /* justify-content: space-around; */
  }
 
 .post-com-date {
     font-size: 90%;
-    /* font-family: Courier New, sans-serif; */
     color: black;
     margin-left: 5%;
 }
 
 .button-filtres {
-    /* height: 15%;
-    width: 15%;
-    border-radius: 10px ;
-    background-color:  #602A0F; 
-    background-color:#F2EADF;
-    color: black;
-    font-size: 100%;
-    cursor: pointer;
-    padding: 1%;
-    font-family: Courier New, sans-serif;
-    text-align: center; */
     background-color: transparent;
     color: #8B4513;
     border: none;
@@ -279,8 +236,6 @@ div[data-grid] {
     font-size: 18px;
     border-radius: 8px;
     transition: color 0.3s ease;
-    /* margin-left: 3%;
-    margin-right: 3%; */
     margin: 0 !important;
     position: relative;
     z-index: 1;
@@ -306,8 +261,6 @@ div[data-grid] {
     color: #602A0F;
     font-family: Courier New, sans-serif;
     text-align: center;
-    /* margin-left: 50%;
-    margin-right: 50%; */
     white-space: nowrap;
 }
 
@@ -321,14 +274,11 @@ div[data-grid] {
 .button-wrapper {
     position: relative;
     display: inline-block;
-    /* margin-left: 3%;
-    margin-right: 3%; */
     margin: 0 !important;
 }
    
 .button-underline {
     position: absolute;
-    /* bottom: 0; */
     top: 0;
     left: 0;
     width: 100%;
@@ -376,7 +326,7 @@ div[data-grid] {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 50%; /* Ajustez la largeur selon vos préférences */
+    width: 50%; 
     border: #602A0F solid 1px;
     margin: 20px 0;
     border-radius: 17px;
@@ -391,12 +341,12 @@ div[data-grid] {
     -moz-appearance: none;
     padding: 10px;
     font-size: 16px;
-    border: 2px solid #602A0F; /* Couleur de bordure personnalisée */
+    border: 2px solid #602A0F; 
     border-radius: 12px;
-    background-color: #F2EADF; /* Couleur de fond personnalisée */
-    color: #602A0F; /* Couleur du texte personnalisée */
+    background-color: #F2EADF; 
+    color: #602A0F; 
     cursor: pointer;
-    margin-bottom: 10px; /* Ajoutez une marge entre chaque élément du formulaire */
+    margin-bottom: 10px; 
 }
 
 .label{
@@ -448,8 +398,8 @@ div[data-grid] {
     font-size: 16px;
     border: 0px;
     border-radius: 12px;
-    background-color: #FAF6F1 ; /* Couleur de fond personnalisée */
-    color: #602A0F; /* Couleur du texte personnalisée */
+    background-color: #FAF6F1 ; 
+    color: #602A0F; 
     width: 100%;
   }
 
@@ -483,8 +433,6 @@ div[data-grid] {
     font-size: 18px;
     border-radius: 8px;
     transition: color 0.3s ease;
-    /* margin-left: 3%;
-    margin-right: 3%; */
     position: relative;
     z-index: 1;
     white-space: nowrap;
@@ -504,8 +452,6 @@ div[data-grid] {
     font-size: 18px;
     border-radius: 8px;
     transition: color 0.3s ease;
-    /* margin-left: 3%;
-    margin-right: 3%; */
     position: relative;
     z-index: 1;
     white-space: nowrap;
@@ -535,7 +481,6 @@ div[data-grid] {
 }
 
 .active-page a {
-    /* background-color: #f00; */
     color: #602A0F;
     font-weight: bold;
 }
@@ -545,6 +490,5 @@ div[data-grid] {
 }
 
 .pagination .disabled-page a:hover {
-    /* color: #8B4513; */
     color: #602A0F;
 }
