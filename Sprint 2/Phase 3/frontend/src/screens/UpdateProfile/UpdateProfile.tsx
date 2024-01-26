@@ -25,9 +25,6 @@ export function UpdateProfile() {
 
   const navigate = useNavigate();
 
-  // TODO: Améliorer la beauté
-  // FIXME: Le label de la photo de profil est absolument affreux
-
   const context = useContext(MyBlogContext);
   const userService = new UserService(config.API_URL);
 
@@ -53,7 +50,7 @@ export function UpdateProfile() {
     blob = new Blob([byteArray], { type: "image/jpeg" });
   }
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [, setIsLoggedIn] = useState(false);
 
   const [username, setUsername] = useState<string>(() => {
     return localStorage.getItem("username") || "";

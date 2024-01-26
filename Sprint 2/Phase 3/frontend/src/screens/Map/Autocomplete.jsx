@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import { useEffect, useState } from "react";
 
 function AutocompleteSelect({ onAddressSelect }) {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
     if (inputValue) {
       fetch(`https://api-adresse.data.gouv.fr/search/?q=${inputValue}&limit=5`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data.features) {
-            const addresses = data.features.map(feature => feature.properties.label);
+            const addresses = data.features.map(
+              (feature) => feature.properties.label
+            );
             setOptions(addresses);
           }
         })
-        .catch(error => console.error('Error fetching data:', error));
+        .catch((error) => console.error("Error fetching data:", error));
     } else {
       setOptions([]);
     }
@@ -37,7 +39,7 @@ function AutocompleteSelect({ onAddressSelect }) {
       }}
       onChange={handleChange}
       options={options}
-      size='small'
+      size="small"
       renderInput={(params) => (
         <TextField {...params} label="Address" variant="outlined" />
       )}

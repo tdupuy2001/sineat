@@ -5,6 +5,8 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import Modal from "react-modal";
@@ -27,8 +29,6 @@ import restaurant from "../News/assets/restaurant.png";
 import sante from "../News/assets/sante.png";
 import texte from "../News/assets/texte.png";
 import "./Profile.css";
-import { IconButton } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete"
 
 export function Profile() {
   const userService = new UserService(config.API_URL);
@@ -80,8 +80,6 @@ export function Profile() {
 
   const [isUserForDelete, setIsUserForDelete] = useState(false);
 
-
-
   // Gestion de la photo de profil
   useEffect(() => {
     if (usernameLink) {
@@ -117,7 +115,6 @@ export function Profile() {
               .then((response) => response.data)
               .then((data) => {
                 setPosts(data);
-                
 
                 data.forEach((post) => {
                   if (post.picbin) {
@@ -192,73 +189,6 @@ export function Profile() {
           } else {
             setPosts([]);
           }
-          // if (
-          //   response.data.main_post_ids &&
-          //   response.data.main_post_ids.length > 0 &&
-          //   user
-          // ) {
-          //   const postService = new PostService(config.API_URL);
-          //   const likeService = new LikeService(config.API_URL);
-          //   let listPosts: Post[] = [];
-
-          //   response.data.main_post_ids.forEach((postId) =>
-          //     postService.getPost(postId).then((reponses) => {
-          //       let post = reponses.data;
-          //       if (post.picbin) {
-          //         let postPicture = "data:image/png;base64," + post.picbin;
-          //         let byteCharacters = atob(postPicture.split(",")[1]);
-          //         let byteNumbers = new Array(byteCharacters.length);
-          //         for (let i = 0; i < byteCharacters.length; i++) {
-          //           byteNumbers[i] = byteCharacters.charCodeAt(i);
-          //         }
-          //         let byteArray = new Uint8Array(byteNumbers);
-          //         let blob = new Blob([byteArray], { type: "image/png" });
-          //         post.blob = blob;
-          //       }
-          //       listPosts.push(post);
-          //     })
-          //   );
-          //   setPosts(listPosts);
-          //   const commentsPromises = listPosts.map((post) =>
-          //     postService.getPostComments(post.id_post)
-          //   );
-          //   Promise.all(commentsPromises)
-          //     .then((commentsData) => {
-          //       const allComments = commentsData.map((comment) => comment.data);
-          //       setComments(allComments.flat());
-          //     })
-          //     .catch((error) => console.error(error));
-
-          //   const likesPromises = listPosts.map((post) =>
-          //     likeService.getPostLikes(post.id_post)
-          //   );
-          //   Promise.all(likesPromises)
-          //     .then((likesData) => {
-          //       const likesCount = likesData.reduce((count, likesArray) => {
-          //         likesArray.data.forEach((like) => {
-          //           count[like.id_post] = likesArray.data.length;
-          //         });
-          //         return count;
-          //       }, {} as Record<number, number>);
-          //       setLikesCount(likesCount);
-          //     })
-          //     .catch((error) => console.error(error));
-
-          //   Promise.all(likesPromises)
-          //     .then((likesData) => {
-          //       const userLikes = likesData.reduce((acc, likesArray) => {
-          //         if (likesArray.data.length > 0) {
-          //           const id_post = likesArray.data[0]?.id_post || -1;
-          //           acc[id_post] = likesArray.data.some(
-          //             (like) => like.id_user === user.id_user
-          //           );
-          //         }
-          //         return acc;
-          //       }, {} as Record<number, boolean>);
-          //       setUserLikes(userLikes);
-          //     })
-          //     .catch((error) => console.error(error));
-          // }
         })
         .catch((error) => {
           console.error("An error occurred:", error);
@@ -277,7 +207,7 @@ export function Profile() {
     if (isPostDeleted) {
       setIsPostDeleted(false);
     }
-    console.log(posts)
+    console.log(posts);
   }, [usernameLink, filter, sortOrder, isPostDeleted]);
 
   //
@@ -362,9 +292,6 @@ export function Profile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abonnement]);
 
-  
-
-
   const handleLogout = () => {
     context.setUser(null);
     sessionStorage.removeItem("username");
@@ -445,7 +372,6 @@ export function Profile() {
       if (existingLike) {
         await likeService.deleteLike(id_post, context.user?.id_user);
         setUserLikes((prevState) => ({ ...prevState, [id_post]: false }));
-        // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post]-1}));
       } else {
         const newLike: Like = {
           id_post: id_post,
@@ -453,12 +379,7 @@ export function Profile() {
         };
         await likeService.addLike(newLike);
         setUserLikes((prevState) => ({ ...prevState, [id_post]: true }));
-        // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post] + 1}));
       }
-      // const updatedLikesCount = { ...likesCount, [id_post]: likesCount[id_post] + (existingLike ? -1 : 1) };
-      // setLikesCount(updatedLikesCount);
-      // const updatedLikesForPost = await likeService.getPostLikes(id_post);
-      // setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
       const updatedLikesForPost = await likeService.getPostLikes(id_post);
       setLikesCount((prevState) => ({
         ...prevState,
@@ -487,7 +408,7 @@ export function Profile() {
     setPostHistory((prevHistory) => [...prevHistory, post.id_post]);
     setSelectedPost(post);
     setIsModalOpen(true);
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
     rightUser(post);
   };
 
@@ -527,14 +448,14 @@ export function Profile() {
     handlePageChange(1);
   };
 
-  const deletePost = (selectedPost : Post) => {
-    const postService = new PostService(config.API_URL)
-      if (selectedPost.id_post) {
-        postService.deletePost(selectedPost.id_post);
-      }
-      setIsModalOpen(false);
-      setIsPostDeleted(true);
-  }
+  const deletePost = (selectedPost: Post) => {
+    const postService = new PostService(config.API_URL);
+    if (selectedPost.id_post) {
+      postService.deletePost(selectedPost.id_post);
+    }
+    setIsModalOpen(false);
+    setIsPostDeleted(true);
+  };
 
   const navigateToUserProfile = (
     username: string,
@@ -548,15 +469,15 @@ export function Profile() {
     if (context.user) {
       if (context.user.id_user === selectedPost.id_user) {
         setIsUserForDelete(true);
-        console.log(context.user.id_user)
-        console.log(selectedPost.id_user)
+        console.log(context.user.id_user);
+        console.log(selectedPost.id_user);
       }
     }
-  }
+  };
 
-  useEffect (()=>{
-    console.log(isUserForDelete)
-  },[isUserForDelete])
+  useEffect(() => {
+    console.log(isUserForDelete);
+  }, [isUserForDelete]);
 
   return (
     <div>
@@ -746,86 +667,86 @@ export function Profile() {
               cols={{ lg: 3, md: 3, sm: 3, xs: 1, xxs: 1 }}
               rowHeight={500}
             >
-              {Array.isArray(posts) && posts
-                .filter(
-                  (post) =>
-                    (!filter &&
-                      ["texte", "recette", "restaurant", "santé"].includes(
-                        post.type
-                      )) ||
-                    post.type === filter
-                )
-                .map((post: Post, index: number) => (
-                  <div
-                    key={post.id_post}
-                    data-grid={{
-                      x: index % 3,
-                      y: Math.floor(index / 3),
-                      w: 0.9,
-                      h: 1,
-                      static: true,
-                    }}
-                    className="post-profile" // Reprendre le css de post news mais adapter la taille
-                    onClick={() => openPost(post)}
-                  >
-                    <div className="post-border">
-                      <h2 className="post-title">{post.titre_post}</h2>
-                      <div className="post-info">
-                        <p className="post-type">{post.type}</p>
-                        <p
-                          className="post-user"
-                          onClick={(event) =>
-                            navigateToUserProfile(
+              {Array.isArray(posts) &&
+                posts
+                  .filter(
+                    (post) =>
+                      (!filter &&
+                        ["texte", "recette", "restaurant", "santé"].includes(
+                          post.type
+                        )) ||
+                      post.type === filter
+                  )
+                  .map((post: Post, index: number) => (
+                    <div
+                      key={post.id_post}
+                      data-grid={{
+                        x: index % 3,
+                        y: Math.floor(index / 3),
+                        w: 0.9,
+                        h: 1,
+                        static: true,
+                      }}
+                      className="post-profile" // Reprendre le css de post news mais adapter la taille
+                      onClick={() => openPost(post)}
+                    >
+                      <div className="post-border">
+                        <h2 className="post-title">{post.titre_post}</h2>
+                        <div className="post-info">
+                          <p className="post-type">{post.type}</p>
+                          <p
+                            className="post-user"
+                            onClick={(event) =>
+                              navigateToUserProfile(
+                                users.find(
+                                  (userC) => userC.id_user === post.id_user
+                                )?.username || "",
+                                event
+                              )
+                            }
+                          >
+                            @
+                            {
                               users.find(
                                 (userC) => userC.id_user === post.id_user
-                              )?.username || "",
-                              event
-                            )
-                          }
-                        >
-                          @
-                          {
-                            users.find(
-                              (userC) => userC.id_user === post.id_user
-                            )?.username
-                          }
-                        </p>
-                      </div>
-                      <div className="img-wrapper">
-                        <img
-                          onClick={() => {
-                            setSelectedPost(post);
-                            setIsModalOpen(true);
-                          }}
-                          className="img-test"
-                          src={
-                            post.blob
-                              ? URL.createObjectURL(post.blob)
-                              : handleNoPhoto(post.type)
-                          }
-                          alt="Logo"
-                        />
-                        <div
-                          className="likes-count"
-                          onClick={() => toggleLike(post.id_post)}
-                        >
-                          {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            color={userLikes[post.id_post] ? "red" : "black"}
-                          />
-                          {likesCount[post.id_post] || 0}
+                              )?.username
+                            }
+                          </p>
                         </div>
+                        <div className="img-wrapper">
+                          <img
+                            onClick={() => {
+                              setSelectedPost(post);
+                              setIsModalOpen(true);
+                            }}
+                            className="img-test"
+                            src={
+                              post.blob
+                                ? URL.createObjectURL(post.blob)
+                                : handleNoPhoto(post.type)
+                            }
+                            alt="Logo"
+                          />
+                          <div
+                            className="likes-count"
+                            onClick={() => toggleLike(post.id_post)}
+                          >
+                            {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
+                            <FontAwesomeIcon
+                              icon={faHeart}
+                              color={userLikes[post.id_post] ? "red" : "black"}
+                            />
+                            {likesCount[post.id_post] || 0}
+                          </div>
+                        </div>
+                        <p className="post-text">{post.text}</p>
+                        <p className="post-date">{post.date?.toString()} </p>
                       </div>
-                      <p className="post-text">{post.text}</p>
-                      <p className="post-date">{post.date?.toString()} </p>
                     </div>
-                  </div>
-                ))}
+                  ))}
             </ResponsiveGridLayout>
           </div>
         )}
-        
       </div>
       <Modal
         isOpen={abonneIsOpen}
@@ -924,13 +845,14 @@ export function Profile() {
           <div className="post-avec-com">
             <div className="post-com">
               <div className="post-com-margin">
-                {isUserForDelete && 
+                {isUserForDelete && (
                   <IconButton
                     aria-label="close"
                     onClick={() => deletePost(selectedPost)}
                   >
-                  <DeleteIcon />
-                  </IconButton>}
+                    <DeleteIcon />
+                  </IconButton>
+                )}
                 <h2 className="post-title">{selectedPost.titre_post}</h2>
                 <div className="post-info">
                   <p className="post-type">{selectedPost.type}</p>

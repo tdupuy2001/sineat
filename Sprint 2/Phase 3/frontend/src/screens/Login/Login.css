@@ -1,147 +1,147 @@
-.mainLog{
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    flex-direction: row;
+.mainLog {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: row;
 }
 
-.SignUp{
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    background-color: #F2EADF;
+.SignUp {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  background-color: #f2eadf;
 }
 
-.ContSignUp{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    gap: 1vh;
+.ContSignUp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 1vh;
 }
 
-.SignIn{
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
+.SignIn {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 }
 
-.Img-signup{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* this will ensure that the image doesn't exceed the boundaries of the div */
+.Img-signup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* this will ensure that the image doesn't exceed the boundaries of the div */
 }
 
 .Img-signup img {
-    width: 40%;
-    height: 50%;
-    margin: auto;
-    object-fit: cover; /* this property ensures that the entire image is shown within the div */
+  width: 40%;
+  height: 50%;
+  margin: auto;
+  object-fit: cover; /* this property ensures that the entire image is shown within the div */
 }
 
 .Texts {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-   }
-   
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: bold;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .Texts span {
-    width: 70%;
-    word-wrap: break-word;
-    text-align: center;
-   }
-
-.btn-signup{
-    height: 175%;
-    width: 30vw;
-    border-radius: 20px ;
-    background-color:  #602A0F; 
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
+  width: 70%;
+  word-wrap: break-word;
+  text-align: center;
 }
 
-.btn-signup:hover{
-    height: 175%;
-    width: 30vw;
-    border-radius: 20px ;
-    border: #602A0F solid 1px;
-    background-color:  white; 
-    color: black;
-    font-size: 20px;
-    cursor: pointer;
+.btn-signup {
+  height: 175%;
+  width: 30vw;
+  border-radius: 20px;
+  background-color: #602a0f;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.Btn-signup{
-    height: 175%;
-    width: 30vw;
-    border-radius: 20px ;
-    margin-bottom: 40px;
+.btn-signup:hover {
+  height: 175%;
+  width: 30vw;
+  border-radius: 20px;
+  border: #602a0f solid 1px;
+  background-color: white;
+  color: black;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.cont-signIn{
-    height: 80%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    width: 70%;
-    border: #602A0F solid 1px;
-    margin: auto;
-    border-radius: 17px;
-    gap: 1rem;
+.Btn-signup {
+  height: 175%;
+  width: 30vw;
+  border-radius: 20px;
+  margin-bottom: 40px;
+}
+
+.cont-signIn {
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 70%;
+  border: #602a0f solid 1px;
+  margin: auto;
+  border-radius: 17px;
+  gap: 1rem;
 }
 
 .Img-signin {
-    width: 45%;
-    height: 15%;
-    margin: auto;
-    object-fit: cover; /* this property ensures that the entire image is shown within the div */
+  width: 45%;
+  height: 15%;
+  margin: auto;
+  object-fit: cover; /* this property ensures that the entire image is shown within the div */
 }
 
-.btn-signin{
-    height: 20%;
-    width: 80%;
-    border-radius: 20px ;
-    background-color:  #602A0F; 
-    color: white;
-    font-size: 25px;
-    cursor: pointer;
+.btn-signin {
+  height: 20%;
+  width: 80%;
+  border-radius: 20px;
+  background-color: #602a0f;
+  color: white;
+  font-size: 25px;
+  cursor: pointer;
 }
 
-.btn-signin:hover{
-    height: 20%;
-    width: 80%;
-    border-radius: 20px ;
-    border: #602A0F solid 1px;
-    background-color:  white; 
-    color: black;
-    font-size: 25px;
-    cursor: pointer;
+.btn-signin:hover {
+  height: 20%;
+  width: 80%;
+  border-radius: 20px;
+  border: #602a0f solid 1px;
+  background-color: white;
+  color: black;
+  font-size: 25px;
+  cursor: pointer;
 }
 
-.privacy{
-    font-size: 11px;
-    margin-bottom: 40px;
+.privacy {
+  font-size: 11px;
+  margin-bottom: 40px;
 }
 
-.last-signin{
-    display: flex;
-    justify-content: space-between;
-    width: 50%;
-    font-size: 12px;
-    margin-bottom: 20px;
+.last-signin {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  font-size: 12px;
+  margin-bottom: 20px;
 }
 
-.title-signin{
-    font-size: 20px;
-    margin-bottom: 5%;
+.title-signin {
+  font-size: 20px;
+  margin-bottom: 5%;
 }

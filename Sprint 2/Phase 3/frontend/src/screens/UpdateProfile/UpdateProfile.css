@@ -56,26 +56,26 @@
   cursor: pointer;
 }
 
-.file-selection{
+.file-selection {
   height: 40px;
   width: 80%;
   border-radius: 20px;
   margin-top: "10px";
-  display: "block" ;
+  display: "block";
   cursor: pointer;
-  color: #4CAF50;
+  color: #4caf50;
   text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    transition-duration: 0.4s;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
 }
 
 /* { */
-    /* padding: 6px 12px;
+/* padding: 6px 12px;
     cursor: pointer; */
-    /* background-color: #4CAF50; Change this to your preferred color */
-    /* border: none;
+/* background-color: #4CAF50; Change this to your preferred color */
+/* border: none;
     border-radius: 4px;
     color: white;
     text-align: center;
@@ -84,9 +84,9 @@
     font-size: 16px;
     transition-duration: 0.4s;
     cursor: pointer; */
-   /* } */
-   
-   .custom-file-upload:hover {
-    background-color: #45a049;
-    color: white;
-   }
+/* } */
+
+.custom-file-upload:hover {
+  background-color: #45a049;
+  color: white;
+}
