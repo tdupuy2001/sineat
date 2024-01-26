@@ -103,6 +103,7 @@ nav {
     height: 40px;
     border-radius: 50%;
     margin-right: 10px; /* Ajoutez une marge entre l'image de profil et le lien du profil */
+    object-fit: cover;
   }
 
   .profile {

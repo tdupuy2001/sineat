@@ -152,7 +152,7 @@ fetch('http://localhost:9456/regimes-etablissements')
           >
             Informations
           </button>
-          <button
+          {/* <button
             className={activeTab === 'tab2' ? 'active' : ''}
             onClick={() => handleTabChange('tab2')}
           >
@@ -163,7 +163,7 @@ fetch('http://localhost:9456/regimes-etablissements')
             onClick={() => handleTabChange('tab3')}
           >
             Votre avis
-          </button>
+          </button> */}
         </div>
 
         {activeTab === 'tab1' && (

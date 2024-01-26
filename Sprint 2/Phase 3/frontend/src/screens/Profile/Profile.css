@@ -1,14 +1,20 @@
 /* Profile.css */
 .profile-container {
-  padding: 50px;
+  min-height: 100vh;
+  /* padding: 50px; */
   text-align: center;
-  background-color: #c5a485;
+  background-color: #f2eadf;
   padding-top: 110px; /* Ajoutez une valeur équivalente à la hauteur de la barre de navigation */
 }
 .profile-header {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.profile-plus-collection {
+  background-color: #c5a485;
+  padding: 30px;
 }
 
 .settings {
@@ -38,6 +44,7 @@
   height: 100px;
   border-radius: 50%;
   margin-right: 20px;
+  margin-left: 20px;
   object-fit: cover;
 }
 
@@ -52,13 +59,14 @@
 .subscribers {
   display: flex;
   flex-direction: line;
-  gap: 10px
+  gap: 10px;
 }
 
 .collections-section {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
+  margin-left: 20px;
 }
 
 .collection {
@@ -104,48 +112,81 @@
 }
 
 .ReactModal__Content {
-  position:relative;
-  width: 30%; 
-  height: 40%; 
-  margin: auto; 
-  border-radius: 10px; 
-  overflow: hidden; 
- }
+  width: 30%;
+  height: 40%;
+  margin: auto;
+  z-index: 1000;
+}
 
-
- .title_sticky {
+.title_sticky {
   position: sticky;
   top: 0;
-  z-index: 1; 
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
- }
+}
 
- .username_link {
+.username_link {
   text-decoration: none;
   color: black;
- }
+  display: flex;
+  align-items: center;
+}
 
- #list_username{
+.username_img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+#list_username {
   list-style-type: none;
+  margin-bottom: 10px;
 }
 
 .close-button {
   font-size: medium;
   position: absolute;
-  top: 0px; 
-  left: 0px; 
-  border: none; 
-  background: none; 
-  cursor: pointer; 
+  top: 0px;
+  left: 0px;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
-#button_sub{
+#button_sub {
   font-size: 1em;
   background: none;
-  border:none;
-  cursor: pointer; 
+  border: none;
+  cursor: pointer;
 }
- 
+
+.post-profile {
+  border: none !important;
+}
+
+.post-title{
+  font-size: 24px;
+  margin-bottom: 2%;
+  color: #602a0f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.load-profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* position: absolute; */
+  top: 50% !important;
+  right: 0 !important;
+  width: 100%;
+  height: 100hv;
+}

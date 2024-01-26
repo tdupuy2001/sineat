@@ -15,7 +15,6 @@ import os
 from io import BytesIO
 from PIL import Image
 import re
-# import cStringIO
 
 logging.basicConfig(
     filename='app.log',  # Nom du fichier de logs
@@ -43,6 +42,9 @@ Création des classes pouvant être utilisés avec FastApi
 """
 from pydantic import BaseModel
 
+
+class PostIdsRequest(BaseModel):
+    ids_posts: list[int]
 class UserSchema(BaseModel):
     """
     Les attributs obligatoires
@@ -59,18 +61,20 @@ class PostSchema(BaseModel):
     """
     Les attributs obligatoires
     """
-    id_post: Optional[int] = None
     id_user: int
-    date: str
     type: str
     afficher: bool
-    titre_post: str
     """
     Les attributs facultatifs
     """
-    text: str = ""
-    id_note: int = None
-    id_post_comm: int = None
+    date: Optional[str] = None
+    titre_post: Optional[str] = None
+    id_post: Optional[int] = None
+    text: Optional[str] = None
+    id_note: Optional[int] = None
+    id_post_comm: Optional[int] = None
+    picbin: Optional[str] = None
+    picform: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -109,7 +113,7 @@ class Place(BaseModel):
 Api pour user
 """
 
-from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime,RegimeEtablissement, EtablissementDeType, TypeEtablissement, RegimeEtablissement, Regime
+from .db_mapping import User, Collection, PossedeRole, Post, Abonnement, LikedPost,Etablissement,Note,NoteConcerne,TypeNote,Regime, EtablissementDeType, TypeEtablissement, RegimeEtablissement,PhotoPost
 
 def find_user(username:str, session:Session):
     order = select(User).where(User.username == username)
@@ -147,12 +151,27 @@ def get_user(username: str):
             if user.ppbin:
                 image_data2 = base64.b64encode(user.ppbin)
                 image_data = image_data2.decode('utf-8')
-                image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                image.save(os.path.join('../frontend/src/screens/Profile/assets', 'profile.png'))
             else:
                 image_data = None
             user.ppbin = image_data
-        return user
+            
+            main_post_ids = find_main_posts_by_user(user.id_user)
+            # main_post_ids = [1,2]
+            
+            
+            return {
+                    "user": user,
+                    "main_post_ids": main_post_ids
+                }
+        else:
+            return {"user":user}
+    
+def find_main_posts_by_user(user_id: int):
+    with Session(db.engine) as session:
+        main_posts = session.query(Post).filter(
+            Post.id_user == user_id
+        ).all()
+        return [post.id_post for post in main_posts]
 
 
 
@@ -224,8 +243,6 @@ def log_user(user : UserSchema):
             if found_user.ppbin:
                 image_data2 = base64.b64encode(found_user.ppbin)
                 image_data = image_data2.decode('utf-8')
-                image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
             else:
                 image_data = None
             found_user.ppbin = image_data
@@ -239,14 +256,12 @@ def update_user(user : UserUpdate):
         if found_user == None:
             error = True
         else:
-            #TODO checker si les champs obligatoires ne sont pas vide
+            #TODO: checker si les champs obligatoires ne sont pas vide
             other_username = find_user(user.username,session)
             if other_username == None or user.username == user.old_username:
                 if user.ppbin:
                     image_data2 = re.sub('^data:image/.+;base64,', '', user.ppbin)
                     image_data = base64.b64decode(image_data2)
-                    image = Image.open(BytesIO(base64.b64decode(image_data2)))
-                    image.save(os.path.join('../frontend/src/screens/Login/assets', 'user.png'))
                 else:
                     image_data = None
                 order = update(User).where(User.username == user.old_username).values(
@@ -294,39 +309,104 @@ def find_post(id_post: int, session:Session):
 @app.get("/posts")
 def get_posts():
     with Session(db.engine) as session:
+        posts_dict=[]
         posts = session.query(Post).all()
-        return posts
+        for post in posts:
+            post_dict=post.__dict__
+            if post.id_photo:
+                query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+                picbin=session.execute(query).scalar()
+                picbin = base64.b64encode(picbin).decode('utf-8')
+                post_dict['picbin']=picbin
+            posts_dict.append(post_dict)
+        return posts_dict
+            
 
 
-@app.get("/posts/{id_post}")
-def get_post(id_post: int):
+# @app.get("/posts/{id_post}")
+# def get_post(id_post: int):
+#     error = False
+#     with Session(db.engine) as session:
+#         post = find_post(id_post=id_post, session=session)
+#         post_dict=post.__dict__
+#         if post == None:
+#             error = True
+#         if error:
+#             return {'message': 'Post not found'}
+#         else:
+#             if post.id_photo:
+#                 query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+#                 result=session.execute(query)
+#                 picbin=result.scalar()
+#                 picbin = base64.b64encode(picbin).decode('utf-8')
+#                 post_dict['picbin']=picbin
+#             return post_dict
+
+@app.post("/postsById")
+def get_post(list_ids_post: PostIdsRequest):
     error = False
+    posts = []
+
     with Session(db.engine) as session:
-        post = find_post(id_post=id_post, session=session)
-        if post == None:
-            error = True
-        if error:
-            return {'message': 'Post not found'}
-        else:
-            return post
+        for id_post in list_ids_post.ids_posts:
+            post = find_post(id_post=id_post, session=session)
+            if post is None:
+                error = True
+                break  # If one post is not found, break out of the loop
+            post_dict = post.__dict__
+            if post.id_photo:
+                query = select(PhotoPost.picbin).where(
+                    PhotoPost.id_photo == post.id_photo)
+                result = session.execute(query)
+                picbin = result.scalar()
+                picbin = base64.b64encode(picbin).decode('utf-8')
+                post_dict['picbin'] = picbin
+            posts.append(post_dict)
+
+    if error:
+        return {'message': 'One or more posts not found'}
+    return posts
 
 
 @app.post("/posts")
 def add_post(post: PostSchema):
     with Session(db.engine) as session:
-        new_post = Post(
-            text = post.text,
-            id_user = post.id_user,
-            date = post.date,
-            type = post.type,
-            afficher = post.afficher,
-            titre_post = post.titre_post,
-            id_note = post.id_note,
-            id_post_comm = post.id_post_comm,
-        )
-        session.add(new_post)
-        session.commit()
-        session.refresh(new_post)
+        if post.picbin:
+            image_data = base64.b64decode(post.picbin)
+            new_photo_post=PhotoPost(
+                picbin=image_data,
+                picform=post.picform,  
+            )
+            session.add(new_photo_post)
+            session.commit()
+            session.refresh(new_photo_post)
+            id_photo=new_photo_post.id_photo
+            new_post = Post(
+                text = post.text,
+                id_user = post.id_user,
+                afficher=post.afficher,
+                type = post.type,
+                titre_post = post.titre_post,
+                id_note = post.id_note,
+                id_post_comm = post.id_post_comm,
+                id_photo = id_photo,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
+        else:
+            new_post = Post(
+                text = post.text,
+                id_user = post.id_user,
+                afficher=post.afficher,
+                type = post.type,
+                titre_post = post.titre_post,
+                id_note = post.id_note,
+                id_post_comm = post.id_post_comm,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
         return new_post
 
 
@@ -367,7 +447,28 @@ def get_post_comments(id_post: int):
         comments = session.query(Post).where(Post.id_post_comm==id_post).all()
         return comments
 
-#api pour récupérer le user d'un post, changer pour avec find_user_by_id
+@app.post("/posts/comment")
+def compare_and_add_comment(post1: PostSchema, post2: PostSchema):
+    with Session(db.engine) as session:
+        if post2.date>post1.date:
+            new_post = Post(
+            text = post2.text,
+            id_user = post2.id_user,
+            type = post2.type,
+            afficher = post2.afficher,
+            titre_post = post2.titre_post,
+            id_note = post2.id_note,
+            id_post_comm = post2.id_post_comm,
+            )
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
+            return new_post
+        else:
+            return {'message':'Wrong date'}
+
+
+#api pour récupérer le user d'un post
 @app.get("/posts/{id_post}/user")
 def get_user_from_post(id_post: int):
     with Session(db.engine) as session:
@@ -380,6 +481,38 @@ def get_user_from_post(id_post: int):
                 return ['error: User not found']
         else:
             return ["error : Post not found"]
+        
+#test pour pagination
+@app.get("/page")
+def get_posts_per_page(page: int, limit: int, sortOrder: str, type: Optional[str] = None):
+    with Session(db.engine) as session:
+        query = session.query(Post)
+        if type:
+            query = query.filter(Post.type == type,Post.id_post_comm.is_(None)).order_by(Post.date.desc())
+        else:
+            if sortOrder == "asc":
+                query = query.order_by(Post.date.asc()).filter(Post.id_post_comm.is_(None))
+            else:
+                query = query.order_by(Post.date.desc()).filter(Post.id_post_comm.is_(None))
+        total_posts = query.count()
+        start = (page-1)*limit
+        end = start + limit
+        posts = query[start:end]
+        posts_dict=[]
+        for post in posts:
+            post_dict=post.__dict__
+            if post.id_photo:
+                query=select(PhotoPost.picbin).where(PhotoPost.id_photo==post.id_photo)
+                picbin=session.execute(query).scalar()
+                picbin = base64.b64encode(picbin).decode('utf-8')
+                post_dict['picbin']=picbin
+            posts_dict.append(post_dict)
+
+        return {"posts":posts_dict, "total_posts": total_posts}
+        
+
+        
+
         
 
 """
@@ -510,6 +643,12 @@ def delete_like(id_post: int, id_user: int):
             session.commit()
         else: 
             raise HTTPException(404, "Like not found")
+        
+"""
+Api pour les établissements
+"""
+
+        
 @app.get("/etablissements/by_regime")
 def get_etablissements_by_regime(regime_id: int):
     with Session(db.engine) as session:
@@ -832,14 +971,17 @@ def get_etablissements_by_regime_and_type(regime_name: str = None, type_name: st
 
 
 
-if __name__ == "__main__":
-    print(add_user(
-        UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
-        email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
-    ))
-    print(get_user("michel33"))
-    # prenom: str = ""
-    # genre: str = ""
-    # adresse: str = ""
-    # description: str = ""
+
+
+
+# if __name__ == "__main__":
+#     print(add_user(
+#         UserSchema(username = "michel33", role = "",date_de_naissance = "2001-04-02",
+#         email = "ghfdjx", password = "hgfjd", langue = "fr", nom = "Michel")
+#     ))
+#     print(get_user("michel33"))
+#     # prenom: str = ""
+#     # genre: str = ""
+#     # adresse: str = ""
+#     # description: str = ""
  

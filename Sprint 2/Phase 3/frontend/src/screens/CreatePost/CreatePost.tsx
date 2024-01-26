@@ -1,35 +1,34 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
-import { MenuItem, Select, TextField } from '@mui/material';
+import {TextField,MenuItem, Alert } from '@mui/material';
 import './CreatePost.css'
 import { useNavigate } from 'react-router-dom';
 import { PostService } from '../../services/PostService';
 import { config } from '../../config';
 import { MyBlogContext } from '../../MyBlogContext';
 import { Post } from '../../dto/Post';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { readAndCompressImage } from "browser-image-resizer";
+import { PostAdd } from '../../dto/PostAdd';
 
-import Img2 from './assets/contact1.jpg';
-import Img3 from './assets/contact2.jpg';
-import Img4 from './assets/contact3.jpg';
-import Img5 from './assets/contact4.jpg';
-import Img6 from './assets/contact5.jpg';
 
 
 export function CreatePost() {
 
     const navigate = useNavigate();
-    const [postTitle, setPostTitle] = useState('');
-    const [postType, setPostType] = useState('');
+    const [postTitle, setPostTitle] = useState<string>();
+    const [postType, setPostType] = useState<string>();
     const [postDesc, setPostDesc] = useState('');
+    const [errorMessage, setErrorMessage] = useState<string>();
     const {user} = useContext(MyBlogContext)
     const [ingredients, setIngredients] = useState('');
     const [preparationTime, setPreparationTime] = useState('');
 
     const [activeTab, setActiveTab] = useState('tab1');
 
-    const handleTabChange = (tab: React.SetStateAction<string>) => {
+    const [selectedFile, setSelectedFile] = useState<File>();
+    const [previewUrl, setPreviewUrl] = useState<string>();
+
+    const handleTabChange = (tab: string) => {
         setActiveTab(tab);
       };
     
@@ -39,131 +38,93 @@ export function CreatePost() {
     };
 
     const handleNewPost = async () => {
+      if (user && user.id_user) {
+      if (!postType) {
+        setErrorMessage("Veuillez remplir tous les champs obligatoires.");
+      } else {
         if (user) {
             const postService = new PostService(config.API_URL);
-            const newPost: Post = {
+            if (selectedFile){
+              let binaryData;
+              let extension;
+              const reader = new FileReader();
+              reader.readAsDataURL(selectedFile);
+              reader.onload = () => {
+              binaryData = reader.result;
+              if (binaryData && typeof binaryData === "string") {
+                binaryData = binaryData.replace(
+                  /^data:image\/[a-z]+;base64,/,
+                  ""
+                );
+              }
+              extension = selectedFile.name.split(".").pop();
+
+              const newPost: PostAdd = {
                 id_user: user.id_user,
-                date: new Date(),
                 type: postType,
-                afficher: true,
                 text: postDesc,
+                afficher:true,
                 titre_post: postTitle,
-            }
-            postService.addPost(newPost);
-            navigate('/profile/'+user.username)
+                picbin: typeof binaryData === "string" ? binaryData : undefined,
+                picform: extension,
+              }
+              postService.addPost(newPost);
+              navigate('/profile/'+user.username)
+            };
+
+            reader.onerror = function (error) {
+              console.log("Error: ", error);
+            };
+            } else {
+              const newPost: PostAdd = {
+                id_user: user.id_user,
+                type: postType,
+                text: postDesc,
+                afficher:true,
+                titre_post: postTitle,
+              }
+              postService.addPost(newPost);
+              navigate('/profile/'+user.username)
+            }     
         }
+      }
     }
+  }
 
+
+
+    const handlePhoto = async (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      if (event.target.files && event.target.files.length > 0) {
+        const file = event.target.files[0];
+        const config = {
+          maxWidth: 800,
+          maxHeight: 800,
+          autoRotate: true,
+          debug: true,
+        };
+        try {
+          const compressedFile = await readAndCompressImage(file, config);
+          const newFile = new File([compressedFile], file.name, {
+            type: compressedFile.type,
+          });
+          setSelectedFile(newFile);
+          setPreviewUrl(URL.createObjectURL(newFile));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+  
     return (
-        // <div>
-        //     <Navbar/>
-        //     <div className='centered-content'>
-        //         <div className='bordered-content'>
-        //             <h1 className='title'>Créer une publication</h1>
-        //             <div className='buttons-sous-titre'>
-        //                 <div className="button-wrapper">
-        //                     <div className='button-underline'></div>
-        //                     <button className='button-filtres'>Informations</button>
-        //                 </div>
-        //                 <div className="button-wrapper">
-        //                     <div className='button-underline'></div>
-        //                     <button className='button-filtres'>Vos photos</button>
-        //                 </div>
-        //             </div>
-        //             <div className='textfield-wrapper'>
-        //                 <TextField required className='create-post-type' sx={{ m: 1, width: '100%' }} id='outlined-basic' label="Type de la publication" variant='outlined' select defaultValue="texte" onChange={e => setPostType(e.target.value)}>
-        //                     <MenuItem value={"texte"}>Post</MenuItem>
-        //                     <MenuItem value={"recette"}>Recette</MenuItem>
-        //                     <MenuItem value={"restaurant"}>Restaurant</MenuItem>
-        //                     <MenuItem value={"santé"}>Santé</MenuItem>
-        //                 </TextField>
-
-
-        //                 <TextField required className='create-post-titre' sx={{ m: 1, width: '100%' }} id="outlined-basic" label="Nom de la publication" variant='outlined' onChange={e => setPostTitle(e.target.value)}/>
-        //                 <TextField required className='create-post-desc' sx={{ m: 1, width: '100%' }} id="outlined-multiline-static" label="Description " variant='outlined' multiline rows={4} onChange={e => setPostDesc(e.target.value)}/>
-        //                 {/* selon le type, il faut mettre ingrédiants, temps de préparation etc... */}
-        //                 {postType === "recette" && (
-        //                     <div>
-        //                         <TextField
-        //                             required
-        //                             className='create-post-ingredients'
-        //                             sx={{ m: 1, width: '100%' }}
-        //                             id="outlined-basic"
-        //                             label="Ingrédients"
-        //                             variant='outlined'
-        //                             onChange={(event) => setIngredients(event.target.value)}
-        //                         />
-        //                         <TextField
-        //                             required
-        //                             className='create-post-time'
-        //                             sx={{ m: 1, width: '100%' }}
-        //                             id="outlined-basic"
-        //                             label="Temps de préparation"
-        //                             variant='outlined'
-        //                             onChange={(event) => setPreparationTime(event.target.value)}
-        //                         /> 
-        //                     </div>
-        //                 )}
-        //             </div>
-        //             <div className='buttons-create'>
-        //                 <button className='button-ajouter' onClick={handleNewPost}> + Créer la publication</button>
-        //                 <button className='button-retour' onClick={handleAnnuler}>
-        //                     <FontAwesomeIcon icon={faTimes} size="sm"/>
-        //                 </button>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
-        <div className='cont-main'>
+      <div className="add_post_main">
         <Navbar />
-        <div className='content-AddPlace'>
-          <div className='image-row'>
-            <div className='Img-Contact'>
-              <img src={Img4} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img3} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img2} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img5} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img6} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-          </div>
-          <div className='image-row'>
-            <div className='Img-Contact'>
-              <img src={Img3} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img5} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img4} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img6} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-            <div className='Img-Contact'>
-              <img src={Img5} alt="Img-cont" />
-              <div className='Img-Overlay'></div>
-            </div>
-          </div>
-          <form className="addPlaceForm" onSubmit={handleNewPost}>
-            <h2 className="addPlaceTitle">Créer une publication</h2>
-            <div className='tabs'>
+        <div>
+          <h2 className="addPostTitle">Créer une publication</h2>
+        </div>
+        <div className='content-AddPost'>
+          <div className='tabsPost'>
             <button
               className={activeTab === 'tab1' ? 'active' : ''}
               onClick={() => handleTabChange('tab1')}
@@ -176,85 +137,73 @@ export function CreatePost() {
             >
               Vos photos
             </button>
-            <button
-              className={activeTab === 'tab3' ? 'active' : ''}
-              onClick={() => handleTabChange('tab3')}
-            >
-              Votre avis
-            </button>
           </div>
-  
           {activeTab === 'tab1' && (
-            <div>
-                <label>
-                    <div className={`form ${postType === '' ? 'defaultValueStyle' : ''}`}>
-                        Type de l'établissement:
-                        <select
-                        className="customSelect" 
-                        name="type"
-                        value={postType}
-                        onChange={e => setPostType(e.target.value)} >
-                        <option value="None">Choisir une valeur</option>
-                        <option value="texte">Post</option>
-                        <option value="recette">Recette</option>
-                        <option value="restaurant">Restaurant</option>
-                        <option value="santé">Santé</option>
-                        </select>
-                    </div>
-                </label>
-                <label>
-                    <div className={`form ${postTitle === '' ? 'defaultValueStyle' : ''}`}>
-                        Nom de la publication:
-                        <input
-                        className="inputField"
-                        type="text"
-                        name="title"
-                        value={postTitle}
-                        onChange={e => setPostTitle(e.target.value)}
-                        placeholder="Nom de la publication"
-                        />
-                    </div>
-                </label>
-                <label>
-                    <div className={`form ${postDesc === '' ? 'defaultValueStyle' : ''}`}>
-                        Description:
-                        <input
-                        className="inputField"
-                        type="text"
-                        name="description"
-                        value={postDesc}
-                        onChange={e => setPostDesc(e.target.value)}
-                        placeholder="Description"
-                        />
-                    </div>
-                </label>
-            </div>
+          <div className="formPost">
+            <TextField
+              select
+              label="Type de publication"
+              value={postType}
+              onChange={e => setPostType(e.target.value)}
+              variant="outlined"
+              fullWidth
+              required
+            >
+              <MenuItem key="texte" value="texte">Texte</MenuItem>
+              <MenuItem key="recette" value="recette">Recette</MenuItem>
+              <MenuItem key="restaurant" value="restaurant">Restaurant</MenuItem>
+              <MenuItem key="santé" value="santé">Santé</MenuItem>
+            </TextField>
+
+            <TextField
+              label="Nom de la publication"
+              value={postTitle}
+              onChange={e => setPostTitle(e.target.value)}
+              placeholder="Nom de la publication"
+              variant="outlined"
+              fullWidth
+            />
+
+            <TextField
+              label="Description"
+              value={postDesc}
+              onChange={e => setPostDesc(e.target.value)}
+              placeholder="Description"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+            />
+          </div>
           )}
   
           {activeTab === 'tab2' && (
-            <div className='onglet'>
-              {/* Contenu de l'onglet 2 ici */}
-            </div>
+          <div className='filePost'>
+            <TextField
+              type="file"
+              inputProps={{
+                accept: "image/jpeg, image/jpg, image/png"
+              }}
+              onChange={handlePhoto}
+              className="file-selection"
+            />
+            {previewUrl ? (
+              <img src={previewUrl} alt="Preview" className="img-preview-post" />
+            ) : ''}
+          </div>
           )}
-  
-          {activeTab === 'tab3' && (
-              <label>
-                  <div className="form">
-                    Ton avis:
-                    <input
-                      className="inputField"
-                      type="text"
-                      name="address"
-                      value={postTitle}
-                      onChange={e => setPostTitle(e.target.value)}
-                    />
-                  </div>
-                </label>
-          )}
-                <button type="submit" className="submitButton">
-                <i className="fas fa-plus"></i>   +   Créer la publication
-                </button>
-          </form>
+        </div>
+        <div className='fixed-container'>
+              <div className='alert_post'>
+                  {errorMessage && (<Alert severity="error">
+                      {errorMessage}
+                  </Alert>)}
+              </div>
+              <div className="SubmitButton">
+                  <button onClick={handleNewPost} className='submitButton'>
+                      +   Créer la publication
+                  </button>
+              </div>
         </div>
       </div>    
   );

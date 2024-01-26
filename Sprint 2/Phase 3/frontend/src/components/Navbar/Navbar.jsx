@@ -1,83 +1,81 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import './Navbar.css';
-import logo from './logo_sineat.png';
-import img from '../../screens/Login/assets/user.png'
-import { MyBlogContext } from '../../MyBlogContext';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Description } from '@mui/icons-material';
+import React, { useState, useContext, useEffect } from "react";
+import { NavLink } from "react-router-dom";
+import "./Navbar.css";
+import logo from "./logo_sineat.png";
+// import img from '../../screens/Login/assets/user.png'
+import { MyBlogContext } from "../../MyBlogContext";
 
 export default function Navbar() {
-  const { user } = useContext(MyBlogContext);
+  const context = useContext(MyBlogContext);
+  
   const [username, setUsername] = useState(sessionStorage?.getItem("username"));
-  const [nom, setNom] = useState(sessionStorage?.getItem("nom"));
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
-
-  const handleList = () => {
-    setOpen(!open);
-  };
-
-  const handleLogout = () => {
-    setUsername("null");
-    setIsLoggedIn(false);
-    setOpen(false);
-    sessionStorage.removeItem("username");
-  };
+  const [blobPhotoProfil, setBlobPhotoProfil] =useState(); //bizarrement lui ne peut pas être typé alors que celui de profil si
+  
 
   useEffect(() => {
-    if (user) {
-      setUsername(user?.username);
+    if (context.user) {
+      setUsername(context.user.username);
       setIsLoggedIn(true);
-      // Extract the profile image binary and format from user object
-      // if (user.ppbin) {
-      //   const base64Image = ;
-      //   setProfileImage(base64Image);
-      // }
-    }
-  }, [user]);
+      const pp = context.user.ppbin
+      let propic = "data:image/png;base64," + pp
+      if (propic) {
+        let byteCharacters = atob(propic.split(",")[1]);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        setBlobPhotoProfil(new Blob([byteArray], { type: "image/png" })); // Mettre à jour l'état ici
+      }
+    };
 
-  const navigate = useNavigate();
+    }, [context.user]);
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
 
   return (
-    <nav className='fixed-navbar'>
+    <nav className="fixed-navbar">
       <div className="logo">
-        <NavLink to="/" exact>
+        <NavLink to="/">
           <img src={logo} alt="Logo" />
         </NavLink>
       </div>
 
       <ul className="nav-links">
-        <li><NavLink className="item" activeClassName="current" to="/" exact>Accueil</NavLink></li>
-        <li><NavLink className="item" activeClassName="current" to="/map">La carte collaborative</NavLink></li>
-        <li><NavLink className="item" activeClassName="current" to="/news">Fil d'actualité</NavLink></li>
-        <li><NavLink className="item" activeClassName="current" to="/about">Qui sommes-nous ?</NavLink></li>
-        <li><NavLink className="item" activeClassName="current" to="/contact">Contact</NavLink></li>
+        <li>
+          <NavLink className="item" activeclassname="current" to="/">
+            Accueil
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="item" activeclassname="current" to="/map">
+            La carte collaborative
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="item" activeclassname="current" to="/news">
+            Fil d'actualité
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="item" activeclassname="current" to="/about">
+            Qui sommes-nous ?
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="item" activeclassname="current" to="/contact">
+            Contact
+          </NavLink>
+        </li>
       </ul>
 
       <div className="login-button">
         {isLoggedIn ? (
           <div className="user-info">
-            {<img src={img} alt="Profile" />}
-            <NavLink to={`/profile/${username}`} className="profile-link">{username}</NavLink>
-            <p className="profile">{nom}</p>
-            
+            {<img src={blobPhotoProfil ? URL.createObjectURL(blobPhotoProfil) : ""} alt="Profile" />}
+            <NavLink to={`/profile/${username}`} className="profile-link">
+              {username}
+            </NavLink>
           </div>
         ) : (
           <NavLink to="/login">

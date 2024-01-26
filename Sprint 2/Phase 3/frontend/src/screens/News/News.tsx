@@ -8,10 +8,13 @@ import { config } from "../../config";
 import { PostService } from '../../services/PostService';
 import { Post } from '../../dto/Post';
 import { Responsive, WidthProvider } from 'react-grid-layout';
-import logo from './assets/logo_sineat.png';
+import recette from './assets/recette.png';
+import texte from './assets/texte.png';
+import restaurant from './assets/restaurant.png';
+import sante from './assets/sante.png';
 import Modal from '../../components/Modal/Modal';
 import { User } from '../../dto/User';
-import { TextField } from '@mui/material';
+import { Alert, AlertColor, TextField } from '@mui/material';
 import nuage from './assets/nuage_rose.png';
 import { LikeService } from '../../services/LikeService';
 import { Like } from '../../dto/Like';
@@ -20,6 +23,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { error } from 'console';
 import { UserInfo } from '../../dto/UserInfo';
+import { PostAdd } from '../../dto/PostAdd';
+import Pagination from "react-js-pagination";
 
 
 export function News() {
@@ -34,60 +39,74 @@ export function News() {
     const [likesCount, setLikesCount] = useState<Record<number, number>>({});
     const {user} = useContext(MyBlogContext)
     const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
-    // const [newComment, setNewComment] = useState<Partial<Post>>({});
     const [commentTitle, setCommentTitle] = useState<string>();
     const [commentType, setCommentType] = useState<string>();
     const [commentText, setCommentText] = useState<string>();
     const navigate = useNavigate();
     const [userLikes, setUserLikes] = useState<Record<number, boolean>>({});
     const [postHistory, setPostHistory] = useState<number[]>([]);
+    const [commentAlertMessage, setCommentAlertMessage] = useState('');
+    const [commentAlertSeverity, setCommentAlertSeverity] = useState<AlertColor>('info');
+    const [sortOrder, setSortOrder] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(12); 
+    const [totalItemsCount, setTotalItemsCount] = useState(0);
 
     const sortOldestToNewest = () => {
-      const sortedPosts = [...posts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      setPosts(sortedPosts);
+      setFilter(null)
+      setSortOrder("asc");
+      handlePageChange(1);
+
     };
   
     const sortNewestToOldest = () => {
-      const sortedPosts = [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      setPosts(sortedPosts);
+      setFilter(null)
+      setSortOrder("desc");
+      handlePageChange(1);
     };
+
+ 
   
     const filterPosts = () => {
-      setFilter("texte");
+      setFilter("texte")
+      setSortOrder("");
+      handlePageChange(1);
+      
     };
   
     const filterRecipes = () => {
-      setFilter("recette");
+      setFilter("recette")
+      setSortOrder("");
+      handlePageChange(1);
     };
   
     const filterRestaurant = () => {
-      setFilter("restaurant");
+      setFilter("restaurant")
+      setSortOrder("");
+      handlePageChange(1);
     };
 
     const filterSante = () => {
       setFilter("santé")
+      setSortOrder("");
+      handlePageChange(1);
     }
 
     const toggleLike = async (id_post: number) => {
       const likeService = new LikeService(config.API_URL)
-      if (user) {
+      if (user && user.id_user) {
         const likesForPost = await likeService.getPostLikes(id_post);
         const existingLike = likesForPost.data.find(like => like.id_user === user.id_user);
         
         if (existingLike) {
           await likeService.deleteLike(id_post, user.id_user);
           setUserLikes(prevState => ({...prevState, [id_post]:false}));
-          // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post]-1}));
         } else {
           const newLike: Like = { id_post: id_post, id_user: user.id_user};
           await likeService.addLike(newLike);
           setUserLikes(prevState => ({...prevState, [id_post]: true}))
-          // setLikesCount(prevState => ({...prevState, [id_post]: prevState[id_post] + 1}));
         }
-        // const updatedLikesCount = { ...likesCount, [id_post]: likesCount[id_post] + (existingLike ? -1 : 1) };
-        // setLikesCount(updatedLikesCount);
-        // const updatedLikesForPost = await likeService.getPostLikes(id_post);
-        // setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
         const updatedLikesForPost = await likeService.getPostLikes(id_post);
         setLikesCount(prevState => ({...prevState, [id_post]: updatedLikesForPost.data.length}));
 
@@ -97,22 +116,33 @@ export function News() {
     };
   
     const handleSubmitComment = async () => {
-      if (!commentText || !commentTitle || !commentType) {
-        // mettre les messages d'erreur avec alertes à rajouter
+      if (!commentText || !commentTitle) {
+        setCommentAlertMessage('Veuillez remplir tous les champs pour ajouter un commentaire.');
+        setCommentAlertSeverity('error');
       } else {
-        if (user) {
+        if (user && user.id_user && selectedPost) {
           const postService = new PostService(config.API_URL);
-          const newComment : Post = {
+          const newComment : PostAdd = {
             id_user: user.id_user,
+            type: "texte",
             date: new Date(),
-            type: commentType,
             afficher: true,
             text: commentText,
             id_post_comm: selectedPost?.id_post,
             titre_post: commentTitle,
+          };
+          try {
+            await postService.addComment(selectedPost, newComment);
+            setCommentTitle('');
+            setCommentType('');
+            setCommentText('');
+            setIsCommentFormOpen(false);
+            const updatedComments = await postService.getPostComments(selectedPost.id_post);
+            setComments(updatedComments.data);
+            setCommentAlertMessage('');
+          } catch (error) {
+            console.error('failed to submit comment:', error);
           }
-          postService.addPost(newComment)
-          navigate('/profile/'+user.username)
         }
       }
     }
@@ -121,11 +151,20 @@ export function News() {
       setPostHistory(prevHistory => [...prevHistory, post.id_post]);
       setSelectedPost(post);
       setIsModalOpen(true);
+      window.scrollTo(0,0);
+    }
+
+    const openCommentForm = () => {
+      setIsCommentFormOpen(false); 
+      setCommentAlertMessage('');
+      setCommentTitle('');
+      setCommentText('');
+      setCommentType('');
     }
 
     const handleBack = () => {
       setPostHistory(prevHistory => {
-        const newHistory = prevHistory.slice(0, -1); // Remove the last element
+        const newHistory = prevHistory.slice(0, -1); 
         const lastPostId = newHistory[newHistory.length - 1];
         const lastPost = posts.find(post => post.id_post === lastPostId);
         setSelectedPost(lastPost || null);
@@ -133,17 +172,55 @@ export function News() {
       });
     };
    
+
+    const handleNoPhoto = (type:string)=>{
+      if (type==="recette"){
+        return recette
+      }else if (type==="santé"){
+        return sante
+      }else if (type==="restaurant"){
+        return restaurant
+      }else{
+        return texte
+      }
+    }
+
+    const navigateToUserProfile = (username: string, event: React.MouseEvent<HTMLParagraphElement, MouseEvent>) => {
+      event.stopPropagation();
+      navigate(`/profile/${username}`);
+    };
+
+    const handlePageChange = (pageNumber: number) => {
+      const postService = new PostService(config.API_URL);
+      setCurrentPage(pageNumber);
+      setLoading(true)
+    }
+  
     useEffect(() => {
       if (user) {
         const postService = new PostService(config.API_URL)
         const likeService = new LikeService(config.API_URL)
 
-        postService.getPosts()
-        .then(response => response.data)
-        .then(data => {
-          setPosts(data);
-
-          const commentsPromises = data.map(post => postService.getPostComments(post.id_post));
+        postService.getPostsPerPage(currentPage, itemsPerPage, sortOrder, filter)
+        .then(response => {
+          const data =response.data.posts
+          const sortedPosts = data.sort((a: Post,b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setTotalItemsCount(response.data.total_posts);
+          sortedPosts.forEach((post:Post)=>{
+            if (post.picbin){
+              let postPicture = "data:image/png;base64," + post.picbin;
+              let byteCharacters = atob(postPicture.split(",")[1]);
+              let byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              let byteArray = new Uint8Array(byteNumbers);
+              let blob = new Blob([byteArray], { type: "image/png" });
+              post.blob=blob
+          
+              };  
+          })
+          const commentsPromises = data.map((post:Post) => postService.getPostComments(post.id_post));
           Promise.all(commentsPromises)
           .then(commentsData => {
             const allComments = commentsData.map(comment => comment.data);
@@ -151,21 +228,19 @@ export function News() {
           })
           .catch(error => console.error(error));
 
-          const userPromises = data.map(post => postService.getUserFromPost(post.id_post));
+          const userPromises = data.map((post:Post) => postService.getUserFromPost(post.id_post));
           Promise.all(userPromises)
           .then(userData => {
-            console.log('usersData:', userData);
             const allUsers = userData.map(userC => userC.data);
             setUsers(allUsers);
-            console.log('Users:', allUsers);
           })
           .catch(error => console.error('Error fetching users:',error));
 
-          const likesPromises = data.map(post => likeService.getPostLikes(post.id_post));
+          const likesPromises = data.map((post:Post) => likeService.getPostLikes(post.id_post));
           Promise.all(likesPromises)
           .then(likesData => {
             const likesCount = likesData.reduce((count, likesArray) => {
-              likesArray.data.forEach(like => {
+              likesArray.data.forEach((like:Like) => {
                 count[like.id_post] = likesArray.data.length;
               });
               return count;
@@ -179,23 +254,37 @@ export function News() {
             const userLikes = likesData.reduce((acc, likesArray) => {
               if (likesArray.data.length > 0) {
                 const id_post = likesArray.data[0]?.id_post || -1;
-                acc[id_post] = likesArray.data.some(like => like.id_user === user.id_user);
+                acc[id_post] = likesArray.data.some((like:Like) => like.id_user === user.id_user);
               }
               return acc;
             }, {} as Record<number, boolean>);
             setUserLikes(userLikes);
-          })
-          .catch(error => console.error(error));
 
+          })
+
+          setPosts(sortedPosts);
+          
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+          console.error(error);
+
+        });
       }
-    }, [user]);
+      setTimeout(() => {
+            setLoading(false);
+          }, 1500);
+    }, [user, currentPage, itemsPerPage, sortOrder,filter]);
 
     
     return (
     <div className='back-color'>
       <Navbar />
+      {loading ? (
+        <div className='load'>
+          <div>Loading<span className='loading-dots'><span>.</span><span>.</span><span>.</span></span></div>
+          </div>
+      ): (
+      <div>
       <CreatePostButton/>
       <div className='fil-dactu'>
         <ul className='bandeau'>
@@ -211,49 +300,43 @@ export function News() {
         </ul>
       </div>
       <div className='button-container'>
-        {/* <text className='filtres'>Filtres</text> */}
-        <div className="button-wrapper">
-          <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortOldestToNewest}>Le plus ancien</button>        </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortNewestToOldest}>Le plus récent</button>
-          {/* <button className= 'button-filtres' onClick={sortNewestToOldest}>Le plus récent</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
-          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Post</button>
-          {/* <button className= 'button-filtres' onClick={filterPosts}>Posts</button> */}
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={sortOldestToNewest}>Le plus ancien</button>        </div>
+        
+        <div className="button-wrapper">
+          <div className='button-underline'></div>
+          <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterPosts}>Texte</button>
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRecipes}>Recette</button>
-          {/* <button className= 'button-filtres' onClick={filterRecipes}>Recettes</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterRestaurant}>Restaurant</button>
-          {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
         <div className="button-wrapper">
           <div className='button-underline'></div>
           <button className={`button-filtres ${isModalOpen ? 'hidden' : ''}`} onClick={filterSante}>Santé</button>
-          {/* <button className= 'button-filtres' onClick={filterRestaurant}>Restaurants</button> */}
         </div>
       </div>
-      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={310}>
-        {posts.filter(post => (!filter && ["post", "recette", "commentaire_resto"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
-          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' onClick={() => openPost(post)}>
+      <ResponsiveGridLayout className="layout" cols={{lg: 3, md: 3, sm: 3, xs: 1, xxs: 1}} rowHeight={500}>
+        {posts.filter(post => (!filter && ["texte", "recette", "restaurant", "santé"].includes(post.type)) || post.type === filter).map((post: Post, index: number) => (
+          <div key={post.id_post} data-grid={{x: index % 3, y: Math.floor(index / 3), w: 0.9, h: 1, static : true}} className='post-news' >
             <div className='post-border' >
-                <h2 className='post-title'>{post.titre_post}</h2>
+                <h2 className='post-title-news'>{post.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{post.type}</p>
-                  <p className='post-user'>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
+                  <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === post.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === post.id_user)?.username}</p>
                 </div>
                 <div className='img-wrapper'>
-                  <img onClick={()=> {setSelectedPost(post); setIsModalOpen(true);}} className='img-test' src={logo} alt="Logo" />
+                  <img onClick={() => openPost(post)} className='img-test' src={post.blob ? URL.createObjectURL(post.blob) : handleNoPhoto(post.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(post.id_post)} >
-                    {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
                       icon={faHeart} 
                       color={userLikes[post.id_post] ? 'red' : 'black'} 
@@ -286,14 +369,12 @@ export function News() {
                 <h2 className='post-title'>{selectedPost.titre_post}</h2>
                 <div className='post-info'>
                   <p className='post-type'>{selectedPost.type}</p>
-                  <p className='post-user'>@{users.find(userC => userC.id_user === selectedPost.id_user)?.username}</p>
+                  <p className='post-user' onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === selectedPost.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === selectedPost.id_user)?.username}</p>
                 </div>
 
-                {/* <img className='img-test' src={logo} alt="Logo" /> */}
                 <div className='img-wrapper'>
-                  <img className='img-test' src={logo} alt="Logo" />
+                  <img className='img-selected' src={selectedPost.blob ? URL.createObjectURL(selectedPost.blob) : handleNoPhoto(selectedPost.type)} alt="Logo"/>
                   <div className="likes-count"onClick={()=> toggleLike(selectedPost.id_post)} >
-                    {/* <p className='heart-icon' onClick={()=> toggleLike(post.id_post)}>❤️</p> */}
                     <FontAwesomeIcon 
                       icon={faHeart} 
                       color={userLikes[selectedPost.id_post] ? 'red' : 'black'} 
@@ -303,8 +384,7 @@ export function News() {
                   </div>
                 </div>
 
-                {/*changer le post-text car là on peut afficher toutes les lignes */}
-                <p className='post-text'>{selectedPost.text}</p>
+                <p className='post-text-selected'>{selectedPost.text}</p>
                 <p className='post-date'>{selectedPost.date.toString()} </p>
               </div>
             </div>
@@ -312,9 +392,8 @@ export function News() {
               {comments.filter(comment => comment.id_post_comm === selectedPost.id_post).map(comment => (
                 <div className='post-com-com' onClick={() => openPost(comment)}>
                   <div key={comment.id_post} >
-                    {/* mettre un titre ici ? */}
                     <div className='post-info-com'>
-                      <p className='post-user'>@{users.find(userC => userC.id_user === comment.id_user)?.username}</p>
+                      <p className='post-user'onClick={(event)=> navigateToUserProfile(users.find(userC => userC.id_user === comment.id_user)?.username || '', event)}>@{users.find(userC => userC.id_user === comment.id_user)?.username}</p>
                       <p className='post-com-date'>{comment.date.toString()} </p>
                     </div>
                     <p className='post-text-com'>{comment.text}</p>
@@ -325,59 +404,47 @@ export function News() {
                 <button className='ajout-com' onClick={()=> setIsCommentFormOpen(true)}> Ajouter un commentaire... </button>
                 {isCommentFormOpen && (
                   <div>
-                    {/* <div>
-                    <TextField required className='txtfield-com-title' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Titre" variant="outlined" onChange={e => setCommentTitle(e.target.value)}/>
-                    <TextField required className='txtfield-com-type' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Type" variant='outlined' onChange={e => setCommentType(e.target.value)}/>
-                    <TextField required className='txtfield-com-text' sx={{ m: 1, width: '80%' }} id="outlined-basic" label="Texte" variant='outlined' onChange={e => setCommentText(e.target.value)}/>                 
-                    </div> */}
-                    <form className='addPlaceForm' onSubmit={handleSubmitComment}>
+                    <form className='addPlaceForm' onSubmit={async (e) => {
+                      e.preventDefault();
+                      await handleSubmitComment();
+                      }}>
                       <div>
-                      <label>
-                        <div className={`form ${commentType === '' ? 'defaultValueStyle' : ''}`}>
-                          Type:
-                          <select
-                          className="customSelect" 
-                          name="type"
-                          value={commentType}
-                          onChange={e => setCommentType(e.target.value)} >
-                          <option value="None">Choisir une valeur</option>
-                          <option value="texte">Post</option>
-                          <option value="recette">Recette</option>
-                          <option value="restaurant">Restaurant</option>
-                          <option value="santé">Santé</option>
-                          </select>
-                        </div>
-                      </label>
-                      <label>
-                        <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
-                          Titre:
-                          <input
-                          className="inputField"
-                          type="text"
-                          name="title"
-                          value={commentTitle}
-                          onChange={e => setCommentTitle(e.target.value)}
-                          placeholder="Titre"
-                          />
-                        </div>
-                      </label>
-                      <label>
-                        <div className={`form ${commentText === '' ? 'defaultValueStyle' : ''}`}>
-                          Description:
-                          <input
-                          className="inputField"
-                          type="text"
-                          name="description"
-                          value={commentText}
-                          onChange={e => setCommentText(e.target.value)}
-                          placeholder="Texte"
-                          />
-                        </div>
-                      </label>
+                        {commentAlertMessage && (
+                          <Alert severity={commentAlertSeverity}>
+                            {commentAlertMessage}
+                          </Alert>
+                        )}
+                        
+                        <label>
+                          <div className={`form ${commentTitle === '' ? 'defaultValueStyle' : ''}`}>
+                            Titre:
+                            <input
+                            className="inputField-comment"
+                            type="text"
+                            name="title"
+                            value={commentTitle}
+                            onChange={e => setCommentTitle(e.target.value)}
+                            placeholder="Titre"
+                            />
+                          </div>
+                        </label>
+                        <label>
+                          <div className={`form ${commentText === '' ? 'defaultValueStyle' : ''}`}>
+                            Description:
+                            <input
+                            className="inputField-comment"
+                            type="text"
+                            name="description"
+                            value={commentText}
+                            onChange={e => setCommentText(e.target.value)}
+                            placeholder="Texte"
+                            />
+                          </div>
+                        </label>
                       </div>
                       <div className='buttons-comment-container'>
                         <button type="submit" className="submit">Ajouter</button>
-                        <button className="button-ajout-com-close" onClick={() => setIsCommentFormOpen(false)}>Fermer</button>
+                        <button className="button-ajout-com-close" onClick={() => openCommentForm()}>Fermer</button>
                       </div>
 
                     </form>
@@ -389,7 +456,18 @@ export function News() {
           </div>
         )}
       </Modal>
+      <Pagination
+        activePage={currentPage}
+        itemsCountPerPage={itemsPerPage}
+        totalItemsCount={totalItemsCount}
+        pageRangeDisplayed={5}
+        onChange={handlePageChange}
+        activeClass='active-page'
+        disabledClass='disabled-page'
+      />
       <Footer />
+      </div>
+      )}
     </div>
   );
 };

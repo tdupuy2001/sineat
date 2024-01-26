@@ -25,14 +25,13 @@ import { EtablissementService } from '../../services/EtablissementService';
 import { config } from '../../config';
 
 
-export default function RestauCard({data,onClick,setSelectedRestauId,selectedRestauId}) {
+export default function RestauCard({data,onClick,setSelectedRestauId,selectedRestauId,setisRated}) {
 
   const [showDetails, setShowDetails] = useState(false);
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [sansGlutenRating, setSansGlutenRating] = useState(0);
   const [ambianceRating, setAmbianceRating] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);  
 
 
   useEffect(() => {
@@ -96,11 +95,9 @@ export default function RestauCard({data,onClick,setSelectedRestauId,selectedRes
     }
 
     handleRatingDialogClose();
+    setisRated(true);
 }
 
-useEffect(() => {
-
-}, [ratingDialogOpen])
 
 
 
