@@ -25,8 +25,9 @@ function AutocompleteSelect({ onAddressSelect }) {
   }, [inputValue]);
 
   const handleChange = (event, value) => {
-    if (value) {
-      onAddressSelect(value);
+    onAddressSelect(value);
+    if (value === '') {
+      onAddressSelect(null); // Call with null or '' when input is cleared
     }
   };
 

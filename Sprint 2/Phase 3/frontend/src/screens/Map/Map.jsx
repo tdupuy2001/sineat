@@ -29,6 +29,8 @@ function Map() {
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState("");
   const [isRated, setisRated] = useState(false);
+  const [currentCoords, setCurrentCoords] = useState(null);
+
 
   const navigate = useNavigate();
 
@@ -167,9 +169,8 @@ function Map() {
   }, [etablissements, isRated]);
 
   const handleAddressSelect = async (address) => {
-    if (!address) return;
-
-    // Fetching the coordinates for the selected address
+    if (address) {
+       // Fetching the coordinates for the selected address
     const coordResponse = await fetch(
       `https://api-adresse.data.gouv.fr/search/?q=${address}&limit=1`
     );
@@ -178,11 +179,17 @@ function Map() {
     if (coordData.features && coordData.features.length > 0) {
       const coords = coordData.features[0].geometry.coordinates;
       setMapCenter([coords[1], coords[0]]);
+      setCurrentCoords({ lat: coords[1], long: coords[0] }); // Set currentCoords state
       if (mapRef.current) {
         mapRef.current.flyTo([coords[1], coords[0]]);
       }
     }
-  };
+  } else {
+    fetchAllEtablissements();
+  }
+
+   
+};
 
   const handleRegimeChange = async (event) => {
     const regimeId = event.target.value;
@@ -209,6 +216,21 @@ function Map() {
     }
   };
 
+  useEffect(() => {
+    if (currentCoords) {
+      // Define the radius within which you want to filter
+      const radius = 5; // Example radius in kilometers
+  
+      fetch(`${config.API_URL}/filter_Byradius?lat=${currentCoords.lat}&long=${currentCoords.long}&radius=${radius}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setEtablissements(data); // Assuming the API returns an array of establishments
+        })
+        .catch((error) => console.error("Failed to fetch establishments by radius:", error));
+    }
+  }, [currentCoords]);
+  
+
   // Helper function to fetch all etablissements
   const fetchEtablissements = () => {
     const service = new EtablissementService(config.API_URL);
@@ -223,6 +245,20 @@ function Map() {
         console.error("Failed to fetch etablissements:", error);
       });
   };
+
+  const fetchAllEtablissements = () => {
+    const service = new EtablissementService(config.API_URL);
+    service.getEtablissements()
+        .then((response) => {
+            if (response.data) {
+                setEtablissements(response.data);
+            }
+        })
+        .catch((error) => {
+            console.error("Failed to fetch etablissements:", error);
+        });
+};
+
 
   return (
     <div>
@@ -289,7 +325,6 @@ function Map() {
                 {types.map((type, index) => (
                   <MenuItem key={index} value={type}>
                     {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
-                    {/* Capitalize the first letter */}
                   </MenuItem>
                 ))}
               </Select>
