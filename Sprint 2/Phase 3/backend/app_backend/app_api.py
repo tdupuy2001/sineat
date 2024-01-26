@@ -933,6 +933,43 @@ def get_regimes_etablissements():
         regimes_etablissements = session.execute(query).scalars().all()
         return {"regimes_etablissements": regimes_etablissements}
 
+@app.get("/etablissements/by_type")
+async def get_etablissements_by_type(type_etablissement: str):
+    with Session(db.engine) as session:
+        # Query to find the type ID
+        query_type_id = select(TypeEtablissement.id_type_etablissement).where(TypeEtablissement.nom == type_etablissement.lower())
+        type_id_result = session.execute(query_type_id).scalar()
+
+        if not type_id_result:
+            raise HTTPException(status_code=404, detail=f"Type '{type_etablissement}' not found")
+
+        # Query to get etablissements of that type
+        query_etabs = select(Etablissement).join(
+            EtablissementDeType,
+            EtablissementDeType.id_etablissement == Etablissement.id_etablissement
+        ).where(EtablissementDeType.id_type_etablissement == type_id_result)
+
+        etabs = session.execute(query_etabs).scalars().all()
+
+        return [etab for etab in etabs]
+
+@app.get("/etablissements/regime&type")
+def get_etablissements_by_regime_and_type(regime_name: str = None, type_name: str = None):
+    with Session(db.engine) as session:
+        query = session.query(Etablissement)
+
+        if regime_name:
+            query = query.join(RegimeEtablissement).join(Regime).filter(Regime.nom == regime_name)
+
+        if type_name:
+            query = query.join(EtablissementDeType).join(TypeEtablissement).filter(TypeEtablissement.nom == type_name)
+
+        etablissements = query.all()
+        return etablissements
+
+
+
+
 
 
 

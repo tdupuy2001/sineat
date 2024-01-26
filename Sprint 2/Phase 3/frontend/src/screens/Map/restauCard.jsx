@@ -25,19 +25,23 @@ import { EtablissementService } from '../../services/EtablissementService';
 import { config } from '../../config';
 
 
-export default function RestauCard({data,onClick}) {
+export default function RestauCard({data,onClick,setSelectedRestauId,selectedRestauId}) {
 
   const [showDetails, setShowDetails] = useState(false);
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [sansGlutenRating, setSansGlutenRating] = useState(0);
   const [ambianceRating, setAmbianceRating] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-   console.log(data)
-  }, [data])
   
 
+
+  useEffect(() => {
+    if(data.id_etablissement){
+      setShowDetails(selectedRestauId === data.id_etablissement )
+      console.log(selectedRestauId === data.id_etablissement)
+    }
+  }, [data])
+  
 
   const handleRatingDialogOpen = () => {
     setRatingDialogOpen(true);
@@ -59,10 +63,16 @@ export default function RestauCard({data,onClick}) {
   const toggleDetails = () => {
     if (data.coord) {
       const coordinates = [data.coord.geometry.coordinates[1], data.coord.geometry.coordinates[0]-0.005];
-      onClick(coordinates);
+      onClick(data.id_etablissement,coordinates);
     }
     setShowDetails(!showDetails);
   };
+
+  const POPClose = () => {
+    setShowDetails(false);
+    setSelectedRestauId(0);
+  };
+
 
   const submitRating = async () => {
 
@@ -109,15 +119,15 @@ useEffect(() => {
         <Typography component="div" variant="h5">
             {data.nom}
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary" component="div" style={{display:"flex", gap:"1px"}}>
-          {data.notes[0].global_average.toFixed(2)} 
+          <Typography variant="subtitle1" color="text.secondary" component="div" style={{ display: "flex", gap: "1px" }}>
+          {data.notes[0]?.global_average != null ? data.notes[0].global_average.toFixed(2) : "0"} 
           <Rating 
               name="read-only" 
-              value={data.notes[0].global_average} 
+              value={data.notes[0]?.global_average ?? 0} 
               precision={0.5} 
               readOnly
-            />
-          </Typography>
+          />
+        </Typography>
         </CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
         <Typography variant="subtitle1" color="text.primary" component="div">
@@ -147,7 +157,7 @@ useEffect(() => {
         }}>
           <IconButton
             aria-label="close"
-            onClick={toggleDetails}
+            onClick={POPClose}
             sx={{
               position: 'absolute',
               right: 8,

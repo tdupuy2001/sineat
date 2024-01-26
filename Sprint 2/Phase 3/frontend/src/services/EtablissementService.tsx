@@ -35,6 +35,14 @@ export class EtablissementService {
     addRating(ratingData: RatingPayload): Promise<AxiosResponse<any>> {
     return this.axiosInstance.post('/addRatings', ratingData);
     }
+
+    getEtablissementsByType(type: string): Promise<AxiosResponse<Etablissement[]>> {
+        return this.axiosInstance.get(`/etablissements/by_type?type_etablissement=${type}`);
+    }
+
+    getEtablissementsByRegimeAndType(regimeName : string, typeName : string): Promise<AxiosResponse<Etablissement[]>> {
+        return this.axiosInstance.get(`/etablissements/regime&type?regime_name=${regimeName}&type_name=${typeName}`);
+      }
     
 
 }
