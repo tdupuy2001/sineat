@@ -163,10 +163,12 @@ export function Login() {
           </div>
           <div className="last-signin">
             <div>
-              <a href="http://">Autres problemes</a>
+              <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                Autres problemes
+              </a>
             </div>
             <div>
-              <a href="http://">Mot de passe oublié ?</a>
+              <a href="https://youtu.be/qyZXPJk_M5o">Mot de passe oublié ?</a>
             </div>
           </div>
         </div>
