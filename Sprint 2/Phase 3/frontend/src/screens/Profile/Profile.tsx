@@ -27,6 +27,8 @@ import restaurant from "../News/assets/restaurant.png";
 import sante from "../News/assets/sante.png";
 import texte from "../News/assets/texte.png";
 import "./Profile.css";
+import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete"
 
 export function Profile() {
   const userService = new UserService(config.API_URL);
@@ -74,6 +76,12 @@ export function Profile() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const [isPostDeleted, setIsPostDeleted] = useState(false);
+
+  const [isUserForDelete, setIsUserForDelete] = useState(false);
+
+
+
   // Gestion de la photo de profil
   useEffect(() => {
     if (usernameLink) {
@@ -109,6 +117,7 @@ export function Profile() {
               .then((response) => response.data)
               .then((data) => {
                 setPosts(data);
+                
 
                 data.forEach((post) => {
                   if (post.picbin) {
@@ -265,7 +274,11 @@ export function Profile() {
       setLoading(false);
     }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [usernameLink, filter, sortOrder]);
+    if (isPostDeleted) {
+      setIsPostDeleted(false);
+    }
+    console.log(posts)
+  }, [usernameLink, filter, sortOrder, isPostDeleted]);
 
   //
   useEffect(() => {
@@ -348,6 +361,9 @@ export function Profile() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abonnement]);
+
+  
+
 
   const handleLogout = () => {
     context.setUser(null);
@@ -472,7 +488,7 @@ export function Profile() {
     setSelectedPost(post);
     setIsModalOpen(true);
     window.scrollTo(0,0);
-
+    rightUser(post);
   };
 
   const sortOldestToNewest = () => {
@@ -511,6 +527,15 @@ export function Profile() {
     handlePageChange(1);
   };
 
+  const deletePost = (selectedPost : Post) => {
+    const postService = new PostService(config.API_URL)
+      if (selectedPost.id_post) {
+        postService.deletePost(selectedPost.id_post);
+      }
+      setIsModalOpen(false);
+      setIsPostDeleted(true);
+  }
+
   const navigateToUserProfile = (
     username: string,
     event: React.MouseEvent<HTMLParagraphElement, MouseEvent>
@@ -518,6 +543,20 @@ export function Profile() {
     event.stopPropagation();
     navigate(`/profile/${username}`);
   };
+
+  const rightUser = (selectedPost: Post) => {
+    if (context.user) {
+      if (context.user.id_user === selectedPost.id_user) {
+        setIsUserForDelete(true);
+        console.log(context.user.id_user)
+        console.log(selectedPost.id_user)
+      }
+    }
+  }
+
+  useEffect (()=>{
+    console.log(isUserForDelete)
+  },[isUserForDelete])
 
   return (
     <div>
@@ -707,7 +746,7 @@ export function Profile() {
               cols={{ lg: 3, md: 3, sm: 3, xs: 1, xxs: 1 }}
               rowHeight={500}
             >
-              {posts
+              {Array.isArray(posts) && posts
                 .filter(
                   (post) =>
                     (!filter &&
@@ -885,6 +924,13 @@ export function Profile() {
           <div className="post-avec-com">
             <div className="post-com">
               <div className="post-com-margin">
+                {isUserForDelete && 
+                  <IconButton
+                    aria-label="close"
+                    onClick={() => deletePost(selectedPost)}
+                  >
+                  <DeleteIcon />
+                  </IconButton>}
                 <h2 className="post-title">{selectedPost.titre_post}</h2>
                 <div className="post-info">
                   <p className="post-type">{selectedPost.type}</p>

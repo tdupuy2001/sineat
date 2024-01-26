@@ -27,6 +27,8 @@ function Map() {
   const [selectedRestauId, setSelectedRestauId] = useState(null);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState('');
+  const [isRated,setisRated] = useState(false);
+
   const navigate = useNavigate();
 
   const toPartageAdresse = () => {
@@ -147,7 +149,7 @@ useEffect(() => {
       };
       fetchDetails();
     }
-  }, [etablissements]);
+  }, [etablissements,isRated]);
   
 
 const handleAddressSelect = async (address) => {
@@ -218,7 +220,7 @@ const fetchEtablissements = () => {
           </div>
           <div className='list-cardrestau'>
             {etablissementsNote.map(etablissement => (
-              <RestauCard key={etablissement.id} data={etablissement} onClick={handleCardClick} setSelectedRestauId={setSelectedRestauId} selectedRestauId={selectedRestauId} />
+              <RestauCard key={etablissement.id} data={etablissement} onClick={handleCardClick} setSelectedRestauId={setSelectedRestauId} selectedRestauId={selectedRestauId} setisRated={setisRated} />
             ))}
           </div>
         </div>
