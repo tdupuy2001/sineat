@@ -14,6 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import L from "leaflet";
 import Autocomplete from './Autocomplete';
 import { PostAddOutlined } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function Map() {
   const [etablissements, setEtablissements] = useState([]);
@@ -25,7 +26,12 @@ function Map() {
   const PARIS_COORDINATES = [48.8566, 2.3522]
   const [selectedRestauId, setSelectedRestauId] = useState(null);
   const [types, setTypes] = useState([]);
-const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const navigate = useNavigate();
+
+  const toPartageAdresse = () => {
+    navigate('/add-place');
+  }
 
 useEffect(() => {
   const fetchTypes = async () => {
@@ -205,7 +211,7 @@ const fetchEtablissements = () => {
       <div className="cont_map">
       <div className="restaurant-section">
           <div className="btn-map">
-            <button>
+            <button onClick={toPartageAdresse}>
               <AddIcon />
               <span>Partager une adresse</span>
             </button>

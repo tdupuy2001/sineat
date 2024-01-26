@@ -471,6 +471,8 @@ export function Profile() {
     setPostHistory((prevHistory) => [...prevHistory, post.id_post]);
     setSelectedPost(post);
     setIsModalOpen(true);
+    window.scrollTo(0,0);
+
   };
 
   const sortOldestToNewest = () => {
@@ -784,7 +786,7 @@ export function Profile() {
             </ResponsiveGridLayout>
           </div>
         )}
-        ;
+        
       </div>
       <Modal
         isOpen={abonneIsOpen}
