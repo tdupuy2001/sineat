@@ -23,13 +23,48 @@ function Map() {
   const [mapCenter, setMapCenter] = useState([43.92517082408836, 2.147408244346074]);
   const mapRef = useRef();
   const PARIS_COORDINATES = [48.8566, 2.3522]
+  const [selectedRestauId, setSelectedRestauId] = useState(null);
+  const [types, setTypes] = useState([]);
+const [selectedType, setSelectedType] = useState('');
 
-
-  const handleCardClick = (coordinates) => {
-    if (mapRef.current) {
-      mapRef.current.flyTo(coordinates, 15); // 15 is the zoom level
+useEffect(() => {
+  const fetchTypes = async () => {
+    try {
+      const response = await fetch(`${config.API_URL}/types-etablissements`);
+      const data = await response.json();
+      setTypes(data.types_etablissements);
+    } catch (error) {
+      console.error('Failed to fetch types:', error);
     }
   };
+
+  fetchTypes();
+}, []);
+
+useEffect(() => {
+
+  if (selectedType) {
+    const service = new EtablissementService(config.API_URL);
+    service.getEtablissementsByType(selectedType)
+      .then((response) => {
+        if (response.data) {
+          setEtablissements(response.data);
+        }
+      })
+      .catch(error => {
+        console.error("Failed to fetch etablissements for type:", selectedType, error);
+      });
+  }
+}, [selectedType]);
+
+
+  const handleCardClick = (etablissementId, coordinates) => {
+    setSelectedRestauId(etablissementId);
+    if (mapRef.current) {
+      mapRef.current.flyTo(coordinates, 15);
+    }
+  };
+  
 
   useEffect(() => {
     const attemptGeolocation = () => {
@@ -120,7 +155,7 @@ const handleAddressSelect = async (address) => {
     const coords = coordData.features[0].geometry.coordinates;
     setMapCenter([coords[1], coords[0]]);
     if (mapRef.current) {
-      mapRef.current.flyTo([coords[1], coords[0]], mapRef.current.getZoom());
+      mapRef.current.flyTo([coords[1], coords[0]]);
     }
 
 
@@ -177,7 +212,7 @@ const fetchEtablissements = () => {
           </div>
           <div className='list-cardrestau'>
             {etablissementsNote.map(etablissement => (
-              <RestauCard key={etablissement.id} data={etablissement} onClick={handleCardClick} />
+              <RestauCard key={etablissement.id} data={etablissement} onClick={handleCardClick} setSelectedRestauId={setSelectedRestauId} selectedRestauId={selectedRestauId} />
             ))}
           </div>
         </div>
@@ -186,7 +221,7 @@ const fetchEtablissements = () => {
             <div style={{ flex: 1, marginRight: '20px' }}>
               <Autocomplete onAddressSelect={handleAddressSelect} />
             </div>
-            <FormControl style={{ flex: 1, minWidth: 120 }}>
+            <FormControl style={{ flex: 1, minWidth: 120 ,marginRight: '5px' }}>
               <InputLabel id="regime-select-label" size='small'>Regime</InputLabel>
               <Select
                 labelId="regime-select-label"
@@ -200,6 +235,24 @@ const fetchEtablissements = () => {
                 {regimes.map((regime) => (
                   <MenuItem key={regime.id_regime} value={regime.id_regime}>
                     {regime.nom}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl style={{ flex: 1, minWidth: 120 }}>
+              <InputLabel id="type-select-label" size='small'>Type</InputLabel>
+              <Select
+                labelId="type-select-label"
+                id="type-select"
+                value={selectedType}
+                label="Type"
+                size='small'
+                onChange={(event) => setSelectedType(event.target.value)}
+              >
+                <MenuItem value="">All Types</MenuItem>
+                {types.map((type, index) => (
+                  <MenuItem key={index} value={type}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)} {/* Capitalize the first letter */}
                   </MenuItem>
                 ))}
               </Select>
@@ -221,6 +274,7 @@ const fetchEtablissements = () => {
                   <Marker 
                     key={etab.id_etablissement} 
                     position={[etab.coord.geometry.coordinates[1], etab.coord.geometry.coordinates[0]]}
+                    icon={selectedRestauId === etab.id_etablissement ? redIcon : DefaultIcon}
                   >
                     <Popup>{etab.nom}</Popup>
                   </Marker>
@@ -241,5 +295,12 @@ let DefaultIcon = L.icon({
   popupAnchor: [2, -40],
 });
 L.Marker.prototype.options.icon = DefaultIcon;
+
+const redIcon = new L.Icon({
+  iconUrl:"https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34]
+});
 
 export default Map;
